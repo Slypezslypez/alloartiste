@@ -1,0 +1,30 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Artist {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  category     String
+  bio          String   @default("")
+  photos       String[] @default([]) // max 5, contrôlé côté application
+  videos       String[] @default([]) // max 5, contrôlé côté application
+
+  // Stripe
+  stripeCustomerId     String?   @unique
+  stripeSubscriptionId String?   @unique
+  subscriptionStatus   String? // active | trialing | past_due | canceled | incomplete | unpaid
+  currentPeriodEnd     DateTime? // fin de la période payée en cours
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([category])
+}

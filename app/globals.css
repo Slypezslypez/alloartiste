@@ -1,0 +1,150 @@
+:root {
+  --plum: #241220;
+  --plum-deep: #170a15;
+  --card: #2f1b2b;
+  --card-line: #4a2f43;
+  --paper: #f3e9da;
+  --gold: #d4a63a;
+  --gold-dim: #a98430;
+  --red: #b8323b;
+  --muted: #c9b8b0;
+  --radius: 2px;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--plum);
+  color: var(--paper);
+  font-family: "Fraunces", serif;
+  min-height: 100vh;
+}
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; cursor: pointer; }
+.mono { font-family: "JetBrains Mono", monospace; }
+
+header {
+  position: sticky; top: 0; z-index: 50;
+  background: var(--plum-deep);
+  border-bottom: 1px solid var(--card-line);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 28px;
+}
+.logo { font-family: "Bebas Neue", sans-serif; font-size: 28px; letter-spacing: 0.08em; }
+.logo span { color: var(--gold); }
+nav { display: flex; align-items: center; gap: 10px; }
+.navbtn {
+  background: transparent; border: 1px solid var(--card-line); color: var(--paper);
+  padding: 9px 16px; font-size: 13px; border-radius: var(--radius); transition: 0.15s;
+}
+.navbtn:hover { border-color: var(--gold); color: var(--gold); }
+.navbtn.primary { background: var(--gold); color: var(--plum-deep); border-color: var(--gold); font-weight: 600; }
+
+main { max-width: 1180px; margin: 0 auto; padding: 0 24px 80px; }
+
+.marquee { padding: 70px 4px 40px; border-bottom: 1px dashed var(--card-line); margin-bottom: 40px; }
+.marquee .eyebrow { font-size: 12px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; }
+.marquee h1 {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: clamp(48px, 9vw, 108px);
+  line-height: 0.92;
+  margin: 0 0 20px;
+}
+.marquee h1 em { font-style: normal; color: var(--gold); }
+.marquee p { max-width: 560px; color: var(--muted); font-size: 17px; line-height: 1.6; margin: 0 0 26px; }
+.ctas { display: flex; gap: 12px; flex-wrap: wrap; }
+
+.btn {
+  display: inline-block; padding: 13px 24px; border-radius: var(--radius);
+  font-size: 14px; font-weight: 600; border: 1px solid transparent; transition: 0.15s;
+}
+.btn-gold { background: var(--gold); color: var(--plum-deep); }
+.btn-gold:hover { background: var(--paper); }
+.btn-outline { border-color: var(--card-line); color: var(--paper); background: transparent; }
+.btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+
+.filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 32px; }
+.chip {
+  padding: 7px 14px; border: 1px solid var(--card-line); border-radius: 20px;
+  font-family: "JetBrains Mono", monospace; font-size: 12px; background: transparent; color: var(--muted);
+}
+.chip.active { background: var(--gold); border-color: var(--gold); color: var(--plum-deep); font-weight: 600; }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 22px; }
+.ticket {
+  background: var(--card); border: 1px solid var(--card-line); border-radius: var(--radius);
+  overflow: hidden; display: block; transition: 0.18s;
+}
+.ticket:hover { transform: translateY(-4px); border-color: var(--gold); }
+.ticket .photo { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; display: block; background: var(--plum-deep); }
+.stub { padding: 14px 16px 16px; position: relative; }
+.perf { height: 0; border-top: 1px dashed var(--card-line); position: relative; }
+.perf::before, .perf::after { content: ""; position: absolute; top: -7px; width: 14px; height: 14px; border-radius: 50%; background: var(--plum); }
+.perf::before { left: -8px; }
+.perf::after { right: -8px; }
+.ticket .name { font-family: "Bebas Neue", sans-serif; font-size: 22px; margin: 0 0 4px; }
+.cat {
+  display: inline-block; font-family: "JetBrains Mono", monospace; font-size: 11px; letter-spacing: 0.05em;
+  color: var(--gold); text-transform: uppercase; border: 1px solid var(--gold-dim); padding: 2px 8px; border-radius: 12px;
+}
+.empty { text-align: center; padding: 70px 20px; color: var(--muted); border: 1px dashed var(--card-line); border-radius: var(--radius); }
+
+.section-title { font-family: "Bebas Neue", sans-serif; font-size: 34px; margin: 0 0 22px; display: flex; align-items: center; gap: 12px; }
+.section-title::after { content: ""; flex: 1; height: 1px; background: var(--card-line); }
+
+.panel { max-width: 640px; margin: 40px auto; background: var(--card); border: 1px solid var(--card-line); border-radius: var(--radius); padding: 36px 32px; }
+.panel.wide { margin-left: 0; margin-right: 0; max-width: none; }
+.panel h2 { font-family: "Bebas Neue", sans-serif; font-size: 32px; margin: 0 0 6px; }
+.panel .sub { color: var(--muted); font-size: 14px; margin: 0 0 26px; }
+label { display: block; font-family: "JetBrains Mono", monospace; font-size: 11px; text-transform: uppercase; color: var(--gold); margin: 18px 0 6px; }
+input, textarea, select {
+  width: 100%; background: var(--plum-deep); border: 1px solid var(--card-line); color: var(--paper);
+  padding: 11px 12px; font-family: "Fraunces", serif; font-size: 15px; border-radius: var(--radius);
+}
+input:focus, textarea:focus, select:focus { outline: 2px solid var(--gold); outline-offset: 1px; border-color: var(--gold); }
+textarea { resize: vertical; min-height: 90px; }
+.error { color: var(--red); font-size: 13px; margin-top: 10px; }
+.success { color: #8bb87a; font-size: 13px; margin-top: 10px; }
+.hint { color: var(--muted); font-size: 12px; margin-top: 6px; }
+
+.sub-badge {
+  display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: var(--radius);
+  font-family: "JetBrains Mono", monospace; font-size: 13px; margin-bottom: 24px; border: 1px solid var(--card-line);
+}
+.sub-badge.active { border-color: #8bb87a; color: #8bb87a; }
+.sub-badge.inactive { border-color: var(--red); color: var(--red); }
+
+.media-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 10px; }
+.thumb { width: 100px; height: 120px; border-radius: var(--radius); object-fit: cover; border: 1px solid var(--card-line); }
+.thumb-wrap { position: relative; }
+.rm {
+  position: absolute; top: -8px; right: -8px; background: var(--red); color: var(--paper); border: none;
+  width: 22px; height: 22px; border-radius: 50%; font-size: 13px;
+}
+.video-item {
+  display: flex; align-items: center; gap: 10px; background: var(--plum-deep); border: 1px solid var(--card-line);
+  padding: 9px 12px; border-radius: var(--radius); margin-top: 8px; font-size: 13px; word-break: break-all;
+}
+.video-item button { margin-left: auto; background: none; border: none; color: var(--red); font-size: 16px; }
+
+.profile-hero { display: flex; gap: 32px; flex-wrap: wrap; margin-bottom: 36px; }
+.profile-hero img.main { width: 260px; height: 320px; object-fit: cover; border: 1px solid var(--card-line); border-radius: var(--radius); }
+.profile-info h1 { font-family: "Bebas Neue", sans-serif; font-size: 56px; margin: 0 0 10px; line-height: 0.95; }
+.profile-info p.bio { color: var(--muted); line-height: 1.7; max-width: 520px; margin: 16px 0 26px; }
+.gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin-bottom: 40px; }
+.gallery img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: var(--radius); border: 1px solid var(--card-line); }
+.videos { display: grid; gap: 14px; }
+.video-embed { aspect-ratio: 16 / 9; width: 100%; background: var(--card); border: 1px solid var(--card-line); border-radius: var(--radius); }
+.video-embed iframe { width: 100%; height: 100%; border: 0; border-radius: var(--radius); }
+
+.backlink { display: inline-block; margin-bottom: 24px; color: var(--muted); font-size: 13px; font-family: "JetBrains Mono", monospace; }
+.backlink:hover { color: var(--gold); }
+
+footer { text-align: center; padding: 30px; color: var(--muted); font-size: 12px; border-top: 1px solid var(--card-line); }
+
+@media (max-width: 640px) {
+  header { padding: 12px 16px; }
+  .marquee { padding: 44px 4px 30px; }
+  .profile-info h1 { font-size: 38px; }
+  .profile-hero img.main { width: 100%; height: 280px; }
+}
