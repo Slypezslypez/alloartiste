@@ -14,7 +14,7 @@ export async function sendContactEmail(opts: {
   return resend.emails.send({
     from: process.env.EMAIL_FROM as string,
     to: artistEmail,
-    replyTo: senderEmail,
+    reply_To: senderEmail,
     subject: `Demande de devis via La Coulisse — de ${senderName}`,
     text: `Bonjour ${artistName},
 
