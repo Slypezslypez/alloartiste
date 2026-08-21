@@ -105,7 +105,7 @@ export function CatalogClient({ artists }: { artists: ArtistCard[] }) {
 
       {filtered.length === 0 ? (
         <div className="empty">
-          <p style={{ fontFamily: "Bebas Neue", fontSize: 30 }}>Aucun artiste trouvé.</p>
+          <p className="empty-title">Aucun artiste trouvé.</p>
           <p>Essayez d&apos;élargir votre recherche ou réinitialisez les filtres.</p>
         </div>
       ) : (
@@ -148,6 +148,6 @@ export function CatalogClient({ artists }: { artists: ArtistCard[] }) {
 function placeholder() {
   return (
     "data:image/svg+xml;utf8," +
-    encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="300" height="375"><rect width="100%" height="100%" fill="%23170a15"/></svg>`)
+    encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="300" height="375"><rect width="100%" height="100%" fill="%23e5e7eb"/></svg>`)
   );
 }
