@@ -37,6 +37,9 @@ export function AdminArticles({ initialArticles }: { initialArticles: Article[] 
   const [form, setForm] = useState({ ...EMPTY_FORM });
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [aiTopic, setAiTopic] = useState("");
+  const [generating, setGenerating] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
 
   function startCreate() {
     setForm({ ...EMPTY_FORM });
@@ -66,6 +69,34 @@ export function AdminArticles({ initialArticles }: { initialArticles: Article[] 
     const matches = gradient.match(/#[0-9a-fA-F]{3,6}/g);
     if (matches && matches.length >= 2) return [matches[0], matches[1]];
     return ["#d4af37", "#8b6b1f"];
+  }
+
+  async function generateWithAI() {
+    if (!aiTopic.trim()) return;
+    setGenerating(true);
+    setAiError(null);
+    try {
+      const res = await fetch("/api/admin/articles/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ topic: aiTopic.trim() })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Échec de la génération.");
+      setForm((f) => ({
+        ...f,
+        title: data.title || f.title,
+        excerpt: data.excerpt || f.excerpt,
+        category: data.category || f.category,
+        icon: data.icon || f.icon,
+        readTime: data.readTime || f.readTime,
+        body: data.body || f.body
+      }));
+    } catch (err: any) {
+      setAiError(err.message || "Échec de la génération.");
+    } finally {
+      setGenerating(false);
+    }
   }
 
   async function uploadImage(file: File) {
@@ -150,6 +181,25 @@ export function AdminArticles({ initialArticles }: { initialArticles: Article[] 
     return (
       <div className="panel wide">
         <h2 style={{ fontSize: 24 }}>{editingId ? "Modifier l'article" : "Nouvel article"}</h2>
+
+        <div className="ai-generate-box">
+          <label style={{ margin: "0 0 8px" }}>✨ Générer un brouillon avec l&apos;IA</label>
+          <div style={{ display: "flex", gap: 10 }}>
+            <input
+              type="text"
+              value={aiTopic}
+              onChange={(e) => setAiTopic(e.target.value)}
+              placeholder="Ex. Comment gérer le trac avant une prestation"
+              disabled={generating}
+            />
+            <button type="button" className="btn btn-gold" onClick={generateWithAI} disabled={generating || !aiTopic.trim()} style={{ whiteSpace: "nowrap" }}>
+              {generating ? "Génération..." : "Générer"}
+            </button>
+          </div>
+          {aiError && <p className="error">{aiError}</p>}
+          <p className="hint">Le brouillon remplit les champs ci-dessous — relisez et modifiez avant d&apos;enregistrer.</p>
+        </div>
+
         <form onSubmit={save}>
           <label>Titre</label>
           <input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required maxLength={140} />
