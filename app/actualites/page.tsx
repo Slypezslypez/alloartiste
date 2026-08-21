@@ -1,53 +1,34 @@
-const ARTICLES = [
-  {
-    slug: "reussir-sa-fiche-artiste",
-    title: "5 conseils pour une fiche artiste qui donne envie de réserver",
-    excerpt:
-      "Vos photos, votre bio, vos vidéos : chaque détail compte pour convaincre un organisateur en quelques secondes. Voici ce qui fait vraiment la différence.",
-    category: "Conseils artistes",
-    readTime: "4 min"
-  },
-  {
-    slug: "bien-briefer-un-artiste",
-    title: "Organisateurs : comment bien briefer un artiste avant l'événement",
-    excerpt:
-      "Lieu, horaires, matériel technique, public attendu... un bon brief évite 90% des malentendus le jour J.",
-    category: "Conseils organisateurs",
-    readTime: "5 min"
-  },
-  {
-    slug: "tarifer-sa-prestation",
-    title: "Comment fixer le prix de sa prestation artistique",
-    excerpt:
-      "Entre le temps de préparation, le déplacement et le matériel, voici une méthode simple pour arriver à un tarif juste.",
-    category: "Conseils artistes",
-    readTime: "6 min"
-  },
-  {
-    slug: "checklist-avant-evenement",
-    title: "La checklist à cocher avant chaque événement",
-    excerpt: "Contrat, acompte, plan d'accès, contact sur place... la liste qui évite le stress de dernière minute.",
-    category: "Conseils organisateurs",
-    readTime: "3 min"
-  }
-];
+import Link from "next/link";
+import { ARTICLES } from "@/lib/articles";
 
 export default function ActualitesPage() {
   return (
     <>
       <div className="panel">
-        <h2>Actualités & Conseils</h2>
+        <div className="eyebrow mono">Professions & métiers de la scène</div>
+        <h2>Conseils, Guides & Actualités</h2>
         <p className="sub">Des ressources pratiques pour les artistes et les organisateurs d&apos;événements en Belgique.</p>
       </div>
 
       <div className="blog-grid">
         {ARTICLES.map((a) => (
-          <article key={a.slug} className="blog-card">
-            <span className="cat mono">{a.category}</span>
-            <h3>{a.title}</h3>
-            <p>{a.excerpt}</p>
-            <span className="blog-meta mono">{a.readTime} de lecture</span>
-          </article>
+          <Link key={a.slug} href={`/actualites/${a.slug}`} className="blog-card">
+            <div className="blog-cover" style={{ background: a.gradient }}>
+              <span className="blog-icon">{a.icon}</span>
+              <span className="blog-cat-badge mono">{a.category}</span>
+            </div>
+            <div className="blog-card-body">
+              <div className="blog-byline mono">
+                L&apos;équipe La Coulisse · {a.date}
+              </div>
+              <h3>{a.title}</h3>
+              <p>{a.excerpt}</p>
+              <div className="blog-footer">
+                <span className="blog-meta mono">{a.readTime} de lecture</span>
+                <span className="blog-read-link">Lire l&apos;article →</span>
+              </div>
+            </div>
+          </Link>
         ))}
       </div>
     </>
