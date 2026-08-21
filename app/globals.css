@@ -252,7 +252,7 @@ textarea { resize: vertical; min-height: 90px; }
 .blog-cover-large { aspect-ratio: 21/9; border-radius: var(--radius) var(--radius) 0 0; }
 .blog-icon-large { font-size: 72px; }
 .article-body { margin-top: 26px; max-width: 680px; }
-.article-body p { color: var(--ink-soft); font-size: 16px; line-height: 1.8; margin: 0 0 20px; font-weight: 300; }
+.article-body p { color: var(--ink-soft); font-size: 15px; line-height: 1.75; margin: 0 0 18px; font-weight: 300; }
 
 .ai-generate-box { background: var(--gold-soft); border: 1px dashed var(--gold); border-radius: 12px; padding: 18px 20px; margin: 18px 0 24px; }
 
