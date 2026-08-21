@@ -26,14 +26,13 @@ export async function POST(req: NextRequest) {
           data: {
             stripeSubscriptionId: sub.id,
             subscriptionStatus: sub.status,
-            currentPeriodEnd: new Date(sub.current_period_end * 1000)
+            currentPeriodEnd: getPeriodEnd(sub)
           }
         });
       }
       break;
     }
 
-    // Renouvellement annuel réussi (ou tout paiement de la souscription).
     case "invoice.paid": {
       const invoice = event.data.object as Stripe.Invoice;
       if (invoice.subscription) {
@@ -43,7 +42,6 @@ export async function POST(req: NextRequest) {
       break;
     }
 
-    // Mise à jour générique (changement de statut, annulation programmée, etc.)
     case "customer.subscription.updated":
     case "customer.subscription.deleted": {
       const sub = event.data.object as Stripe.Subscription;
@@ -51,8 +49,6 @@ export async function POST(req: NextRequest) {
       break;
     }
 
-    // Échec de paiement du renouvellement — le profil redeviendra invisible
-    // automatiquement puisque currentPeriodEnd ne sera pas repoussé.
     case "invoice.payment_failed": {
       const invoice = event.data.object as Stripe.Invoice;
       if (invoice.subscription) {
@@ -66,12 +62,24 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({ received: true });
 }
 
+/** Récupère la date de fin de période, quelle que soit la version de l'API Stripe utilisée. */
+function getPeriodEnd(sub: Stripe.Subscription): Date {
+  const fromItem = (sub as any).items?.data?.[0]?.current_period_end;
+  const fromRoot = (sub as any).current_period_end;
+  const timestamp = fromItem ?? fromRoot;
+  if (typeof timestamp === "number") {
+    return new Date(timestamp * 1000);
+  }
+  // Filet de sécurité : si Stripe ne renvoie aucune date exploitable, on retombe sur un an.
+  return new Date(Date.now() + 365 * 24 * 60 * 60 * 1000);
+}
+
 async function updateByCustomer(sub: Stripe.Subscription) {
   await prisma.artist.updateMany({
     where: { stripeSubscriptionId: sub.id },
     data: {
       subscriptionStatus: sub.status,
-      currentPeriodEnd: new Date(sub.current_period_end * 1000)
+      currentPeriodEnd: getPeriodEnd(sub)
     }
   });
 }
