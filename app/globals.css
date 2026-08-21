@@ -95,11 +95,11 @@ main { max-width: 1180px; margin: 0 auto; padding: 0 24px 80px; }
 .stat-num { font-family: "Playfair Display", serif; font-weight: 800; font-size: 30px; color: var(--ink); }
 .stat-cap { font-size: 10.5px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2px; }
 
-.marquee-photos { display: flex; flex-direction: column; gap: 18px; }
-.spotlight-card { position: relative; display: block; border-radius: 18px; overflow: hidden; aspect-ratio: 16/10; box-shadow: 0 14px 34px rgba(0,0,0,0.12); }
+.marquee-photos { display: flex; flex-direction: column; gap: 18px; max-width: 380px; margin-left: auto; width: 100%; }
+.spotlight-card { position: relative; display: block; border-radius: 18px; overflow: hidden; aspect-ratio: 4/3; max-height: 260px; box-shadow: 0 14px 34px rgba(0,0,0,0.12); }
 .spotlight-card:first-child { margin-right: 30px; }
 .spotlight-card:last-child { margin-left: 30px; }
-.spotlight-card img { width: 100%; height: 100%; object-fit: cover; transition: 0.3s; }
+.spotlight-card img { width: 100%; height: 100%; object-fit: cover; transition: 0.3s; display: block; }
 .spotlight-card:hover img { transform: scale(1.05); }
 .spotlight-overlay { position: absolute; inset: auto 0 0 0; padding: 14px 16px; background: linear-gradient(0deg, rgba(0,0,0,0.75), transparent); display: flex; flex-direction: column; gap: 2px; }
 .spotlight-cat { color: var(--gold); font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; }
@@ -114,7 +114,8 @@ main { max-width: 1180px; margin: 0 auto; padding: 0 24px 80px; }
 
 @media (max-width: 860px) {
   .marquee-grid { grid-template-columns: 1fr; }
-  .marquee-photos { flex-direction: row; }
+  .marquee-photos { flex-direction: row; max-width: none; margin-left: 0; }
+  .spotlight-card { max-height: 200px; }
   .spotlight-card:first-child, .spotlight-card:last-child { margin: 0; }
 }
 
