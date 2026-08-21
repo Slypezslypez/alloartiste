@@ -34,13 +34,17 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     }
   });
 
-  sendContactEmail({
-    artistName: artist.name,
-    artistEmail: artist.email,
-    senderName: parsed.data.senderName,
-    senderEmail: parsed.data.senderEmail,
-    message: parsed.data.message
-  }).catch(() => {});
+  try {
+    await sendContactEmail({
+      artistName: artist.name,
+      artistEmail: artist.email,
+      senderName: parsed.data.senderName,
+      senderEmail: parsed.data.senderEmail,
+      message: parsed.data.message
+    });
+  } catch (err) {
+    console.error("Échec de l'envoi de l'email de contact artiste:", err);
+  }
 
   return NextResponse.json({ ok: true });
 }
