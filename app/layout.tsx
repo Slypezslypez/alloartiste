@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import "./globals.css";
-import { HeaderNav } from "./HeaderNav";
+import { SiteHeader } from "./SiteHeader";
 
 export const metadata: Metadata = {
   title: "La Coulisse — Artistes & Producteurs",
@@ -23,12 +23,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <span>✦</span>
           <span>Plateforme de mise en relation entre artistes et organisateurs en Belgique</span>
         </div>
-        <header>
-          <div className="logo">
-            LA <span>COULISSE</span>
-          </div>
-          <HeaderNav />
-        </header>
+        <SiteHeader />
         <main>{children}</main>
         <footer>
           <div className="footer-links">
