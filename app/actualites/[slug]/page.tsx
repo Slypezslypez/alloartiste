@@ -1,14 +1,14 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getArticleBySlug, ARTICLES } from "@/lib/articles";
+import { prisma } from "@/lib/prisma";
 
-export function generateStaticParams() {
-  return ARTICLES.map((a) => ({ slug: a.slug }));
-}
+export const dynamic = "force-dynamic";
 
-export default function ArticlePage({ params }: { params: { slug: string } }) {
-  const article = getArticleBySlug(params.slug);
-  if (!article) notFound();
+export default async function ArticlePage({ params }: { params: { slug: string } }) {
+  const article = await prisma.article.findUnique({ where: { slug: params.slug } });
+  if (!article || !article.published) notFound();
+
+  const paragraphs = article.body.split(/\n\s*\n/).filter(Boolean);
 
   return (
     <>
@@ -16,8 +16,12 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
         ← Retour aux actualités
       </Link>
 
-      <div className="blog-cover blog-cover-large" style={{ background: article.gradient }}>
-        <span className="blog-icon blog-icon-large">{article.icon}</span>
+      <div className="blog-cover blog-cover-large" style={article.imageUrl ? {} : { background: article.gradient }}>
+        {article.imageUrl ? (
+          <img src={article.imageUrl} alt={article.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+        ) : (
+          <span className="blog-icon blog-icon-large">{article.icon}</span>
+        )}
       </div>
 
       <div className="panel" style={{ marginTop: -60, position: "relative", zIndex: 2 }}>
@@ -26,11 +30,13 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
         </span>
         <h2 style={{ fontSize: 32 }}>{article.title}</h2>
         <p className="sub" style={{ marginBottom: 6 }}>
-          L&apos;équipe La Coulisse · {article.date} · {article.readTime} de lecture
+          L&apos;équipe La Coulisse ·{" "}
+          {new Date(article.createdAt).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })} ·{" "}
+          {article.readTime} de lecture
         </p>
 
         <div className="article-body">
-          {article.body.map((paragraph, i) => (
+          {paragraphs.map((paragraph, i) => (
             <p key={i}>{paragraph}</p>
           ))}
         </div>

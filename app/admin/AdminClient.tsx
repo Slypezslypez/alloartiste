@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { isSubscriptionVisible } from "@/lib/categories";
+import { AdminArticles } from "./AdminArticles";
 
 type Artist = {
   id: string;
@@ -37,17 +38,34 @@ type ContactMessage = {
   createdAt: string;
 };
 
+type Article = {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+  category: string;
+  body: string;
+  imageUrl: string | null;
+  icon: string;
+  gradient: string;
+  readTime: string;
+  published: boolean;
+  createdAt: string;
+};
+
 export function AdminClient({
   initialArtists,
   initialLeads,
-  initialMessages
+  initialMessages,
+  initialArticles
 }: {
   initialArtists: Artist[];
   initialLeads: Lead[];
   initialMessages: ContactMessage[];
+  initialArticles: Article[];
 }) {
   const router = useRouter();
-  const [tab, setTab] = useState<"artists" | "leads" | "messages">("artists");
+  const [tab, setTab] = useState<"artists" | "leads" | "messages" | "articles">("artists");
   const [artists, setArtists] = useState(initialArtists);
   const [leads, setLeads] = useState(initialLeads);
   const [messages, setMessages] = useState(initialMessages);
@@ -126,6 +144,9 @@ export function AdminClient({
         </button>
         <button className={`chip ${tab === "messages" ? "active" : ""}`} onClick={() => setTab("messages")}>
           Messages ({messages.length}){newMessagesCount > 0 && ` · ${newMessagesCount} nouveau${newMessagesCount > 1 ? "x" : ""}`}
+        </button>
+        <button className={`chip ${tab === "articles" ? "active" : ""}`} onClick={() => setTab("articles")}>
+          Articles ({initialArticles.length})
         </button>
       </div>
 
@@ -235,6 +256,7 @@ export function AdminClient({
           </div>
         </div>
       )}
+      {tab === "articles" && <AdminArticles initialArticles={initialArticles} />}
     </>
   );
 }

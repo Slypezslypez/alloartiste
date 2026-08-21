@@ -32,3 +32,19 @@ export async function deleteObjectByUrl(publicUrl: string) {
   const key = publicUrl.slice(base.length + 1);
   await s3.send(new DeleteObjectCommand({ Bucket: process.env.S3_BUCKET, Key: key }));
 }
+
+/** Upload d'image pour le contenu du site (articles de blog...), réservé à l'admin. */
+export async function createPresignedArticleUpload(fileExt: string, contentType: string) {
+  const key = `articles/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${fileExt}`;
+
+  const command = new PutObjectCommand({
+    Bucket: process.env.S3_BUCKET,
+    Key: key,
+    ContentType: contentType
+  });
+
+  const uploadUrl = await getSignedUrl(s3, command, { expiresIn: 300 });
+  const publicUrl = `${process.env.S3_PUBLIC_BASE_URL}/${key}`;
+
+  return { uploadUrl, publicUrl };
+}

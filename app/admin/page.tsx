@@ -9,10 +9,11 @@ export default async function AdminPage() {
   const ok = await isAdminAuthenticated();
   if (!ok) redirect("/admin/login");
 
-  const [artists, leads, messages] = await Promise.all([
+  const [artists, leads, messages, articles] = await Promise.all([
     prisma.artist.findMany({ orderBy: { createdAt: "desc" } }),
     prisma.lead.findMany({ orderBy: { createdAt: "desc" }, include: { artist: { select: { name: true } } } }),
-    prisma.contactMessage.findMany({ orderBy: { createdAt: "desc" } })
+    prisma.contactMessage.findMany({ orderBy: { createdAt: "desc" } }),
+    prisma.article.findMany({ orderBy: { createdAt: "desc" } })
   ]);
 
   return (
@@ -20,6 +21,7 @@ export default async function AdminPage() {
       initialArtists={JSON.parse(JSON.stringify(artists))}
       initialLeads={JSON.parse(JSON.stringify(leads))}
       initialMessages={JSON.parse(JSON.stringify(messages))}
+      initialArticles={JSON.parse(JSON.stringify(articles))}
     />
   );
 }
