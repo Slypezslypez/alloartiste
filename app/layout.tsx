@@ -27,6 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <main>{children}</main>
         <footer>
           <div className="footer-links">
+            <Link href="/actualites">Actualités</Link>
             <Link href="/comment-ca-marche">Comment ça marche</Link>
             <Link href="/faq">FAQ</Link>
             <Link href="/contact">Contact</Link>
