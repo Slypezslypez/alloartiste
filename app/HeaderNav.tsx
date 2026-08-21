@@ -25,6 +25,12 @@ export function HeaderNav() {
       <Link className="navbtn" href="/">
         Accueil
       </Link>
+      <Link className="navbtn" href="/comment-ca-marche">
+        Comment ça marche
+      </Link>
+      <Link className="navbtn" href="/contact">
+        Contact
+      </Link>
       {loggedIn ? (
         <>
           <Link className="navbtn" href="/dashboard">

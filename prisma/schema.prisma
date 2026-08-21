@@ -57,3 +57,14 @@ model Lead {
 
   @@index([artistId])
 }
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  role      String   @default("organisateur") // organisateur | artiste | autre
+  message   String
+  status    String   @default("new") // new | replied | archived
+  createdAt DateTime @default(now())
+}

@@ -192,6 +192,24 @@ textarea { resize: vertical; min-height: 90px; }
 .lead-contact { font-size: 12px; color: var(--muted); }
 .lead-contact a { color: var(--gold-deep); font-weight: 600; }
 
+.admin-tag { font-family: "JetBrains Mono", monospace; font-size: 10px; font-weight: 700; text-transform: uppercase; padding: 4px 9px; border-radius: 999px; }
+.tag-active { background: #f0fdf4; color: var(--green); }
+.tag-inactive { background: #fef2f2; color: var(--red); }
+
+.faq-list { display: flex; flex-direction: column; gap: 4px; }
+.faq-item { border-bottom: 1px solid var(--line); padding: 16px 0; }
+.faq-item summary { cursor: pointer; font-weight: 600; color: var(--ink); font-size: 15px; list-style: none; }
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::before { content: "+ "; color: var(--gold-deep); font-weight: 700; }
+.faq-item[open] summary::before { content: "− "; }
+.faq-item p { color: var(--ink-soft); font-size: 14px; line-height: 1.6; margin: 10px 0 0; font-weight: 300; }
+
+.steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; }
+.step-box { background: var(--cream); border: 1px solid var(--line); border-radius: 12px; padding: 20px; }
+.step-num { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(90deg, var(--gold), var(--gold-deep)); color: #fff; font-weight: 700; font-size: 13px; margin-bottom: 10px; }
+.step-box strong { display: block; font-family: "Playfair Display", serif; font-size: 16px; margin-bottom: 6px; color: var(--ink); }
+.step-box p { color: var(--muted); font-size: 13px; line-height: 1.5; margin: 0; }
+
 .media-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 10px; }
 .thumb { width: 100px; height: 120px; border-radius: 12px; object-fit: cover; border: 1px solid var(--line); }
 .thumb-wrap { position: relative; }
@@ -219,6 +237,9 @@ textarea { resize: vertical; min-height: 90px; }
 .backlink:hover { color: var(--gold-deep); }
 
 footer { text-align: center; padding: 34px; color: var(--muted); font-size: 12px; border-top: 1px solid var(--line); }
+.footer-links { display: flex; justify-content: center; gap: 22px; margin-bottom: 14px; }
+.footer-links a { color: var(--ink-soft); font-size: 13px; font-weight: 500; }
+.footer-links a:hover { color: var(--gold-deep); }
 
 @media (max-width: 640px) {
   header { padding: 12px 16px; }

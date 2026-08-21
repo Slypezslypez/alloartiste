@@ -27,6 +27,25 @@ Vous pouvez répondre directement à cet email, il arrivera chez ${senderName}.`
   });
 }
 
+export async function sendGeneralContactEmail(opts: { name: string; email: string; phone?: string; role: string; message: string }) {
+  const { name, email, phone, role, message } = opts;
+  const receiver = process.env.CONTACT_RECEIVER_EMAIL || process.env.EMAIL_FROM;
+
+  return resend.emails.send({
+    from: process.env.EMAIL_FROM as string,
+    to: receiver as string,
+    reply_to: email,
+    subject: `Nouveau message de contact (${role}) — ${name}`,
+    text: `Nom : ${name}
+Email : ${email}
+Téléphone : ${phone || "—"}
+Rôle : ${role}
+
+Message :
+${message}`
+  });
+}
+
 export async function sendWelcomeEmail(artistName: string, artistEmail: string) {
   return resend.emails.send({
     from: process.env.EMAIL_FROM as string,

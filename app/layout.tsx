@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import "./globals.css";
 import { HeaderNav } from "./HeaderNav";
 
@@ -29,7 +30,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <HeaderNav />
         </header>
         <main>{children}</main>
-        <footer>La Coulisse — Annuaire d&apos;artistes pour producteurs &amp; demandeurs de devis</footer>
+        <footer>
+          <div className="footer-links">
+            <Link href="/comment-ca-marche">Comment ça marche</Link>
+            <Link href="/faq">FAQ</Link>
+            <Link href="/contact">Contact</Link>
+          </div>
+          <p>La Coulisse — Annuaire d&apos;artistes pour producteurs &amp; demandeurs de devis</p>
+        </footer>
       </body>
     </html>
   );
