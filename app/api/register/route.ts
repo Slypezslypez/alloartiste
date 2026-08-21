@@ -39,7 +39,11 @@ export async function POST(req: NextRequest) {
   });
 
   await createSession(artist.id);
-  sendWelcomeEmail(artist.name, artist.email).catch(() => {});
+  try {
+    await sendWelcomeEmail(artist.name, artist.email);
+  } catch (err) {
+    console.error("Échec de l'envoi de l'email de bienvenue:", err);
+  }
 
   return NextResponse.json({ ok: true, artistId: artist.id });
 }
