@@ -26,3 +26,29 @@ export function isSubscriptionVisible(artist: {
   const okStatus = artist.subscriptionStatus === "active" || artist.subscriptionStatus === "trialing";
   return okStatus && artist.currentPeriodEnd.getTime() > Date.now();
 }
+
+/** Un profil est considéré "Nouveau" pendant les 14 jours suivant sa création. */
+export function isNewArrival(createdAt: Date | string) {
+  const t = new Date(createdAt).getTime();
+  return Date.now() - t < 14 * 24 * 60 * 60 * 1000;
+}
+
+export const BELGIAN_CITIES = [
+  "Bruxelles",
+  "Anvers",
+  "Gand",
+  "Charleroi",
+  "Liège",
+  "Bruges",
+  "Namur",
+  "Louvain",
+  "Mons",
+  "Courcelles",
+  "Tournai",
+  "La Louvière",
+  "Wavre",
+  "Verviers",
+  "Arlon",
+  "Ostende",
+  "Autre"
+] as const;

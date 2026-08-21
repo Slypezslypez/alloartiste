@@ -1,23 +1,43 @@
 "use client";
 
 import { useState } from "react";
-import { CATEGORIES, MAX_PHOTOS, MAX_VIDEOS, isSubscriptionVisible } from "@/lib/categories";
+import { CATEGORIES, BELGIAN_CITIES, MAX_PHOTOS, MAX_VIDEOS, isSubscriptionVisible } from "@/lib/categories";
 
 type Artist = {
   id: string;
   name: string;
   email: string;
   category: string;
+  city: string;
   bio: string;
+  phone: string | null;
+  website: string | null;
+  facebook: string | null;
+  instagram: string | null;
   photos: string[];
   videos: string[];
+  views: number;
+  rating: number;
+  reviewsCount: number;
   stripeCustomerId: string | null;
   subscriptionStatus: string | null;
   currentPeriodEnd: string | null;
 };
 
-export function DashboardClient({ initialArtist }: { initialArtist: Artist }) {
+type Lead = {
+  id: string;
+  senderName: string;
+  senderEmail: string;
+  senderPhone: string | null;
+  eventDate: string | null;
+  message: string;
+  status: "new" | "replied" | "archived";
+  createdAt: string;
+};
+
+export function DashboardClient({ initialArtist, initialLeads }: { initialArtist: Artist; initialLeads: Lead[] }) {
   const [artist, setArtist] = useState(initialArtist);
+  const [leads, setLeads] = useState(initialLeads);
   const active = isSubscriptionVisible({
     subscriptionStatus: artist.subscriptionStatus,
     currentPeriodEnd: artist.currentPeriodEnd ? new Date(artist.currentPeriodEnd) : null
@@ -27,6 +47,8 @@ export function DashboardClient({ initialArtist }: { initialArtist: Artist }) {
   const [uploading, setUploading] = useState(false);
   const [videoUrl, setVideoUrl] = useState("");
   const [subLoading, setSubLoading] = useState(false);
+
+  const newLeadsCount = leads.filter((l) => l.status === "new").length;
 
   async function startSubscription() {
     setSubLoading(true);
@@ -48,7 +70,16 @@ export function DashboardClient({ initialArtist }: { initialArtist: Artist }) {
     const res = await fetch("/api/artists/me", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: fd.get("name"), category: fd.get("category"), bio: fd.get("bio") })
+      body: JSON.stringify({
+        name: fd.get("name"),
+        category: fd.get("category"),
+        city: fd.get("city"),
+        bio: fd.get("bio"),
+        phone: fd.get("phone") || null,
+        website: fd.get("website") || null,
+        facebook: fd.get("facebook") || null,
+        instagram: fd.get("instagram") || null
+      })
     });
     if (res.ok) {
       const updated = await res.json();
@@ -120,6 +151,17 @@ export function DashboardClient({ initialArtist }: { initialArtist: Artist }) {
     setArtist((a) => ({ ...a, videos: res.videos }));
   }
 
+  async function updateLeadStatus(id: string, status: Lead["status"]) {
+    const res = await fetch(`/api/leads/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status })
+    });
+    if (res.ok) {
+      setLeads((ls) => ls.map((l) => (l.id === id ? { ...l, status } : l)));
+    }
+  }
+
   return (
     <>
       <h2 className="section-title">Mon espace — {artist.name}</h2>
@@ -133,9 +175,9 @@ export function DashboardClient({ initialArtist }: { initialArtist: Artist }) {
       {!active ? (
         <div className="panel wide">
           <h2 style={{ fontSize: 24 }}>Activer l&apos;abonnement</h2>
-          <p className="sub">33€ par an, renouvelable automatiquement via Stripe. Requis pour apparaître dans le catalogue public.</p>
+          <p className="sub">Abonnement annuel, renouvelable automatiquement via Stripe. Requis pour apparaître dans le catalogue public.</p>
           <button className="btn btn-gold" onClick={startSubscription} disabled={subLoading}>
-            {subLoading ? "Redirection..." : "S'abonner — 33€/an"}
+            {subLoading ? "Redirection..." : "S'abonner"}
           </button>
         </div>
       ) : (
@@ -150,21 +192,112 @@ export function DashboardClient({ initialArtist }: { initialArtist: Artist }) {
         </div>
       )}
 
+      {/* Statistiques */}
+      <div className="panel wide">
+        <h2 style={{ fontSize: 24 }}>Statistiques</h2>
+        <div className="stats-row">
+          <div className="stat-box">
+            <span className="stat-value">{artist.views}</span>
+            <span className="stat-label">Vues du profil</span>
+          </div>
+          <div className="stat-box">
+            <span className="stat-value">{leads.length}</span>
+            <span className="stat-label">Demandes reçues</span>
+          </div>
+          <div className="stat-box">
+            <span className="stat-value">{artist.reviewsCount > 0 ? artist.rating.toFixed(1) : "—"}</span>
+            <span className="stat-label">Note moyenne{artist.reviewsCount > 0 ? ` (${artist.reviewsCount})` : ""}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Demandes de contact */}
+      <div className="panel wide">
+        <h2 style={{ fontSize: 24 }}>
+          Demandes de contact {newLeadsCount > 0 && <span className="lead-count-badge">{newLeadsCount} nouvelle{newLeadsCount > 1 ? "s" : ""}</span>}
+        </h2>
+        {leads.length === 0 ? (
+          <p className="hint">Aucune demande reçue pour le moment.</p>
+        ) : (
+          <div className="lead-list">
+            {leads.map((lead) => (
+              <div key={lead.id} className={`lead-card lead-${lead.status}`}>
+                <div className="lead-header">
+                  <div>
+                    <strong>{lead.senderName}</strong>{" "}
+                    <span className="mono" style={{ fontSize: 12, color: "var(--muted)" }}>
+                      {new Date(lead.createdAt).toLocaleDateString("fr-FR")}
+                    </span>
+                  </div>
+                  <select value={lead.status} onChange={(e) => updateLeadStatus(lead.id, e.target.value as Lead["status"])} className="lead-status-select">
+                    <option value="new">Nouveau</option>
+                    <option value="replied">Traité</option>
+                    <option value="archived">Archivé</option>
+                  </select>
+                </div>
+                <p className="lead-message">{lead.message}</p>
+                <div className="lead-contact">
+                  <a href={`mailto:${lead.senderEmail}`}>{lead.senderEmail}</a>
+                  {lead.senderPhone && <span> · {lead.senderPhone}</span>}
+                  {lead.eventDate && <span> · Événement : {lead.eventDate}</span>}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
       <div className="panel wide">
         <h2 style={{ fontSize: 24 }}>Mon profil</h2>
         <form onSubmit={saveProfile}>
           <label>Nom / nom de scène</label>
           <input name="name" type="text" defaultValue={artist.name} required />
-          <label>Catégorie</label>
-          <select name="category" defaultValue={artist.category}>
-            {CATEGORIES.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
+          <div className="field-row">
+            <div>
+              <label>Catégorie</label>
+              <select name="category" defaultValue={artist.category}>
+                {CATEGORIES.map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label>Ville</label>
+              <select name="city" defaultValue={artist.city || BELGIAN_CITIES[0]}>
+                {BELGIAN_CITIES.map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
           <label>Bio</label>
           <textarea name="bio" maxLength={600} defaultValue={artist.bio} />
+
+          <div className="field-row">
+            <div>
+              <label>Téléphone (optionnel)</label>
+              <input name="phone" type="text" defaultValue={artist.phone || ""} maxLength={30} />
+            </div>
+            <div>
+              <label>Site web (optionnel)</label>
+              <input name="website" type="text" defaultValue={artist.website || ""} maxLength={200} placeholder="monsite.be" />
+            </div>
+          </div>
+          <div className="field-row">
+            <div>
+              <label>Facebook (optionnel)</label>
+              <input name="facebook" type="text" defaultValue={artist.facebook || ""} maxLength={200} placeholder="facebook.com/..." />
+            </div>
+            <div>
+              <label>Instagram (optionnel)</label>
+              <input name="instagram" type="text" defaultValue={artist.instagram || ""} maxLength={200} placeholder="instagram.com/..." />
+            </div>
+          </div>
+
           {profileMsg && <p className="success">{profileMsg}</p>}
           <div style={{ marginTop: 20 }}>
             <button type="submit" className="btn btn-gold">
@@ -218,7 +351,7 @@ export function DashboardClient({ initialArtist }: { initialArtist: Artist }) {
         ))}
         {artist.videos.length < MAX_VIDEOS && (
           <>
-            <label style={{ marginTop: 20 }}>Ajouter un lien vidéo (YouTube, Vimeo...)</label>
+            <label style={{ marginTop: 20 }}>Ajouter un lien vidéo (YouTube, Vimeo, MP4...)</label>
             <div style={{ display: "flex", gap: 10 }}>
               <input type="url" value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} placeholder="https://youtube.com/watch?v=..." />
               <button className="btn btn-outline" onClick={addVideo} style={{ whiteSpace: "nowrap" }}>

@@ -11,6 +11,9 @@ export default async function ProfilePage({ params }: { params: { id: string } }
   const artist = await prisma.artist.findUnique({ where: { id: params.id } });
   if (!artist || !isSubscriptionVisible(artist)) notFound();
 
+  // Comptabilise la vue (non bloquant pour l'affichage).
+  prisma.artist.update({ where: { id: artist.id }, data: { views: { increment: 1 } } }).catch(() => {});
+
   return (
     <>
       <Link className="backlink" href="/">
@@ -20,9 +23,46 @@ export default async function ProfilePage({ params }: { params: { id: string } }
       <div className="profile-hero">
         <img className="main" src={artist.photos[0] || undefined} alt={`Photo principale de ${artist.name}`} />
         <div className="profile-info">
-          <h1>{artist.name}</h1>
-          <span className="cat mono">{artist.category}</span>
+          <h1>
+            {artist.name}
+            {artist.isVerified && (
+              <span className="verified-check" title="Profil vérifié" style={{ fontSize: 28 }}>
+                ✓
+              </span>
+            )}
+          </h1>
+          <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap", marginBottom: 16 }}>
+            <span className="cat mono">{artist.category}</span>
+            {artist.city && <span className="mono" style={{ color: "var(--muted)", fontSize: 13 }}>📍 {artist.city}</span>}
+            {artist.reviewsCount > 0 && (
+              <span className="rating">
+                ★ {artist.rating.toFixed(1)} <span className="dim">({artist.reviewsCount} avis)</span>
+              </span>
+            )}
+          </div>
           <p className="bio">{artist.bio || "Cet·te artiste n'a pas encore ajouté de description."}</p>
+
+          {(artist.website || artist.facebook || artist.instagram || artist.phone) && (
+            <div style={{ display: "flex", gap: 14, flexWrap: "wrap", marginBottom: 22, fontSize: 13 }}>
+              {artist.phone && <span className="mono" style={{ color: "var(--muted)" }}>📞 {artist.phone}</span>}
+              {artist.website && (
+                <a href={formatUrl(artist.website)} target="_blank" rel="noopener noreferrer" style={{ color: "var(--gold)" }}>
+                  🔗 Site web
+                </a>
+              )}
+              {artist.facebook && (
+                <a href={formatUrl(artist.facebook)} target="_blank" rel="noopener noreferrer" style={{ color: "var(--gold)" }}>
+                  Facebook
+                </a>
+              )}
+              {artist.instagram && (
+                <a href={formatUrl(artist.instagram)} target="_blank" rel="noopener noreferrer" style={{ color: "var(--gold)" }}>
+                  Instagram
+                </a>
+              )}
+            </div>
+          )}
+
           <ContactForm artistId={artist.id} artistName={artist.name} />
         </div>
       </div>
@@ -50,4 +90,9 @@ export default async function ProfilePage({ params }: { params: { id: string } }
       )}
     </>
   );
+}
+
+function formatUrl(url: string) {
+  if (/^https?:\/\//i.test(url)) return url;
+  return `https://${url}`;
 }

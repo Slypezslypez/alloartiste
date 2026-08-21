@@ -63,6 +63,22 @@ main { max-width: 1180px; margin: 0 auto; padding: 0 24px 80px; }
 .btn-outline { border-color: var(--card-line); color: var(--paper); background: transparent; }
 .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
 
+.search-panel { background: var(--card); border: 1px solid var(--card-line); border-radius: var(--radius); padding: 20px; margin-bottom: 24px; }
+.search-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
+.search-input { flex: 2; min-width: 200px; background: var(--plum-deep); border: 1px solid var(--card-line); color: var(--paper); padding: 10px 14px; font-family: "Fraunces", serif; font-size: 14px; border-radius: var(--radius); }
+.search-select { flex: 1; min-width: 150px; background: var(--plum-deep); border: 1px solid var(--card-line); color: var(--paper); padding: 10px 14px; font-family: "JetBrains Mono", monospace; font-size: 13px; border-radius: var(--radius); }
+.reset-link { background: none; border: none; color: var(--gold); font-family: "JetBrains Mono", monospace; font-size: 12px; margin-top: 4px; padding: 0; }
+.reset-link:hover { text-decoration: underline; }
+.result-count { color: var(--muted); font-size: 13px; margin: 0 0 18px; }
+.result-count strong { color: var(--gold); }
+
+.badge { position: absolute; top: 10px; left: 10px; z-index: 2; font-family: "JetBrains Mono", monospace; font-size: 10px; font-weight: 700; text-transform: uppercase; padding: 4px 9px; border-radius: 20px; letter-spacing: 0.04em; }
+.badge-new { background: linear-gradient(90deg, var(--gold), var(--gold-dim)); color: var(--plum-deep); }
+.verified-check { color: var(--gold); font-size: 14px; margin-left: 6px; }
+.ticket-meta { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; font-size: 11px; color: var(--muted); }
+.rating { color: var(--gold); font-weight: 600; }
+.rating .dim { color: var(--muted); font-weight: 400; }
+
 .filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 32px; }
 .chip {
   padding: 7px 14px; border: 1px solid var(--card-line); border-radius: 20px;
@@ -73,7 +89,7 @@ main { max-width: 1180px; margin: 0 auto; padding: 0 24px 80px; }
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 22px; }
 .ticket {
   background: var(--card); border: 1px solid var(--card-line); border-radius: var(--radius);
-  overflow: hidden; display: block; transition: 0.18s;
+  overflow: hidden; display: block; transition: 0.18s; position: relative;
 }
 .ticket:hover { transform: translateY(-4px); border-color: var(--gold); }
 .ticket .photo { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; display: block; background: var(--plum-deep); }
@@ -106,6 +122,22 @@ textarea { resize: vertical; min-height: 90px; }
 .error { color: var(--red); font-size: 13px; margin-top: 10px; }
 .success { color: #8bb87a; font-size: 13px; margin-top: 10px; }
 .hint { color: var(--muted); font-size: 12px; margin-top: 6px; }
+
+.stats-row { display: flex; flex-wrap: wrap; gap: 16px; }
+.stat-box { flex: 1; min-width: 140px; background: var(--plum-deep); border: 1px solid var(--card-line); border-radius: var(--radius); padding: 18px; text-align: center; }
+.stat-value { display: block; font-family: "Bebas Neue", sans-serif; font-size: 34px; color: var(--gold); }
+.stat-label { display: block; font-family: "JetBrains Mono", monospace; font-size: 11px; color: var(--muted); text-transform: uppercase; margin-top: 4px; }
+
+.lead-count-badge { display: inline-block; background: var(--red); color: var(--paper); font-family: "JetBrains Mono", monospace; font-size: 11px; padding: 2px 9px; border-radius: 20px; margin-left: 8px; vertical-align: middle; }
+.lead-list { display: flex; flex-direction: column; gap: 14px; }
+.lead-card { background: var(--plum-deep); border: 1px solid var(--card-line); border-left: 3px solid var(--card-line); border-radius: var(--radius); padding: 14px 16px; }
+.lead-card.lead-new { border-left-color: var(--gold); }
+.lead-card.lead-archived { opacity: 0.55; }
+.lead-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px; }
+.lead-status-select { width: auto; padding: 5px 8px; font-size: 12px; }
+.lead-message { font-size: 14px; color: var(--paper); margin: 0 0 8px; line-height: 1.5; }
+.lead-contact { font-size: 12px; color: var(--muted); }
+.lead-contact a { color: var(--gold); }
 
 .sub-badge {
   display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: var(--radius);

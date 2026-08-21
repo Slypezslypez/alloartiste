@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getCurrentArtist } from "@/lib/auth";
-import { CATEGORIES } from "@/lib/categories";
+import { CATEGORIES, BELGIAN_CITIES } from "@/lib/categories";
 
 export async function GET() {
   const artist = await getCurrentArtist();
@@ -14,7 +14,12 @@ export async function GET() {
 const schema = z.object({
   name: z.string().min(2).max(60).optional(),
   category: z.enum(CATEGORIES).optional(),
-  bio: z.string().max(600).optional()
+  city: z.enum(BELGIAN_CITIES).optional(),
+  bio: z.string().max(600).optional(),
+  phone: z.string().max(30).optional().nullable(),
+  website: z.string().max(200).optional().nullable(),
+  facebook: z.string().max(200).optional().nullable(),
+  instagram: z.string().max(200).optional().nullable()
 });
 
 export async function PATCH(req: NextRequest) {

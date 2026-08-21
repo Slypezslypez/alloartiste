@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { CATEGORIES } from "@/lib/categories";
+import { CATEGORIES, BELGIAN_CITIES } from "@/lib/categories";
 
 export default function InscriptionPage() {
   const router = useRouter();
@@ -22,6 +22,7 @@ export default function InscriptionPage() {
         email: fd.get("email"),
         password: fd.get("password"),
         category: fd.get("category"),
+        city: fd.get("city"),
         bio: fd.get("bio")
       })
     });
@@ -48,6 +49,14 @@ export default function InscriptionPage() {
         <label>Catégorie</label>
         <select name="category" required defaultValue={CATEGORIES[0]}>
           {CATEGORIES.map((c) => (
+            <option key={c} value={c}>
+              {c}
+            </option>
+          ))}
+        </select>
+        <label>Ville</label>
+        <select name="city" required defaultValue={BELGIAN_CITIES[0]}>
+          {BELGIAN_CITIES.map((c) => (
             <option key={c} value={c}>
               {c}
             </option>

@@ -16,6 +16,8 @@ export function ContactForm({ artistId, artistName }: { artistId: string; artist
       body: JSON.stringify({
         senderName: fd.get("senderName"),
         senderEmail: fd.get("senderEmail"),
+        senderPhone: fd.get("senderPhone") || undefined,
+        eventDate: fd.get("eventDate") || undefined,
         message: fd.get("message")
       })
     });
@@ -40,8 +42,18 @@ export function ContactForm({ artistId, artistName }: { artistId: string; artist
       <input name="senderName" type="text" required maxLength={80} />
       <label>Votre email</label>
       <input name="senderEmail" type="email" required />
+      <div className="field-row">
+        <div>
+          <label>Votre téléphone (optionnel)</label>
+          <input name="senderPhone" type="text" maxLength={30} />
+        </div>
+        <div>
+          <label>Date de l&apos;événement (optionnel)</label>
+          <input name="eventDate" type="text" placeholder="ex. 14 juin 2027" maxLength={40} />
+        </div>
+      </div>
       <label>Votre message</label>
-      <textarea name="message" required minLength={10} maxLength={3000} placeholder="Décrivez votre événement, la date, le lieu, le budget..." />
+      <textarea name="message" required minLength={10} maxLength={3000} placeholder="Décrivez votre événement, le lieu, le budget..." />
       {status === "error" && <p className="error">L&apos;envoi a échoué, réessayez.</p>}
       <div style={{ marginTop: 16 }}>
         <button className="btn btn-gold" type="submit" disabled={status === "sending"}>

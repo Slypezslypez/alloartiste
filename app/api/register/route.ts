@@ -3,13 +3,14 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { hashPassword, createSession } from "@/lib/auth";
 import { sendWelcomeEmail } from "@/lib/email";
-import { CATEGORIES } from "@/lib/categories";
+import { CATEGORIES, BELGIAN_CITIES } from "@/lib/categories";
 
 const schema = z.object({
   name: z.string().min(2).max(60),
   email: z.string().email(),
   password: z.string().min(8),
   category: z.enum(CATEGORIES),
+  city: z.enum(BELGIAN_CITIES).optional().default("Autre"),
   bio: z.string().max(600).optional().default("")
 });
 
@@ -19,7 +20,7 @@ export async function POST(req: NextRequest) {
   if (!parsed.success) {
     return NextResponse.json({ error: "Champs invalides." }, { status: 400 });
   }
-  const { name, email, password, category, bio } = parsed.data;
+  const { name, email, password, category, city, bio } = parsed.data;
 
   const existing = await prisma.artist.findUnique({ where: { email: email.toLowerCase() } });
   if (existing) {
@@ -32,6 +33,7 @@ export async function POST(req: NextRequest) {
       email: email.toLowerCase(),
       passwordHash: await hashPassword(password),
       category,
+      city,
       bio
     }
   });
