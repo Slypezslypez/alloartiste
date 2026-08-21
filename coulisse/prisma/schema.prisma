@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Artist {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  category     String
+  city         String   @default("")
+  bio          String   @default("")
+  photos       String[] @default([]) // max 5, contrôlé côté application
+  videos       String[] @default([]) // max 5, contrôlé côté application
+
+  phone     String?
+  website   String?
+  facebook  String?
+  instagram String?
+
+  rating       Float   @default(0)
+  reviewsCount Int     @default(0)
+  views        Int     @default(0)
+  isVerified   Boolean @default(false)
+
+  // Stripe
+  stripeCustomerId     String?   @unique
+  stripeSubscriptionId String?   @unique
+  subscriptionStatus   String? // active | trialing | past_due | canceled | incomplete | unpaid
+  currentPeriodEnd     DateTime? // fin de la période payée en cours
+
+  leads Lead[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([category])
+  @@index([city])
+}
+
+model Lead {
+  id          String   @id @default(cuid())
+  artistId    String
+  artist      Artist   @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  senderName  String
+  senderEmail String
+  senderPhone String?
+  eventDate   String?
+  message     String
+  status      String   @default("new") // new | replied | archived
+  createdAt   DateTime @default(now())
+
+  @@index([artistId])
+}

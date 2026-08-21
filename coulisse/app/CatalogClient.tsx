@@ -1,0 +1,153 @@
+"use client";
+
+import { useMemo, useState } from "react";
+import Link from "next/link";
+import { CATEGORIES, isNewArrival } from "@/lib/categories";
+
+type ArtistCard = {
+  id: string;
+  name: string;
+  category: string;
+  city: string;
+  photos: string[];
+  rating: number;
+  reviewsCount: number;
+  isVerified: boolean;
+  createdAt: string; // ISO
+};
+
+type SortOption = "newest" | "alpha" | "rating";
+
+export function CatalogClient({ artists }: { artists: ArtistCard[] }) {
+  const [search, setSearch] = useState("");
+  const [city, setCity] = useState("Toutes");
+  const [category, setCategory] = useState("Tous");
+  const [sort, setSort] = useState<SortOption>("newest");
+
+  const cities = useMemo(() => {
+    const set = new Set(artists.map((a) => a.city).filter(Boolean));
+    return ["Toutes", ...Array.from(set).sort()];
+  }, [artists]);
+
+  const filtered = useMemo(() => {
+    return artists
+      .filter((a) => {
+        const matchesSearch = !search || a.name.toLowerCase().includes(search.toLowerCase());
+        const matchesCity = city === "Toutes" || a.city === city;
+        const matchesCategory = category === "Tous" || a.category === category;
+        return matchesSearch && matchesCity && matchesCategory;
+      })
+      .sort((a, b) => {
+        if (sort === "alpha") return a.name.localeCompare(b.name, "fr");
+        if (sort === "rating") return b.rating - a.rating;
+        if (sort === "newest") return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        return 0;
+      });
+  }, [artists, search, city, category, sort]);
+
+  function resetFilters() {
+    setSearch("");
+    setCity("Toutes");
+    setCategory("Tous");
+    setSort("newest");
+  }
+
+  const hasActiveFilters = search || city !== "Toutes" || category !== "Tous";
+
+  return (
+    <div id="catalogue">
+      <h2 className="section-title">Le catalogue</h2>
+
+      <div className="search-panel">
+        <div className="search-row">
+          <input
+            type="text"
+            placeholder="Rechercher un nom d'artiste..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="search-input"
+          />
+          <select value={city} onChange={(e) => setCity(e.target.value)} className="search-select">
+            {cities.map((c) => (
+              <option key={c} value={c}>
+                {c === "Toutes" ? "Toutes les villes" : c}
+              </option>
+            ))}
+          </select>
+          <select value={sort} onChange={(e) => setSort(e.target.value as SortOption)} className="search-select">
+            <option value="newest">Plus récents</option>
+            <option value="alpha">Ordre alphabétique</option>
+            <option value="rating">Mieux notés</option>
+          </select>
+        </div>
+
+        <div className="filters">
+          <button className={`chip ${category === "Tous" ? "active" : ""}`} onClick={() => setCategory("Tous")}>
+            Tous
+          </button>
+          {CATEGORIES.map((c) => (
+            <button key={c} className={`chip ${category === c ? "active" : ""}`} onClick={() => setCategory(c)}>
+              {c}
+            </button>
+          ))}
+        </div>
+
+        {hasActiveFilters && (
+          <button className="reset-link" onClick={resetFilters}>
+            ↺ Réinitialiser les filtres
+          </button>
+        )}
+      </div>
+
+      <p className="result-count">
+        <strong>{filtered.length}</strong> profil{filtered.length > 1 ? "s" : ""} correspondant{filtered.length > 1 ? "s" : ""}
+      </p>
+
+      {filtered.length === 0 ? (
+        <div className="empty">
+          <p className="empty-title">Aucun artiste trouvé.</p>
+          <p>Essayez d&apos;élargir votre recherche ou réinitialisez les filtres.</p>
+        </div>
+      ) : (
+        <div className="grid">
+          {filtered.map((a) => {
+            const isNew = isNewArrival(a.createdAt);
+            return (
+              <Link key={a.id} className="ticket" href={`/profil/${a.id}`}>
+                {isNew && <span className="badge badge-new">Nouveau</span>}
+                <img className="photo" src={a.photos[0] || placeholder()} alt={`Photo de ${a.name}`} />
+                <div className="perf" />
+                <div className="stub">
+                  <p className="name">
+                    {a.name}
+                    {a.isVerified && (
+                      <span className="verified-check" title="Profil vérifié">
+                        ✓
+                      </span>
+                    )}
+                  </p>
+                  <span className="cat mono">{a.category}</span>
+                  <div className="ticket-meta">
+                    <span className="mono">{a.city || "Belgique"}</span>
+                    {a.reviewsCount > 0 && (
+                      <span className="rating">
+                        ★ {a.rating.toFixed(1)} <span className="dim">({a.reviewsCount})</span>
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function placeholder() {
+  return (
+    "data:image/svg+xml;utf8," +
+    encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="300" height="375"><rect width="100%" height="100%" fill="%23e5e7eb"/></svg>`)
+  );
+}
