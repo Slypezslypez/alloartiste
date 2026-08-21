@@ -235,6 +235,12 @@ textarea { resize: vertical; min-height: 90px; }
 .step-box strong { display: block; font-family: "Playfair Display", serif; font-size: 16px; margin-bottom: 6px; color: var(--ink); }
 .step-box p { color: var(--muted); font-size: 13px; line-height: 1.5; margin: 0; }
 
+.blog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 22px; }
+.blog-card { background: var(--white); border: 1px solid var(--line); border-radius: var(--radius); padding: 26px; box-shadow: 0 1px 3px rgba(0,0,0,0.03); }
+.blog-card h3 { font-family: "Playfair Display", serif; font-weight: 700; font-size: 19px; margin: 12px 0 10px; color: var(--ink); line-height: 1.3; }
+.blog-card p { color: var(--ink-soft); font-size: 14px; line-height: 1.6; margin: 0 0 16px; font-weight: 300; }
+.blog-meta { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+
 .media-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 10px; }
 .thumb { width: 100px; height: 120px; border-radius: 12px; object-fit: cover; border: 1px solid var(--line); }
 .thumb-wrap { position: relative; }
