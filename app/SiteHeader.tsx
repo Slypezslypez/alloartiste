@@ -7,6 +7,7 @@ import { usePathname, useRouter } from "next/navigation";
 const NAV_ITEMS = [
   { href: "/", label: "Accueil" },
   { href: "/#catalogue", label: "Découvrir les Artistes" },
+  { href: "/actualites", label: "Actualités & Conseils" },
   { href: "/comment-ca-marche", label: "Comment ça marche" },
   { href: "/contact", label: "Contact / Organisateurs" }
 ];
