@@ -25,7 +25,11 @@ export async function POST(req: NextRequest) {
     }
   });
 
-  sendGeneralContactEmail(parsed.data).catch(() => {});
+  try {
+    await sendGeneralContactEmail(parsed.data);
+  } catch (err) {
+    console.error("Échec de l'envoi de l'email de contact général:", err);
+  }
 
   return NextResponse.json({ ok: true });
 }
