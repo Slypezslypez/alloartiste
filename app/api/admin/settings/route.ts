@@ -30,6 +30,12 @@ const schema = z.object({
   statDirectLabel: z.string().min(1).max(60).optional(),
   spotlightArtistId1: z.string().optional().nullable(),
   spotlightArtistId2: z.string().optional().nullable(),
+  howArtistsImageUrl: z.string().url().optional().nullable(),
+  howArtistsImagePositionX: z.number().min(0).max(100).optional(),
+  howArtistsImagePositionY: z.number().min(0).max(100).optional(),
+  howOrganizersImageUrl: z.string().url().optional().nullable(),
+  howOrganizersImagePositionX: z.number().min(0).max(100).optional(),
+  howOrganizersImagePositionY: z.number().min(0).max(100).optional(),
   contactReceiverEmail: z.string().email().optional().nullable().or(z.literal(""))
 });
 
