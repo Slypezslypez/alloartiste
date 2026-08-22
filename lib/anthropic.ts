@@ -143,6 +143,8 @@ Réponds UNIQUEMENT avec un tableau JSON de chaînes de caractères, sans aucun 
     throw new Error("Réponse de l'IA illisible, réessayez.");
   }
 }
+
+export async function normalizeCategoryName(raw: string): Promise<string> {
   if (!process.env.ANTHROPIC_API_KEY) {
     throw new Error("La clé ANTHROPIC_API_KEY n'est pas configurée.");
   }
