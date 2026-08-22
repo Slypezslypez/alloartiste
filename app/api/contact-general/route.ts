@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { sendGeneralContactEmail } from "@/lib/email";
+import { getSiteSettings } from "@/lib/settings";
 
 const schema = z.object({
   name: z.string().min(2).max(80),
@@ -26,7 +27,8 @@ export async function POST(req: NextRequest) {
   });
 
   try {
-    await sendGeneralContactEmail(parsed.data);
+    const settings = await getSiteSettings();
+    await sendGeneralContactEmail({ ...parsed.data, receiverOverride: settings.contactReceiverEmail || undefined });
   } catch (err) {
     console.error("Échec de l'envoi de l'email de contact général:", err);
   }

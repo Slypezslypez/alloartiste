@@ -84,3 +84,34 @@ model Article {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model SiteSettings {
+  id String @id @default("singleton")
+
+  // Identité
+  siteName  String @default("AlloArtiste")
+  logoPart1 String @default("ALLO")
+  logoPart2 String @default("ARTISTE")
+  tagline   String @default("Plateforme de mise en relation entre artistes et organisateurs en Belgique")
+
+  // Page d'accueil — texte principal
+  heroLine1     String @default("TROUVEZ")
+  heroEmphasis  String @default("L'ARTISTE")
+  heroLine2     String @default("QU'IL VOUS FAUT")
+  heroSubtitle  String @default("Musiciens, danseurs, comédiens, DJs, plasticiens... chaque profil présente jusqu'à 5 photos et 5 vidéos pour se montrer sous son meilleur jour. Contactez directement l'artiste pour un devis.")
+
+  // Statistiques affichées (le nombre d'artistes est calculé automatiquement)
+  statCommissionValue String @default("0%")
+  statCommissionLabel String @default("Commission")
+  statDirectValue      String @default("Direct")
+  statDirectLabel      String @default("Organisateur → Artiste")
+
+  // Artistes mis en avant sur l'accueil (vide = sélection automatique)
+  spotlightArtistId1 String?
+  spotlightArtistId2 String?
+
+  // Contact
+  contactReceiverEmail String?
+
+  updatedAt DateTime @updatedAt
+}

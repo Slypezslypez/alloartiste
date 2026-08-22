@@ -35,7 +35,7 @@ export default async function ActualitesPage() {
               </div>
               <div className="blog-card-body">
                 <div className="blog-byline mono">
-                  L&apos;équipe La Coulisse · {new Date(a.createdAt).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
+                  L&apos;équipe AlloArtiste · {new Date(a.createdAt).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
                 </div>
                 <h3>{a.title}</h3>
                 <p>{a.excerpt}</p>

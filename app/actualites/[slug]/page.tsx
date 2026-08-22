@@ -30,7 +30,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
         </span>
         <h2 style={{ fontSize: 32 }}>{article.title}</h2>
         <p className="sub" style={{ marginBottom: 6 }}>
-          L&apos;équipe La Coulisse ·{" "}
+          L&apos;équipe AlloArtiste ·{" "}
           {new Date(article.createdAt).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })} ·{" "}
           {article.readTime} de lecture
         </p>

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { isSubscriptionVisible } from "@/lib/categories";
 import { AdminArticles } from "./AdminArticles";
+import { AdminSettings } from "./AdminSettings";
 
 type Artist = {
   id: string;
@@ -53,19 +54,39 @@ type Article = {
   createdAt: string;
 };
 
+type Settings = {
+  siteName: string;
+  logoPart1: string;
+  logoPart2: string;
+  tagline: string;
+  heroLine1: string;
+  heroEmphasis: string;
+  heroLine2: string;
+  heroSubtitle: string;
+  statCommissionValue: string;
+  statCommissionLabel: string;
+  statDirectValue: string;
+  statDirectLabel: string;
+  spotlightArtistId1: string | null;
+  spotlightArtistId2: string | null;
+  contactReceiverEmail: string | null;
+};
+
 export function AdminClient({
   initialArtists,
   initialLeads,
   initialMessages,
-  initialArticles
+  initialArticles,
+  initialSettings
 }: {
   initialArtists: Artist[];
   initialLeads: Lead[];
   initialMessages: ContactMessage[];
   initialArticles: Article[];
+  initialSettings: Settings;
 }) {
   const router = useRouter();
-  const [tab, setTab] = useState<"artists" | "leads" | "messages" | "articles">("artists");
+  const [tab, setTab] = useState<"artists" | "leads" | "messages" | "articles" | "settings">("artists");
   const [artists, setArtists] = useState(initialArtists);
   const [leads, setLeads] = useState(initialLeads);
   const [messages, setMessages] = useState(initialMessages);
@@ -147,6 +168,9 @@ export function AdminClient({
         </button>
         <button className={`chip ${tab === "articles" ? "active" : ""}`} onClick={() => setTab("articles")}>
           Articles ({initialArticles.length})
+        </button>
+        <button className={`chip ${tab === "settings" ? "active" : ""}`} onClick={() => setTab("settings")}>
+          Réglages
         </button>
       </div>
 
@@ -257,6 +281,9 @@ export function AdminClient({
         </div>
       )}
       {tab === "articles" && <AdminArticles initialArticles={initialArticles} />}
+      {tab === "settings" && (
+        <AdminSettings initialSettings={initialSettings} artistOptions={artists.map((a) => ({ id: a.id, name: a.name }))} />
+      )}
     </>
   );
 }

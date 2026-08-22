@@ -15,10 +15,10 @@ export async function sendContactEmail(opts: {
     from: process.env.EMAIL_FROM as string,
     to: artistEmail,
     reply_to: senderEmail,
-    subject: `Demande de devis via La Coulisse — de ${senderName}`,
+    subject: `Demande de devis via AlloArtiste — de ${senderName}`,
     text: `Bonjour ${artistName},
 
-${senderName} (${senderEmail}) vous contacte via La Coulisse au sujet d'une prestation :
+${senderName} (${senderEmail}) vous contacte via AlloArtiste au sujet d'une prestation :
 
 ${message}
 
@@ -27,9 +27,16 @@ Vous pouvez répondre directement à cet email, il arrivera chez ${senderName}.`
   });
 }
 
-export async function sendGeneralContactEmail(opts: { name: string; email: string; phone?: string; role: string; message: string }) {
-  const { name, email, phone, role, message } = opts;
-  const receiver = process.env.CONTACT_RECEIVER_EMAIL || process.env.EMAIL_FROM;
+export async function sendGeneralContactEmail(opts: {
+  name: string;
+  email: string;
+  phone?: string;
+  role: string;
+  message: string;
+  receiverOverride?: string;
+}) {
+  const { name, email, phone, role, message, receiverOverride } = opts;
+  const receiver = receiverOverride || process.env.CONTACT_RECEIVER_EMAIL || process.env.EMAIL_FROM;
 
   return resend.emails.send({
     from: process.env.EMAIL_FROM as string,
@@ -50,7 +57,7 @@ export async function sendWelcomeEmail(artistName: string, artistEmail: string) 
   return resend.emails.send({
     from: process.env.EMAIL_FROM as string,
     to: artistEmail,
-    subject: "Bienvenue sur La Coulisse",
+    subject: "Bienvenue sur AlloArtiste",
     text: `Bonjour ${artistName},
 
 Votre compte a bien été créé. Activez votre abonnement (33€/an) depuis votre espace pour rendre votre profil visible dans le catalogue.

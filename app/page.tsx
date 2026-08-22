@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { isSubscriptionVisible, CATEGORIES } from "@/lib/categories";
+import { getSiteSettings } from "@/lib/settings";
 import { CatalogClient } from "./CatalogClient";
 
 export const dynamic = "force-dynamic"; // toujours à jour (abonnements qui expirent, nouveaux artistes)
@@ -18,7 +19,11 @@ const CATEGORY_ICONS: Record<string, string> = {
 };
 
 export default async function HomePage() {
-  const all = await prisma.artist.findMany({ orderBy: { createdAt: "desc" } });
+  const [all, settings] = await Promise.all([
+    prisma.artist.findMany({ orderBy: { createdAt: "desc" } }),
+    getSiteSettings()
+  ]);
+
   const visibleRaw = all.filter(isSubscriptionVisible);
   const visible = visibleRaw.map((a) => ({
     id: a.id,
@@ -32,7 +37,13 @@ export default async function HomePage() {
     createdAt: a.createdAt.toISOString()
   }));
 
-  const spotlight = visible.filter((a) => a.photos.length > 0).slice(0, 2);
+  // Photos mises en avant : sélection manuelle depuis l'admin si définie, sinon automatique.
+  const withPhotos = visible.filter((a) => a.photos.length > 0);
+  const manualPicks = [settings.spotlightArtistId1, settings.spotlightArtistId2]
+    .filter((id): id is string => !!id)
+    .map((id) => withPhotos.find((a) => a.id === id))
+    .filter((a): a is (typeof withPhotos)[number] => !!a);
+  const spotlight = manualPicks.length > 0 ? manualPicks.slice(0, 2) : withPhotos.slice(0, 2);
 
   return (
     <>
@@ -41,14 +52,11 @@ export default async function HomePage() {
           <div>
             <div className="eyebrow mono">Annuaire d&apos;artistes pour producteurs & organisateurs</div>
             <h1>
-              TROUVEZ <em>L&apos;ARTISTE</em>
+              {settings.heroLine1} <em>{settings.heroEmphasis}</em>
               <br />
-              QU&apos;IL VOUS FAUT
+              {settings.heroLine2}
             </h1>
-            <p>
-              Musiciens, danseurs, comédiens, DJs, plasticiens... chaque profil présente jusqu&apos;à 5 photos et 5
-              vidéos pour se montrer sous son meilleur jour. Contactez directement l&apos;artiste pour un devis.
-            </p>
+            <p>{settings.heroSubtitle}</p>
             <div className="ctas">
               <Link className="btn btn-gold" href="/inscription">
                 Je m&apos;inscris
@@ -64,12 +72,12 @@ export default async function HomePage() {
                 <span className="stat-cap mono">Artistes belges</span>
               </div>
               <div>
-                <span className="stat-num">0%</span>
-                <span className="stat-cap mono">Commission</span>
+                <span className="stat-num">{settings.statCommissionValue}</span>
+                <span className="stat-cap mono">{settings.statCommissionLabel}</span>
               </div>
               <div>
-                <span className="stat-num">Direct</span>
-                <span className="stat-cap mono">Organisateur → Artiste</span>
+                <span className="stat-num">{settings.statDirectValue}</span>
+                <span className="stat-cap mono">{settings.statDirectLabel}</span>
               </div>
             </div>
           </div>

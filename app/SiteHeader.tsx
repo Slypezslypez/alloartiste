@@ -12,7 +12,7 @@ const NAV_ITEMS = [
   { href: "/contact", label: "Contact / Organisateurs" }
 ];
 
-export function SiteHeader() {
+export function SiteHeader({ logoPart1 = "ALLO", logoPart2 = "ARTISTE" }: { logoPart1?: string; logoPart2?: string }) {
   const pathname = usePathname();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
@@ -44,7 +44,7 @@ export function SiteHeader() {
     <header>
       <div className="header-row">
         <Link href="/" className="logo">
-          ALLO<span>ARTISTE</span>
+          {logoPart1}<span>{logoPart2}</span>
         </Link>
 
         <nav className="desktop-nav">

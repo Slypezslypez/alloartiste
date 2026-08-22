@@ -2,13 +2,18 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import "./globals.css";
 import { SiteHeader } from "./SiteHeader";
+import { getSiteSettings } from "@/lib/settings";
 
 export const metadata: Metadata = {
-  title: "La Coulisse — Artistes & Producteurs",
+  title: "AlloArtiste — Artistes & Producteurs",
   description: "Annuaire d'artistes pour producteurs et demandeurs de devis."
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export const dynamic = "force-dynamic";
+
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const settings = await getSiteSettings();
+
   return (
     <html lang="fr">
       <head>
@@ -21,9 +26,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <div className="top-banner">
           <span>✦</span>
-          <span>Plateforme de mise en relation entre artistes et organisateurs en Belgique</span>
+          <span>{settings.tagline}</span>
         </div>
-        <SiteHeader />
+        <SiteHeader logoPart1={settings.logoPart1} logoPart2={settings.logoPart2} />
         <main>{children}</main>
         <footer>
           <div className="footer-links">
@@ -32,7 +37,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Link href="/faq">FAQ</Link>
             <Link href="/contact">Contact</Link>
           </div>
-          <p>AlloArtiste — Annuaire d&apos;artistes pour producteurs &amp; demandeurs de devis</p>
+          <p>{settings.siteName} — Annuaire d&apos;artistes pour producteurs &amp; demandeurs de devis</p>
         </footer>
       </body>
     </html>
