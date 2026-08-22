@@ -351,7 +351,11 @@ export function DashboardClient({ initialArtist, initialLeads }: { initialArtist
 
       <div className="panel wide">
         <h2 style={{ fontSize: 24 }}>Mon profil</h2>
+        <p className="hint" style={{ marginTop: -6, marginBottom: 20 }}>
+          Cet écran reprend la même présentation que votre fiche publique, pour que vous voyiez exactement ce que verront les organisateurs.
+        </p>
         <form onSubmit={saveProfile}>
+          <p className="profile-section-label mono" style={{ margin: "0 0 10px" }}>Identité</p>
           <label>Nom / nom de scène</label>
           <input name="name" type="text" defaultValue={artist.name} required />
           <div className="field-row">
@@ -390,7 +394,33 @@ export function DashboardClient({ initialArtist, initialLeads }: { initialArtist
               <p className="hint">Elle sera automatiquement corrigée par l&apos;IA en enregistrant.</p>
             </>
           )}
-          <label>Bio</label>
+
+          {artist.reviewsCount > 0 && (
+            <div className="profile-rating-badge" style={{ marginTop: 16 }}>
+              <span className="profile-stars">
+                {[1, 2, 3, 4, 5].map((n) => (
+                  <span key={n} className={n <= Math.round(artist.rating) ? "star-filled" : "star-empty"}>
+                    ★
+                  </span>
+                ))}
+              </span>
+              <span>{artist.rating.toFixed(1)}</span>
+              <span className="dim">{artist.reviewsCount} avis — non modifiable, basé sur vos évaluations reçues</span>
+            </div>
+          )}
+
+          <p className="profile-section-label mono" style={{ margin: "26px 0 10px" }}>Citation courte</p>
+          <input
+            type="text"
+            value={taglineValue}
+            onChange={(e) => setTaglineValue(e.target.value)}
+            placeholder="ex. Spécialiste de la musique électronique, événements corporate haut de gamme."
+            maxLength={180}
+          />
+          {taglineValue.trim() && <p className="profile-tagline" style={{ marginTop: 12, paddingBottom: 0, borderBottom: "none" }}>&ldquo;{taglineValue}&rdquo;</p>}
+          <p className="hint">Affichée en italique, en évidence, tout en haut de votre fiche publique.</p>
+
+          <p className="profile-section-label mono" style={{ margin: "26px 0 10px" }}>Biographie & démarche</p>
 
           <div className="ai-generate-box">
             <label style={{ margin: "0 0 8px" }}>✨ Laissez l&apos;IA rédiger votre bio</label>
@@ -410,17 +440,7 @@ export function DashboardClient({ initialArtist, initialLeads }: { initialArtist
 
           <textarea name="bio" maxLength={600} value={bioValue} onChange={(e) => setBioValue(e.target.value)} />
 
-          <label>Citation courte (optionnelle)</label>
-          <input
-            type="text"
-            value={taglineValue}
-            onChange={(e) => setTaglineValue(e.target.value)}
-            placeholder="ex. Spécialiste de la musique électronique, événements corporate haut de gamme."
-            maxLength={180}
-          />
-          <p className="hint">Affichée en italique, en évidence, tout en haut de votre fiche publique.</p>
-
-          <label>Formules & prestations</label>
+          <p className="profile-section-label mono" style={{ margin: "26px 0 10px" }}>Formules & prestations</p>
           <div className="profile-services-row" style={{ marginBottom: 12 }}>
             {services.map((s) => (
               <span key={s} className="profile-service-pill">
@@ -465,6 +485,7 @@ export function DashboardClient({ initialArtist, initialLeads }: { initialArtist
             {servicesError && <p className="error">{servicesError}</p>}
           </div>
 
+          <p className="profile-section-label mono" style={{ margin: "26px 0 10px" }}>Liens directs</p>
           <div className="field-row">
             <div>
               <label>Téléphone (optionnel)</label>
