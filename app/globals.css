@@ -69,7 +69,7 @@ nav { display: flex; align-items: center; gap: 10px; }
 .navbtn.primary { background: linear-gradient(90deg, var(--gold), var(--gold-deep)); color: #fff; border-color: transparent; font-weight: 700; box-shadow: 0 4px 14px rgba(212,175,55,0.25); }
 .navbtn.primary:hover { filter: brightness(1.06); }
 
-main { max-width: 1180px; margin: 0 auto; padding: 0 24px 80px; }
+main { max-width: 1400px; margin: 0 auto; padding: 0 28px 80px; }
 
 .marquee { padding: 76px 4px 46px; border-bottom: 1px solid var(--line); margin-bottom: 44px; }
 .marquee .eyebrow { font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold-deep); margin-bottom: 16px; font-weight: 700; font-family: "JetBrains Mono", monospace; }
