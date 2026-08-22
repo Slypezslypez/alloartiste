@@ -55,12 +55,18 @@ export function DashboardClient({ initialArtist, initialLeads }: { initialArtist
   const [uploading, setUploading] = useState(false);
   const [videoUrl, setVideoUrl] = useState("");
   const [subLoading, setSubLoading] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   const newLeadsCount = leads.filter((l) => l.status === "new").length;
 
   async function startSubscription() {
+    if (!termsAccepted) return;
     setSubLoading(true);
-    const res = await fetch("/api/stripe/checkout", { method: "POST" });
+    const res = await fetch("/api/stripe/checkout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ accepted: true })
+    });
     const body = await res.json();
     setSubLoading(false);
     if (body.url) window.location.href = body.url;
@@ -95,7 +101,22 @@ export function DashboardClient({ initialArtist, initialLeads }: { initialArtist
   async function saveProfile(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
-    const finalCategory = isCustomCategory && customCategory.trim() ? customCategory.trim() : category;
+
+    let finalCategory = category;
+    if (isCustomCategory && customCategory.trim()) {
+      try {
+        const res = await fetch("/api/categories/normalize", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ raw: customCategory.trim() })
+        });
+        const data = await res.json();
+        finalCategory = res.ok && data.category ? data.category : customCategory.trim();
+      } catch {
+        finalCategory = customCategory.trim();
+      }
+    }
+
     const res = await fetch("/api/artists/me", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -205,7 +226,23 @@ export function DashboardClient({ initialArtist, initialLeads }: { initialArtist
         <div className="panel wide">
           <h2 style={{ fontSize: 24 }}>Activer l&apos;abonnement</h2>
           <p className="sub">Abonnement annuel, renouvelable automatiquement via Stripe. Requis pour apparaître dans le catalogue public.</p>
-          <button className="btn btn-gold" onClick={startSubscription} disabled={subLoading}>
+          <label style={{ display: "flex", alignItems: "flex-start", gap: 10, marginBottom: 20 }}>
+            <input
+              type="checkbox"
+              checked={termsAccepted}
+              onChange={(e) => setTermsAccepted(e.target.checked)}
+              style={{ width: "auto", marginTop: 3 }}
+            />
+            <span style={{ textTransform: "none", fontFamily: "inherit", fontWeight: 400, color: "var(--ink-soft)", fontSize: 14 }}>
+              J&apos;ai lu et j&apos;accepte les{" "}
+              <a href="/conditions" target="_blank" rel="noopener noreferrer" style={{ color: "var(--gold-deep)", fontWeight: 600 }}>
+                Conditions Générales d&apos;Utilisation
+              </a>
+              , notamment la clause de non-responsabilité concernant le fonctionnement du site et les relations avec
+              les organisateurs, producteurs ou agents.
+            </span>
+          </label>
+          <button className="btn btn-gold" onClick={startSubscription} disabled={subLoading || !termsAccepted}>
             {subLoading ? "Redirection..." : "S'abonner"}
           </button>
         </div>
@@ -314,6 +351,7 @@ export function DashboardClient({ initialArtist, initialLeads }: { initialArtist
                 maxLength={60}
                 required
               />
+              <p className="hint">Elle sera automatiquement corrigée par l&apos;IA en enregistrant.</p>
             </>
           )}
           <label>Bio</label>
