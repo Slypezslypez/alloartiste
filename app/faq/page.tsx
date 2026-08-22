@@ -16,7 +16,7 @@ const FAQ_ITEMS = [
     a: "Oui, votre espace personnel vous permet de modifier votre bio, vos coordonnées, vos photos et vos vidéos à tout moment, sans validation préalable."
   },
   {
-    q: "La Coulisse prend-elle une commission sur mes contrats ?",
+    q: "AlloArtiste prend-elle une commission sur mes contrats ?",
     a: "Non, aucune commission. Vous négociez et gérez vos prestations directement avec les organisateurs qui vous contactent."
   },
   {
