@@ -1,6 +1,6 @@
 const FAQ_ITEMS = [
   {
-    q: "Combien coûte un profil sur La Coulisse ?",
+    q: "Combien coûte un profil sur AlloArtiste ?",
     a: "L'inscription est gratuite. La visibilité dans le catalogue public nécessite un abonnement annuel, renouvelable automatiquement, résiliable à tout moment depuis votre espace."
   },
   {
