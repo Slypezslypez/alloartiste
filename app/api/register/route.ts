@@ -9,7 +9,7 @@ const schema = z.object({
   name: z.string().min(2).max(60),
   email: z.string().email(),
   password: z.string().min(8),
-  category: z.enum(CATEGORIES),
+  category: z.string().min(2).max(60),
   city: z.enum(BELGIAN_CITIES).optional().default("Autre"),
   bio: z.string().max(600).optional().default("")
 });
