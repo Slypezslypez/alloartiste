@@ -97,6 +97,7 @@ model SiteSettings {
   logoPart1 String @default("ALLO")
   logoPart2 String @default("ARTISTE")
   tagline   String @default("Plateforme de mise en relation entre artistes et organisateurs en Belgique")
+  headerBackgroundUrl String? // image de fond du bandeau de menu, modifiable via admin
 
   // Page d'accueil — texte principal
   heroLine1     String @default("TROUVEZ")
