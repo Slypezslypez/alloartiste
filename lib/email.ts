@@ -53,6 +53,24 @@ ${message}`
   });
 }
 
+export async function sendPasswordResetEmail(artistEmail: string, resetUrl: string) {
+  return resend.emails.send({
+    from: process.env.EMAIL_FROM as string,
+    to: artistEmail,
+    subject: "Réinitialisation de votre mot de passe AlloArtiste",
+    text: `Bonjour,
+
+Vous avez demandé à réinitialiser votre mot de passe sur AlloArtiste.
+
+Cliquez sur le lien suivant pour choisir un nouveau mot de passe (valable 1 heure) :
+${resetUrl}
+
+Si vous n'êtes pas à l'origine de cette demande, ignorez simplement cet email — votre mot de passe actuel reste inchangé.
+
+L'équipe AlloArtiste`
+  });
+}
+
 export async function sendWelcomeEmail(artistName: string, artistEmail: string) {
   return resend.emails.send({
     from: process.env.EMAIL_FROM as string,
