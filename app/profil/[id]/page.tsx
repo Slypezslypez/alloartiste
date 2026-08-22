@@ -20,56 +20,59 @@ export default async function ProfilePage({ params }: { params: { id: string } }
         ← Retour au catalogue
       </Link>
 
-      <div className="profile-hero">
-        <img className="main" src={artist.photos[0] || undefined} alt={`Photo principale de ${artist.name}`} />
-        <div className="profile-info">
-          <h1>
-            {artist.name}
-            {artist.isVerified && (
-              <span className="verified-check" title="Profil vérifié" style={{ fontSize: 28 }}>
-                ✓
-              </span>
-            )}
-          </h1>
-          <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap", marginBottom: 16 }}>
-            <span className="cat mono">{artist.category}</span>
-            {artist.city && <span className="mono" style={{ color: "var(--muted)", fontSize: 13 }}>📍 {artist.city}</span>}
-            {artist.reviewsCount > 0 && (
-              <span className="rating">
-                ★ {artist.rating.toFixed(1)} <span className="dim">({artist.reviewsCount} avis)</span>
-              </span>
-            )}
-          </div>
-
-          {(artist.website || artist.facebook || artist.instagram || artist.phone) && (
-            <div style={{ display: "flex", gap: 14, flexWrap: "wrap", marginBottom: 22, fontSize: 13 }}>
-              {artist.phone && <span className="mono" style={{ color: "var(--muted)" }}>📞 {artist.phone}</span>}
-              {artist.website && (
-                <a href={formatUrl(artist.website)} target="_blank" rel="noopener noreferrer" style={{ color: "var(--gold)" }}>
-                  🔗 Site web
-                </a>
-              )}
-              {artist.facebook && (
-                <a href={formatUrl(artist.facebook)} target="_blank" rel="noopener noreferrer" style={{ color: "var(--gold)" }}>
-                  Facebook
-                </a>
-              )}
-              {artist.instagram && (
-                <a href={formatUrl(artist.instagram)} target="_blank" rel="noopener noreferrer" style={{ color: "var(--gold)" }}>
-                  Instagram
-                </a>
-              )}
-            </div>
+      <div className="profile-title-row">
+        <h1>
+          {artist.name}
+          {artist.isVerified && (
+            <span className="verified-check" title="Profil vérifié" style={{ fontSize: 28 }}>
+              ✓
+            </span>
           )}
-
-          <ContactForm artistId={artist.id} artistName={artist.name} />
+        </h1>
+        <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+          <span className="cat mono">{artist.category}</span>
+          {artist.city && <span className="mono" style={{ color: "var(--muted)", fontSize: 13 }}>📍 {artist.city}</span>}
+          {artist.reviewsCount > 0 && (
+            <span className="rating">
+              ★ {artist.rating.toFixed(1)} <span className="dim">({artist.reviewsCount} avis)</span>
+            </span>
+          )}
         </div>
       </div>
 
-      <div className="bio-panel">
-        <span className="bio-quote">❝</span>
-        <p className="bio-label mono">À propos</p>
-        <p className="bio-text">{artist.bio || "Cet·te artiste n'a pas encore ajouté de description."}</p>
+      <div className="profile-hero">
+        <img className="main" src={artist.photos[0] || undefined} alt={`Photo principale de ${artist.name}`} />
+
+        <div className="bio-panel">
+          <span className="bio-quote">❝</span>
+          <p className="bio-label mono">À propos</p>
+          <p className="bio-text">{artist.bio || "Cet·te artiste n'a pas encore ajouté de description."}</p>
+        </div>
+      </div>
+
+      <div className="profile-actions-row">
+        {(artist.website || artist.facebook || artist.instagram || artist.phone) && (
+          <div style={{ display: "flex", gap: 14, flexWrap: "wrap", fontSize: 13 }}>
+            {artist.phone && <span className="mono" style={{ color: "var(--muted)" }}>📞 {artist.phone}</span>}
+            {artist.website && (
+              <a href={formatUrl(artist.website)} target="_blank" rel="noopener noreferrer" style={{ color: "var(--gold)" }}>
+                🔗 Site web
+              </a>
+            )}
+            {artist.facebook && (
+              <a href={formatUrl(artist.facebook)} target="_blank" rel="noopener noreferrer" style={{ color: "var(--gold)" }}>
+                Facebook
+              </a>
+            )}
+            {artist.instagram && (
+              <a href={formatUrl(artist.instagram)} target="_blank" rel="noopener noreferrer" style={{ color: "var(--gold)" }}>
+                Instagram
+              </a>
+            )}
+          </div>
+        )}
+
+        <ContactForm artistId={artist.id} artistName={artist.name} />
       </div>
 
       {artist.photos.length > 0 && (
