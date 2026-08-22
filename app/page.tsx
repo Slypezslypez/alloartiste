@@ -51,6 +51,19 @@ export default async function HomePage() {
 
   return (
     <>
+      <CatalogClient artists={visible} />
+
+      <div className="quick-disciplines">
+        <p className="quick-title mono">Rechercher par discipline</p>
+        <div className="quick-pills">
+          {quickCategories.map((c) => (
+            <a key={c} href="#catalogue" className="quick-pill">
+              <span>{CATEGORY_ICONS[c] || "✨"}</span> {c}
+            </a>
+          ))}
+        </div>
+      </div>
+
       <section className="marquee">
         <div className="marquee-grid">
           <div>
@@ -105,19 +118,6 @@ export default async function HomePage() {
           )}
         </div>
       </section>
-
-      <div className="quick-disciplines">
-        <p className="quick-title mono">Rechercher par discipline</p>
-        <div className="quick-pills">
-          {quickCategories.map((c) => (
-            <a key={c} href="#catalogue" className="quick-pill">
-              <span>{CATEGORY_ICONS[c] || "✨"}</span> {c}
-            </a>
-          ))}
-        </div>
-      </div>
-
-      <CatalogClient artists={visible} />
     </>
   );
 }
