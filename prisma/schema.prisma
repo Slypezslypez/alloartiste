@@ -36,6 +36,8 @@ model Artist {
 
   leads Lead[]
 
+  termsAcceptedAt DateTime? // date d'acceptation des CGU (preuve, lors de l'abonnement)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -77,6 +79,8 @@ model Article {
   category  String   @default("Conseils")
   body      String // paragraphes séparés par une ligne vide
   imageUrl  String? // si présent, prime sur l'icône/dégradé
+  imagePositionX Int @default(50) // point focal du recadrage, en % (0-100)
+  imagePositionY Int @default(50)
   icon      String   @default("📰")
   gradient  String   @default("linear-gradient(135deg, #d4af37, #8b6b1f)")
   readTime  String   @default("4 min")
