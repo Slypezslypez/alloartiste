@@ -3,7 +3,6 @@
 import { useState } from "react";
 
 export function ContactForm({ artistId, artistName }: { artistId: string; artistName: string }) {
-  const [open, setOpen] = useState(false);
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
 
   async function submit(e: React.FormEvent<HTMLFormElement>) {
@@ -24,42 +23,48 @@ export function ContactForm({ artistId, artistName }: { artistId: string; artist
     setStatus(res.ok ? "sent" : "error");
   }
 
-  if (!open) {
-    return (
-      <button className="btn btn-gold" onClick={() => setOpen(true)}>
-        ✉ Contacter pour un devis
-      </button>
-    );
-  }
-
-  if (status === "sent") {
-    return <p className="success">Votre message a bien été envoyé à {artistName}.</p>;
-  }
-
   return (
-    <form onSubmit={submit} style={{ maxWidth: 420 }}>
-      <label>Votre nom</label>
-      <input name="senderName" type="text" required maxLength={80} />
-      <label>Votre email</label>
-      <input name="senderEmail" type="email" required />
-      <div className="field-row">
-        <div>
-          <label>Votre téléphone (optionnel)</label>
-          <input name="senderPhone" type="text" maxLength={30} />
-        </div>
-        <div>
-          <label>Date de l&apos;événement (optionnel)</label>
-          <input name="eventDate" type="text" placeholder="ex. 14 juin 2027" maxLength={40} />
-        </div>
-      </div>
-      <label>Votre message</label>
-      <textarea name="message" required minLength={10} maxLength={3000} placeholder="Décrivez votre événement, le lieu, le budget..." />
-      {status === "error" && <p className="error">L&apos;envoi a échoué, réessayez.</p>}
-      <div style={{ marginTop: 16 }}>
-        <button className="btn btn-gold" type="submit" disabled={status === "sending"}>
-          {status === "sending" ? "Envoi..." : "Envoyer le message"}
-        </button>
-      </div>
-    </form>
+    <div className="profile-contact-box">
+      <p className="profile-contact-title">✉ Contacter {artistName} par e-mail</p>
+      <p className="profile-contact-desc">
+        Décrivez votre événement. Votre email est transmis à l&apos;artiste de manière sécurisée, sans jamais exposer
+        publiquement son adresse. Aucune commission.
+      </p>
+
+      {status === "sent" ? (
+        <p className="success">Votre message a bien été envoyé à {artistName}.</p>
+      ) : (
+        <form onSubmit={submit}>
+          <div className="field-row">
+            <div>
+              <label>Votre nom complet</label>
+              <input name="senderName" type="text" required maxLength={80} />
+            </div>
+            <div>
+              <label>Votre email</label>
+              <input name="senderEmail" type="email" required />
+            </div>
+          </div>
+          <div className="field-row">
+            <div>
+              <label>Téléphone (optionnel)</label>
+              <input name="senderPhone" type="text" maxLength={30} />
+            </div>
+            <div>
+              <label>Date estimée de l&apos;événement</label>
+              <input name="eventDate" type="text" placeholder="ex. 14 juin 2027" maxLength={40} />
+            </div>
+          </div>
+          <label>Votre message</label>
+          <textarea name="message" required minLength={10} maxLength={3000} placeholder="Décrivez votre événement, le lieu, le budget..." />
+          {status === "error" && <p className="error">L&apos;envoi a échoué, réessayez.</p>}
+          <div style={{ marginTop: 16 }}>
+            <button className="btn btn-gold" type="submit" disabled={status === "sending"}>
+              {status === "sending" ? "Envoi..." : "Envoyer le message"}
+            </button>
+          </div>
+        </form>
+      )}
+    </div>
   );
 }
