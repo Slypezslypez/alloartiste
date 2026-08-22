@@ -209,4 +209,84 @@ export function AdminClient({
                       <button className="btn btn-outline" style={{ padding: "6px 12px", fontSize: 12 }} onClick={() => toggleVerified(a.id, a.isVerified)}>
                         {a.isVerified ? "✓ Vérifié" : "Marquer vérifié"}
                       </button>
-                      <button className="btn btn-outline" style={{ padding: "6px 12px", fontSize:
+                      <button className="btn btn-outline" style={{ padding: "6px 12px", fontSize: 12, color: "var(--red)" }} onClick={() => deleteArtist(a.id, a.name)}>
+                        Supprimer
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+            {filteredArtists.length === 0 && <p className="hint">Aucun artiste trouvé.</p>}
+          </div>
+        </div>
+      )}
+
+      {tab === "leads" && (
+        <div className="panel wide">
+          <div className="lead-list">
+            {leads.map((lead) => (
+              <div key={lead.id} className={`lead-card lead-${lead.status}`}>
+                <div className="lead-header">
+                  <div>
+                    <strong>{lead.senderName}</strong>{" "}
+                    <span className="mono" style={{ fontSize: 12, color: "var(--muted)" }}>
+                      → {lead.artist.name} · {new Date(lead.createdAt).toLocaleDateString("fr-FR")}
+                    </span>
+                  </div>
+                  <select value={lead.status} onChange={(e) => updateLeadStatus(lead.id, e.target.value as Lead["status"])} className="lead-status-select">
+                    <option value="new">Nouveau</option>
+                    <option value="replied">Traité</option>
+                    <option value="archived">Archivé</option>
+                  </select>
+                </div>
+                <p className="lead-message">{lead.message}</p>
+                <div className="lead-contact">{lead.senderEmail}</div>
+              </div>
+            ))}
+            {leads.length === 0 && <p className="hint">Aucune demande pour le moment.</p>}
+          </div>
+        </div>
+      )}
+
+      {tab === "messages" && (
+        <div className="panel wide">
+          <div className="lead-list">
+            {messages.map((m) => (
+              <div key={m.id} className={`lead-card lead-${m.status}`}>
+                <div className="lead-header">
+                  <div>
+                    <strong>{m.name}</strong>{" "}
+                    <span className="mono" style={{ fontSize: 12, color: "var(--muted)" }}>
+                      {m.role} · {new Date(m.createdAt).toLocaleDateString("fr-FR")}
+                    </span>
+                  </div>
+                  <div style={{ display: "flex", gap: 8 }}>
+                    <select value={m.status} onChange={(e) => updateMessageStatus(m.id, e.target.value as ContactMessage["status"])} className="lead-status-select">
+                      <option value="new">Nouveau</option>
+                      <option value="replied">Traité</option>
+                      <option value="archived">Archivé</option>
+                    </select>
+                    <button onClick={() => deleteMessage(m.id)} style={{ background: "none", border: "none", color: "var(--red)", fontSize: 16 }}>
+                      ×
+                    </button>
+                  </div>
+                </div>
+                <p className="lead-message">{m.message}</p>
+                <div className="lead-contact">
+                  {m.email}
+                  {m.phone && ` · ${m.phone}`}
+                </div>
+              </div>
+            ))}
+            {messages.length === 0 && <p className="hint">Aucun message pour le moment.</p>}
+          </div>
+        </div>
+      )}
+      {tab === "articles" && <AdminArticles initialArticles={initialArticles} />}
+      {tab === "settings" && (
+        <AdminSettings initialSettings={initialSettings} artistOptions={artists.map((a) => ({ id: a.id, name: a.name }))} />
+      )}
+    </>
+  );
+}
