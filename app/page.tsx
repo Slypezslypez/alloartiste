@@ -43,7 +43,7 @@ export default async function HomePage() {
     .filter((id): id is string => !!id)
     .map((id) => withPhotos.find((a) => a.id === id))
     .filter((a): a is (typeof withPhotos)[number] => !!a);
-  const spotlight = manualPicks.length > 0 ? manualPicks.slice(0, 2) : withPhotos.slice(0, 2);
+  const spotlight = manualPicks.length > 0 ? [...manualPicks, ...withPhotos.filter((a) => !manualPicks.includes(a))].slice(0, 4) : withPhotos.slice(0, 4);
 
   // Pills "Rechercher par discipline" : catégories de base + celles créées par les artistes.
   const customCategories = Array.from(new Set(visible.map((a) => a.category).filter((c) => !CATEGORIES.includes(c as any)))).sort();
