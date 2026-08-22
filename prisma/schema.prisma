@@ -40,6 +40,9 @@ model Artist {
 
   termsAcceptedAt DateTime? // date d'acceptation des CGU (preuve, lors de l'abonnement)
 
+  resetTokenHash String?   @unique // empreinte du jeton de réinitialisation (jamais le jeton en clair)
+  resetTokenExpiresAt DateTime?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
