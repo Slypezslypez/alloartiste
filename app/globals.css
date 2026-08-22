@@ -316,6 +316,21 @@ textarea { resize: vertical; min-height: 90px; }
 .profile-contact-title { font-family: "Playfair Display", serif; font-weight: 700; font-size: 19px; margin: 0 0 8px; color: var(--ink); }
 .profile-contact-desc { color: var(--muted); font-size: 13px; line-height: 1.5; margin: 0 0 20px; }
 
+.account-tabs { margin: 0 auto 28px; }
+.account-tabs-bar { display: flex; gap: 6px; background: var(--cream); border: 1px solid var(--line); border-radius: 12px; padding: 5px; }
+.account-tab {
+  flex: 1; background: none; border: none; padding: 11px 16px; border-radius: 8px;
+  font-family: "JetBrains Mono", monospace; font-size: 12.5px; font-weight: 700; letter-spacing: 0.03em;
+  color: var(--ink-soft); cursor: pointer; transition: 0.15s; text-transform: uppercase;
+  display: flex; align-items: center; justify-content: center;
+}
+.account-tab:hover { color: var(--gold-deep); }
+.account-tab.active { background: var(--white); color: var(--gold-deep); box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+.account-tab-panel {
+  background: var(--white); border: 1px solid var(--line); border-top: none;
+  border-radius: 0 0 12px 12px; padding: 24px 26px; margin-top: -1px;
+}
+
 @media (max-width: 860px) {
   .profile-two-col { grid-template-columns: 1fr; gap: 30px; }
   .profile-media-col { position: static; }
