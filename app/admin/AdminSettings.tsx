@@ -18,6 +18,7 @@ type Settings = {
   spotlightArtistId1: string | null;
   spotlightArtistId2: string | null;
   contactReceiverEmail: string | null;
+  headerBackgroundUrl: string | null;
 };
 
 type ArtistOption = { id: string; name: string };
@@ -26,9 +27,30 @@ export function AdminSettings({ initialSettings, artistOptions }: { initialSetti
   const [form, setForm] = useState(initialSettings);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [uploadingHeaderBg, setUploadingHeaderBg] = useState(false);
 
   function set<K extends keyof Settings>(key: K, value: Settings[K]) {
     setForm((f) => ({ ...f, [key]: value }));
+  }
+
+  async function uploadHeaderBackground(file: File) {
+    setUploadingHeaderBg(true);
+    try {
+      const ext = file.name.split(".").pop() || "jpg";
+      const presign = await fetch("/api/admin/settings/upload-image", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fileExt: ext, contentType: file.type })
+      }).then((r) => r.json());
+      if (presign.error) throw new Error(presign.error);
+
+      await fetch(presign.uploadUrl, { method: "PUT", headers: { "Content-Type": file.type }, body: file });
+      set("headerBackgroundUrl", presign.publicUrl);
+    } catch {
+      alert("L'envoi de l'image a échoué.");
+    } finally {
+      setUploadingHeaderBg(false);
+    }
   }
 
   async function save(e: React.FormEvent) {
@@ -66,6 +88,38 @@ export function AdminSettings({ initialSettings, artistOptions }: { initialSetti
         </div>
         <label>Bandeau tout en haut du site</label>
         <input value={form.tagline} onChange={(e) => set("tagline", e.target.value)} required />
+
+        <label>Image de fond de la barre de menu (optionnelle)</label>
+        {form.headerBackgroundUrl ? (
+          <div style={{ marginBottom: 10 }}>
+            <div
+              style={{
+                width: "100%",
+                maxWidth: 500,
+                aspectRatio: "16/4",
+                borderRadius: 10,
+                overflow: "hidden",
+                border: "1px solid var(--line)",
+                backgroundImage: `url(${form.headerBackgroundUrl})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center"
+              }}
+            />
+            <button
+              type="button"
+              className="btn btn-outline"
+              style={{ padding: "6px 12px", fontSize: 12, marginTop: 8 }}
+              onClick={() => set("headerBackgroundUrl", null)}
+            >
+              Retirer l&apos;image
+            </button>
+          </div>
+        ) : (
+          <>
+            <input type="file" accept="image/*" disabled={uploadingHeaderBg} onChange={(e) => e.target.files?.[0] && uploadHeaderBackground(e.target.files[0])} />
+            <p className="hint">{uploadingHeaderBg ? "Envoi en cours..." : "Format large recommandé (ex. 1600×300px) pour un rendu net."}</p>
+          </>
+        )}
       </div>
 
       <div className="panel wide">
@@ -129,38 +183,3 @@ export function AdminSettings({ initialSettings, artistOptions }: { initialSetti
             </select>
           </div>
           <div>
-            <label>2ème photo</label>
-            <select value={form.spotlightArtistId2 || ""} onChange={(e) => set("spotlightArtistId2", e.target.value || null)}>
-              <option value="">Automatique</option>
-              {artistOptions.map((a) => (
-                <option key={a.id} value={a.id}>
-                  {a.name}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <div className="panel wide">
-        <h2 style={{ fontSize: 24 }}>Contact</h2>
-        <label>Email qui reçoit les messages du formulaire de contact général</label>
-        <input
-          type="email"
-          value={form.contactReceiverEmail || ""}
-          onChange={(e) => set("contactReceiverEmail", e.target.value || null)}
-          placeholder="contact@alloartiste.be"
-        />
-        <p className="hint">Si laissé vide, utilise la valeur définie dans les variables d&apos;environnement du serveur.</p>
-      </div>
-
-      {message && <p className={message.includes("Échec") ? "error" : "success"} style={{ marginLeft: 0 }}>{message}</p>}
-
-      <div style={{ marginTop: 4 }}>
-        <button type="submit" className="btn btn-gold" disabled={saving}>
-          {saving ? "Enregistrement..." : "Enregistrer les réglages"}
-        </button>
-      </div>
-    </form>
-  );
-}
