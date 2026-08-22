@@ -21,22 +21,112 @@ type Settings = {
   headerBackgroundUrl: string | null;
   headerBackgroundPositionX: number;
   headerBackgroundPositionY: number;
+  howArtistsImageUrl: string | null;
+  howArtistsImagePositionX: number;
+  howArtistsImagePositionY: number;
+  howOrganizersImageUrl: string | null;
+  howOrganizersImagePositionX: number;
+  howOrganizersImagePositionY: number;
 };
 
 type ArtistOption = { id: string; name: string };
+
+/** Petit sélecteur d'image avec point focal cliquable, réutilisé pour plusieurs champs. */
+function FocalImagePicker({
+  url,
+  posX,
+  posY,
+  uploading,
+  hint,
+  onUpload,
+  onRemove,
+  onFocalChange
+}: {
+  url: string | null;
+  posX: number;
+  posY: number;
+  uploading: boolean;
+  hint: string;
+  onUpload: (file: File) => void;
+  onRemove: () => void;
+  onFocalChange: (x: number, y: number) => void;
+}) {
+  return url ? (
+    <div style={{ marginBottom: 10 }}>
+      <p className="hint" style={{ marginTop: 0, marginBottom: 8 }}>
+        Cliquez sur l&apos;image pour choisir la partie à toujours garder visible.
+      </p>
+      <div
+        onClick={(e) => {
+          const rect = e.currentTarget.getBoundingClientRect();
+          const x = Math.round(((e.clientX - rect.left) / rect.width) * 100);
+          const y = Math.round(((e.clientY - rect.top) / rect.height) * 100);
+          onFocalChange(Math.max(0, Math.min(100, x)), Math.max(0, Math.min(100, y)));
+        }}
+        style={{
+          position: "relative",
+          width: "100%",
+          maxWidth: 400,
+          aspectRatio: "4/3",
+          borderRadius: 10,
+          overflow: "hidden",
+          border: "1px solid var(--line)",
+          cursor: "crosshair"
+        }}
+      >
+        <img
+          src={url}
+          alt=""
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            objectPosition: `${posX}% ${posY}%`,
+            display: "block"
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            left: `${posX}%`,
+            top: `${posY}%`,
+            width: 16,
+            height: 16,
+            marginLeft: -8,
+            marginTop: -8,
+            borderRadius: "50%",
+            border: "2px solid #fff",
+            background: "var(--gold)",
+            boxShadow: "0 0 0 1px rgba(0,0,0,0.3)"
+          }}
+        />
+      </div>
+      <button type="button" className="btn btn-outline" style={{ padding: "6px 12px", fontSize: 12, marginTop: 8 }} onClick={onRemove}>
+        Retirer l&apos;image
+      </button>
+    </div>
+  ) : (
+    <>
+      <input type="file" accept="image/*" disabled={uploading} onChange={(e) => e.target.files?.[0] && onUpload(e.target.files[0])} />
+      <p className="hint">{uploading ? "Envoi en cours..." : hint}</p>
+    </>
+  );
+}
 
 export function AdminSettings({ initialSettings, artistOptions }: { initialSettings: Settings; artistOptions: ArtistOption[] }) {
   const [form, setForm] = useState(initialSettings);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [uploadingHeaderBg, setUploadingHeaderBg] = useState(false);
+  const [uploadingHowArtists, setUploadingHowArtists] = useState(false);
+  const [uploadingHowOrganizers, setUploadingHowOrganizers] = useState(false);
 
   function set<K extends keyof Settings>(key: K, value: Settings[K]) {
     setForm((f) => ({ ...f, [key]: value }));
   }
 
-  async function uploadHeaderBackground(file: File) {
-    setUploadingHeaderBg(true);
+  async function uploadSiteImage(file: File, onDone: (url: string) => void, setUploading: (v: boolean) => void) {
+    setUploading(true);
     try {
       const ext = file.name.split(".").pop() || "jpg";
       const presign = await fetch("/api/admin/settings/upload-image", {
@@ -47,11 +137,11 @@ export function AdminSettings({ initialSettings, artistOptions }: { initialSetti
       if (presign.error) throw new Error(presign.error);
 
       await fetch(presign.uploadUrl, { method: "PUT", headers: { "Content-Type": file.type }, body: file });
-      set("headerBackgroundUrl", presign.publicUrl);
+      onDone(presign.publicUrl);
     } catch {
       alert("L'envoi de l'image a échoué.");
     } finally {
-      setUploadingHeaderBg(false);
+      setUploading(false);
     }
   }
 
@@ -92,75 +182,19 @@ export function AdminSettings({ initialSettings, artistOptions }: { initialSetti
         <input value={form.tagline} onChange={(e) => set("tagline", e.target.value)} required />
 
         <label>Image de fond de la barre de menu (optionnelle)</label>
-        {form.headerBackgroundUrl ? (
-          <div style={{ marginBottom: 10 }}>
-            <p className="hint" style={{ marginTop: 0, marginBottom: 8 }}>
-              Cliquez sur l&apos;image pour choisir la partie à toujours garder visible dans la barre de menu.
-            </p>
-            <div
-              onClick={(e) => {
-                const rect = e.currentTarget.getBoundingClientRect();
-                const x = Math.round(((e.clientX - rect.left) / rect.width) * 100);
-                const y = Math.round(((e.clientY - rect.top) / rect.height) * 100);
-                setForm((f) => ({
-                  ...f,
-                  headerBackgroundPositionX: Math.max(0, Math.min(100, x)),
-                  headerBackgroundPositionY: Math.max(0, Math.min(100, y))
-                }));
-              }}
-              style={{
-                position: "relative",
-                width: "100%",
-                maxWidth: 500,
-                aspectRatio: "16/4",
-                borderRadius: 10,
-                overflow: "hidden",
-                border: "1px solid var(--line)",
-                cursor: "crosshair"
-              }}
-            >
-              <img
-                src={form.headerBackgroundUrl}
-                alt=""
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                  objectPosition: `${form.headerBackgroundPositionX}% ${form.headerBackgroundPositionY}%`,
-                  display: "block"
-                }}
-              />
-              <div
-                style={{
-                  position: "absolute",
-                  left: `${form.headerBackgroundPositionX}%`,
-                  top: `${form.headerBackgroundPositionY}%`,
-                  width: 16,
-                  height: 16,
-                  marginLeft: -8,
-                  marginTop: -8,
-                  borderRadius: "50%",
-                  border: "2px solid #fff",
-                  background: "var(--gold)",
-                  boxShadow: "0 0 0 1px rgba(0,0,0,0.3)"
-                }}
-              />
-            </div>
-            <button
-              type="button"
-              className="btn btn-outline"
-              style={{ padding: "6px 12px", fontSize: 12, marginTop: 8 }}
-              onClick={() => set("headerBackgroundUrl", null)}
-            >
-              Retirer l&apos;image
-            </button>
-          </div>
-        ) : (
-          <>
-            <input type="file" accept="image/*" disabled={uploadingHeaderBg} onChange={(e) => e.target.files?.[0] && uploadHeaderBackground(e.target.files[0])} />
-            <p className="hint">{uploadingHeaderBg ? "Envoi en cours..." : "Format large recommandé (ex. 1600×300px) pour un rendu net."}</p>
-          </>
-        )}
+        <FocalImagePicker
+          url={form.headerBackgroundUrl}
+          posX={form.headerBackgroundPositionX}
+          posY={form.headerBackgroundPositionY}
+          uploading={uploadingHeaderBg}
+          hint="Format large recommandé (ex. 1600×300px) pour un rendu net."
+          onUpload={(file) => uploadSiteImage(file, (url) => set("headerBackgroundUrl", url), setUploadingHeaderBg)}
+          onRemove={() => set("headerBackgroundUrl", null)}
+          onFocalChange={(x, y) => {
+            set("headerBackgroundPositionX", x);
+            set("headerBackgroundPositionY", y);
+          }}
+        />
       </div>
 
       <div className="panel wide">
@@ -235,6 +269,41 @@ export function AdminSettings({ initialSettings, artistOptions }: { initialSetti
             </select>
           </div>
         </div>
+      </div>
+
+      <div className="panel wide">
+        <h2 style={{ fontSize: 24 }}>Page « Comment ça marche »</h2>
+        <p className="sub">Illustrations optionnelles affichées à côté de chaque parcours. Laissez vide pour ne rien afficher.</p>
+
+        <label>Image du parcours « Pour les artistes »</label>
+        <FocalImagePicker
+          url={form.howArtistsImageUrl}
+          posX={form.howArtistsImagePositionX}
+          posY={form.howArtistsImagePositionY}
+          uploading={uploadingHowArtists}
+          hint="Format 4:3 recommandé (ex. 800×600px)."
+          onUpload={(file) => uploadSiteImage(file, (url) => set("howArtistsImageUrl", url), setUploadingHowArtists)}
+          onRemove={() => set("howArtistsImageUrl", null)}
+          onFocalChange={(x, y) => {
+            set("howArtistsImagePositionX", x);
+            set("howArtistsImagePositionY", y);
+          }}
+        />
+
+        <label style={{ marginTop: 26 }}>Image du parcours « Pour les organisateurs »</label>
+        <FocalImagePicker
+          url={form.howOrganizersImageUrl}
+          posX={form.howOrganizersImagePositionX}
+          posY={form.howOrganizersImagePositionY}
+          uploading={uploadingHowOrganizers}
+          hint="Format 4:3 recommandé (ex. 800×600px)."
+          onUpload={(file) => uploadSiteImage(file, (url) => set("howOrganizersImageUrl", url), setUploadingHowOrganizers)}
+          onRemove={() => set("howOrganizersImageUrl", null)}
+          onFocalChange={(x, y) => {
+            set("howOrganizersImagePositionX", x);
+            set("howOrganizersImagePositionY", y);
+          }}
+        />
       </div>
 
       <div className="panel wide">
