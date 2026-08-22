@@ -274,7 +274,7 @@ textarea { resize: vertical; min-height: 90px; }
 .profile-title-row { margin-bottom: 28px; }
 .profile-title-row h1 { font-family: "Playfair Display", serif; font-weight: 800; font-size: 44px; margin: 0 0 12px; line-height: 1.05; color: var(--ink); }
 
-.profile-two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 44px; align-items: start; margin-bottom: 60px; }
+.profile-two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 44px; align-items: start; margin-bottom: 60px; max-width: 1100px; }
 
 .profile-media-col { position: sticky; top: 100px; }
 .profile-main-photo-wrap { position: relative; }
