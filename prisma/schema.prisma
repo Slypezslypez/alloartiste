@@ -15,6 +15,8 @@ model Artist {
   category     String
   city         String   @default("")
   bio          String   @default("")
+  tagline      String? // courte citation en italique affichée sur le profil
+  services     String[] @default([]) // formules & prestations (max 6, suggérées par IA)
   photos       String[] @default([]) // max 5, contrôlé côté application
   videos       String[] @default([]) // max 5, contrôlé côté application
 

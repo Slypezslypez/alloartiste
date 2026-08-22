@@ -27,7 +27,11 @@ export default async function ActualitesPage() {
             <Link key={a.id} href={`/actualites/${a.slug}`} className="blog-card">
               <div className="blog-cover" style={a.imageUrl ? {} : { background: a.gradient }}>
                 {a.imageUrl ? (
-                  <img src={a.imageUrl} alt={a.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  <img
+                    src={a.imageUrl}
+                    alt={a.title}
+                    style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: `${a.imagePositionX}% ${a.imagePositionY}%` }}
+                  />
                 ) : (
                   <span className="blog-icon">{a.icon}</span>
                 )}

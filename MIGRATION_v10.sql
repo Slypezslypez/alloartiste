@@ -1,0 +1,2 @@
+ALTER TABLE "Artist" ADD COLUMN "tagline" TEXT;
+ALTER TABLE "Artist" ADD COLUMN "services" TEXT[] NOT NULL DEFAULT '{}';

@@ -18,7 +18,11 @@ export default async function ArticlePage({ params }: { params: { slug: string }
 
       <div className="blog-cover blog-cover-large" style={article.imageUrl ? {} : { background: article.gradient }}>
         {article.imageUrl ? (
-          <img src={article.imageUrl} alt={article.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+          <img
+            src={article.imageUrl}
+            alt={article.title}
+            style={{ width: "100%", height: "100%", objectFit: "contain", objectPosition: `${article.imagePositionX}% ${article.imagePositionY}%` }}
+          />
         ) : (
           <span className="blog-icon blog-icon-large">{article.icon}</span>
         )}

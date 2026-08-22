@@ -16,6 +16,8 @@ const schema = z.object({
   category: z.string().min(2).max(60).optional(),
   city: z.enum(BELGIAN_CITIES).optional(),
   bio: z.string().max(600).optional(),
+  tagline: z.string().max(180).optional().nullable(),
+  services: z.array(z.string().max(40)).max(6).optional(),
   phone: z.string().max(30).optional().nullable(),
   website: z.string().max(200).optional().nullable(),
   facebook: z.string().max(200).optional().nullable(),

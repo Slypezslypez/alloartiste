@@ -16,13 +16,28 @@ export function InscriptionForm({ categories }: { categories: string[] }) {
     e.preventDefault();
     setError(null);
 
-    const finalCategory = isCustom && customCategory.trim() ? customCategory.trim() : category;
     if (isCustom && !customCategory.trim()) {
       setError("Précisez votre spécialité.");
       return;
     }
 
     setLoading(true);
+
+    let finalCategory = category;
+    if (isCustom) {
+      try {
+        const res = await fetch("/api/categories/normalize", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ raw: customCategory.trim() })
+        });
+        const data = await res.json();
+        finalCategory = res.ok && data.category ? data.category : customCategory.trim();
+      } catch {
+        finalCategory = customCategory.trim();
+      }
+    }
+
     const fd = new FormData(e.currentTarget);
     const res = await fetch("/api/register", {
       method: "POST",
@@ -75,7 +90,7 @@ export function InscriptionForm({ categories }: { categories: string[] }) {
               maxLength={60}
               required
             />
-            <p className="hint">Elle apparaîtra comme une vraie catégorie, filtrable par les organisateurs.</p>
+            <p className="hint">Elle sera automatiquement corrigée par l&apos;IA et deviendra une vraie catégorie, filtrable par les organisateurs.</p>
           </>
         )}
         <label>Ville</label>

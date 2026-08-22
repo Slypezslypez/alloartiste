@@ -15,6 +15,8 @@ export default async function ProfilePage({ params }: { params: { id: string } }
   // Comptabilise la vue (non bloquant pour l'affichage).
   prisma.artist.update({ where: { id: artist.id }, data: { views: { increment: 1 } } }).catch(() => {});
 
+  const filledStars = Math.round(artist.rating);
+
   return (
     <>
       <Link className="backlink" href="/">
@@ -25,57 +27,81 @@ export default async function ProfilePage({ params }: { params: { id: string } }
         <ProfileGallery photos={artist.photos} artistName={artist.name} isVerified={artist.isVerified} />
 
         <div className="profile-right-col">
-          <div className="profile-top-row">
-            <span className="cat mono">{artist.category}</span>
-            {artist.city && <span className="mono profile-city">📍 {artist.city}</span>}
-          </div>
-
-          <h1 className="profile-name">{artist.name}</h1>
-
-          {artist.reviewsCount > 0 && (
-            <div className="profile-rating-badge">
-              <span>★ {artist.rating.toFixed(1)}</span>
-              <span className="dim">{artist.reviewsCount} avis</span>
+          <div className="profile-info-card">
+            <div className="profile-top-row">
+              <span className="cat mono">{artist.category}</span>
+              {artist.city && <span className="mono profile-city">📍 {artist.city}</span>}
             </div>
-          )}
 
-          <p className="profile-section-label mono">Biographie</p>
-          <p className="profile-bio-text">{artist.bio || "Cet·te artiste n'a pas encore ajouté de description."}</p>
+            <h1 className="profile-name">{artist.name}</h1>
 
-          {(artist.website || artist.facebook || artist.instagram || artist.phone) && (
-            <>
-              <p className="profile-section-label mono">Liens directs</p>
-              <div className="profile-links-row">
-                {artist.phone && <span className="profile-link-pill mono">📞 {artist.phone}</span>}
-                {artist.website && (
-                  <a href={formatUrl(artist.website)} target="_blank" rel="noopener noreferrer" className="profile-link-pill">
-                    🔗 Site web
-                  </a>
-                )}
-                {artist.facebook && (
-                  <a href={formatUrl(artist.facebook)} target="_blank" rel="noopener noreferrer" className="profile-link-pill">
-                    Facebook
-                  </a>
-                )}
-                {artist.instagram && (
-                  <a href={formatUrl(artist.instagram)} target="_blank" rel="noopener noreferrer" className="profile-link-pill">
-                    Instagram
-                  </a>
-                )}
+            {artist.reviewsCount > 0 && (
+              <div className="profile-rating-badge">
+                <span className="profile-stars">
+                  {[1, 2, 3, 4, 5].map((n) => (
+                    <span key={n} className={n <= filledStars ? "star-filled" : "star-empty"}>
+                      ★
+                    </span>
+                  ))}
+                </span>
+                <span>{artist.rating.toFixed(1)}</span>
+                <span className="dim">{artist.reviewsCount} avis</span>
               </div>
-            </>
-          )}
+            )}
 
-          {artist.videos.length > 0 && (
-            <>
-              <p className="profile-section-label mono">Vidéos & extraits ({artist.videos.length})</p>
-              <div className="videos" style={{ marginBottom: 24 }}>
-                {artist.videos.map((v) => (
-                  <VideoEmbed key={v} url={v} />
-                ))}
-              </div>
-            </>
-          )}
+            {artist.tagline && <p className="profile-tagline">&ldquo;{artist.tagline}&rdquo;</p>}
+
+            <p className="profile-section-label mono">Biographie & démarche</p>
+            <p className="profile-bio-text">{artist.bio || "Cet·te artiste n'a pas encore ajouté de description."}</p>
+
+            {artist.services.length > 0 && (
+              <>
+                <p className="profile-section-label mono">Formules & prestations</p>
+                <div className="profile-services-row">
+                  {artist.services.map((s) => (
+                    <span key={s} className="profile-service-pill">
+                      <span className="service-check">✓</span> {s}
+                    </span>
+                  ))}
+                </div>
+              </>
+            )}
+
+            {(artist.website || artist.facebook || artist.instagram || artist.phone) && (
+              <>
+                <p className="profile-section-label mono">Liens directs</p>
+                <div className="profile-links-row">
+                  {artist.phone && <span className="profile-link-pill mono">📞 {artist.phone}</span>}
+                  {artist.website && (
+                    <a href={formatUrl(artist.website)} target="_blank" rel="noopener noreferrer" className="profile-link-pill">
+                      🔗 Site web
+                    </a>
+                  )}
+                  {artist.facebook && (
+                    <a href={formatUrl(artist.facebook)} target="_blank" rel="noopener noreferrer" className="profile-link-pill">
+                      Facebook
+                    </a>
+                  )}
+                  {artist.instagram && (
+                    <a href={formatUrl(artist.instagram)} target="_blank" rel="noopener noreferrer" className="profile-link-pill">
+                      Instagram
+                    </a>
+                  )}
+                </div>
+              </>
+            )}
+
+            {artist.videos.length > 0 && (
+              <>
+                <p className="profile-section-label mono">Vidéos & extraits ({artist.videos.length})</p>
+                <div className="videos" style={{ marginBottom: 4 }}>
+                  {artist.videos.map((v) => (
+                    <VideoEmbed key={v} url={v} />
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
 
           <ContactForm artistId={artist.id} artistName={artist.name} />
         </div>
