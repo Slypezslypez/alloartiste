@@ -1,8 +1,19 @@
 "use client";
 
 import { useState } from "react";
+import { VideoEmbed } from "./VideoEmbed";
 
-export function ProfileGallery({ photos, artistName, isVerified }: { photos: string[]; artistName: string; isVerified: boolean }) {
+export function ProfileGallery({
+  photos,
+  artistName,
+  isVerified,
+  videos
+}: {
+  photos: string[];
+  artistName: string;
+  isVerified: boolean;
+  videos: string[];
+}) {
   const [activeIndex, setActiveIndex] = useState(0);
   const mainPhoto = photos[activeIndex] || photos[0];
 
@@ -29,6 +40,17 @@ export function ProfileGallery({ photos, artistName, isVerified }: { photos: str
                 className={`profile-thumb ${i === activeIndex ? "active" : ""}`}
                 onClick={() => setActiveIndex(i)}
               />
+            ))}
+          </div>
+        </>
+      )}
+
+      {videos.length > 0 && (
+        <>
+          <p className="profile-media-label mono">Vidéos & extraits ({videos.length})</p>
+          <div className="videos">
+            {videos.map((v) => (
+              <VideoEmbed key={v} url={v} />
             ))}
           </div>
         </>
