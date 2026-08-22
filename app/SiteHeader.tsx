@@ -15,11 +15,15 @@ const NAV_ITEMS = [
 export function SiteHeader({
   logoPart1 = "ALLO",
   logoPart2 = "ARTISTE",
-  backgroundUrl
+  backgroundUrl,
+  backgroundPositionX = 50,
+  backgroundPositionY = 50
 }: {
   logoPart1?: string;
   logoPart2?: string;
   backgroundUrl?: string | null;
+  backgroundPositionX?: number;
+  backgroundPositionY?: number;
 }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -56,7 +60,7 @@ export function SiteHeader({
           ? {
               backgroundImage: `linear-gradient(rgba(250,249,246,0.88), rgba(250,249,246,0.88)), url(${backgroundUrl})`,
               backgroundSize: "cover",
-              backgroundPosition: "center"
+              backgroundPosition: `${backgroundPositionX}% ${backgroundPositionY}%`
             }
           : undefined
       }
