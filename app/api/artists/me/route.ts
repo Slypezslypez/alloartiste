@@ -13,7 +13,7 @@ export async function GET() {
 
 const schema = z.object({
   name: z.string().min(2).max(60).optional(),
-  category: z.enum(CATEGORIES).optional(),
+  category: z.string().min(2).max(60).optional(),
   city: z.enum(BELGIAN_CITIES).optional(),
   bio: z.string().max(600).optional(),
   phone: z.string().max(30).optional().nullable(),
