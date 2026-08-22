@@ -40,7 +40,6 @@ export default async function ProfilePage({ params }: { params: { id: string } }
               </span>
             )}
           </div>
-          <p className="bio">{artist.bio || "Cet·te artiste n'a pas encore ajouté de description."}</p>
 
           {(artist.website || artist.facebook || artist.instagram || artist.phone) && (
             <div style={{ display: "flex", gap: 14, flexWrap: "wrap", marginBottom: 22, fontSize: 13 }}>
@@ -65,6 +64,12 @@ export default async function ProfilePage({ params }: { params: { id: string } }
 
           <ContactForm artistId={artist.id} artistName={artist.name} />
         </div>
+      </div>
+
+      <div className="bio-panel">
+        <span className="bio-quote">❝</span>
+        <p className="bio-label mono">À propos</p>
+        <p className="bio-text">{artist.bio || "Cet·te artiste n'a pas encore ajouté de description."}</p>
       </div>
 
       {artist.photos.length > 0 && (
