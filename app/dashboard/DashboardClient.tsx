@@ -10,6 +10,8 @@ type Artist = {
   category: string;
   city: string;
   bio: string;
+  tagline: string | null;
+  services: string[];
   phone: string | null;
   website: string | null;
   facebook: string | null;
@@ -52,6 +54,11 @@ export function DashboardClient({ initialArtist, initialLeads }: { initialArtist
   const [bioNotes, setBioNotes] = useState("");
   const [generatingBio, setGeneratingBio] = useState(false);
   const [bioError, setBioError] = useState<string | null>(null);
+  const [taglineValue, setTaglineValue] = useState(initialArtist.tagline || "");
+  const [services, setServices] = useState<string[]>(initialArtist.services || []);
+  const [newService, setNewService] = useState("");
+  const [generatingServices, setGeneratingServices] = useState(false);
+  const [servicesError, setServicesError] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [videoUrl, setVideoUrl] = useState("");
   const [subLoading, setSubLoading] = useState(false);
@@ -98,6 +105,33 @@ export function DashboardClient({ initialArtist, initialLeads }: { initialArtist
     }
   }
 
+  async function generateServices() {
+    setGeneratingServices(true);
+    setServicesError(null);
+    try {
+      const res = await fetch("/api/artists/me/generate-services", { method: "POST" });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Échec de la génération.");
+      const merged = Array.from(new Set([...services, ...(data.services || [])])).slice(0, 6);
+      setServices(merged);
+    } catch (err: any) {
+      setServicesError(err.message || "Échec de la génération.");
+    } finally {
+      setGeneratingServices(false);
+    }
+  }
+
+  function addService() {
+    const v = newService.trim();
+    if (!v || services.includes(v) || services.length >= 6) return;
+    setServices((s) => [...s, v]);
+    setNewService("");
+  }
+
+  function removeService(s: string) {
+    setServices((list) => list.filter((x) => x !== s));
+  }
+
   async function saveProfile(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
@@ -125,6 +159,8 @@ export function DashboardClient({ initialArtist, initialLeads }: { initialArtist
         category: finalCategory,
         city: fd.get("city"),
         bio: bioValue,
+        tagline: taglineValue.trim() || null,
+        services,
         phone: fd.get("phone") || null,
         website: fd.get("website") || null,
         facebook: fd.get("facebook") || null,
@@ -373,6 +409,61 @@ export function DashboardClient({ initialArtist, initialLeads }: { initialArtist
           </div>
 
           <textarea name="bio" maxLength={600} value={bioValue} onChange={(e) => setBioValue(e.target.value)} />
+
+          <label>Citation courte (optionnelle)</label>
+          <input
+            type="text"
+            value={taglineValue}
+            onChange={(e) => setTaglineValue(e.target.value)}
+            placeholder="ex. Spécialiste de la musique électronique, événements corporate haut de gamme."
+            maxLength={180}
+          />
+          <p className="hint">Affichée en italique, en évidence, tout en haut de votre fiche publique.</p>
+
+          <label>Formules & prestations</label>
+          <div className="profile-services-row" style={{ marginBottom: 12 }}>
+            {services.map((s) => (
+              <span key={s} className="profile-service-pill">
+                <span className="service-check">✓</span> {s}
+                <button
+                  type="button"
+                  onClick={() => removeService(s)}
+                  style={{ background: "none", border: "none", color: "inherit", marginLeft: 4, cursor: "pointer", fontWeight: 700 }}
+                >
+                  ×
+                </button>
+              </span>
+            ))}
+            {services.length === 0 && <p className="hint" style={{ margin: 0 }}>Aucune formule ajoutée pour le moment.</p>}
+          </div>
+          {services.length < 6 && (
+            <div style={{ display: "flex", gap: 10, marginBottom: 10 }}>
+              <input
+                type="text"
+                value={newService}
+                onChange={(e) => setNewService(e.target.value)}
+                placeholder="ex. Mariages premium"
+                maxLength={40}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    addService();
+                  }
+                }}
+              />
+              <button type="button" className="btn btn-outline" onClick={addService} style={{ whiteSpace: "nowrap" }}>
+                Ajouter
+              </button>
+            </div>
+          )}
+          <div className="ai-generate-box">
+            <label style={{ margin: "0 0 8px" }}>✨ Suggérer des formules avec l&apos;IA</label>
+            <p className="hint" style={{ marginTop: 0 }}>Basé sur votre catégorie et votre bio actuelle.</p>
+            <button type="button" className="btn btn-gold" onClick={generateServices} disabled={generatingServices || services.length >= 6}>
+              {generatingServices ? "Génération..." : "Suggérer avec l'IA"}
+            </button>
+            {servicesError && <p className="error">{servicesError}</p>}
+          </div>
 
           <div className="field-row">
             <div>
