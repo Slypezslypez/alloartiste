@@ -56,6 +56,6 @@ export async function sendWelcomeEmail(artistName: string, artistEmail: string) 
 Votre compte a bien été créé. Activez votre abonnement (33€/an) depuis votre espace pour rendre votre profil visible dans le catalogue.
 
 À bientôt,
-L'équipe La Coulisse`
+L'équipe AlloArtiste`
   });
 }
