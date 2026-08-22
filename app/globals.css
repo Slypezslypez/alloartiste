@@ -72,6 +72,7 @@ nav { display: flex; align-items: center; gap: 10px; }
 main { max-width: 1400px; margin: 0 auto; padding: 0 28px 80px; }
 
 .marquee { padding: 48px 4px 46px; border-top: 1px solid var(--line); margin-top: 8px; }
+#catalogue { scroll-margin-top: 120px; }
 .marquee .eyebrow { font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold-deep); margin-bottom: 16px; font-weight: 700; font-family: "JetBrains Mono", monospace; }
 .marquee h1 {
   font-family: "Playfair Display", serif;
