@@ -44,7 +44,7 @@ export function SiteHeader() {
     <header>
       <div className="header-row">
         <Link href="/" className="logo">
-          LA <span>COULISSE</span>
+          ALLO<span>ARTISTE</span>
         </Link>
 
         <nav className="desktop-nav">
