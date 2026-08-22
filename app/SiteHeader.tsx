@@ -22,13 +22,14 @@ export function SiteHeader({ logoPart1 = "ALLO", logoPart2 = "ARTISTE" }: { logo
     fetch("/api/artists/me")
       .then((r) => setLoggedIn(r.ok))
       .catch(() => setLoggedIn(false));
-  }, []);
+  }, [pathname]);
 
   useEffect(() => {
     setIsOpen(false);
   }, [pathname]);
 
   async function logout() {
+    setLoggedIn(false); // mise à jour immédiate de l'affichage, sans attendre le rechargement
     await fetch("/api/logout", { method: "POST" });
     router.push("/");
     router.refresh();
