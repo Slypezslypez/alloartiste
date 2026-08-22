@@ -45,6 +45,10 @@ export default async function HomePage() {
     .filter((a): a is (typeof withPhotos)[number] => !!a);
   const spotlight = manualPicks.length > 0 ? manualPicks.slice(0, 2) : withPhotos.slice(0, 2);
 
+  // Pills "Rechercher par discipline" : catégories de base + celles créées par les artistes.
+  const customCategories = Array.from(new Set(visible.map((a) => a.category).filter((c) => !CATEGORIES.includes(c as any)))).sort();
+  const quickCategories = [...CATEGORIES.filter((c) => c !== "Autre"), ...customCategories];
+
   return (
     <>
       <section className="marquee">
@@ -105,7 +109,7 @@ export default async function HomePage() {
       <div className="quick-disciplines">
         <p className="quick-title mono">Rechercher par discipline</p>
         <div className="quick-pills">
-          {CATEGORIES.map((c) => (
+          {quickCategories.map((c) => (
             <a key={c} href="#catalogue" className="quick-pill">
               <span>{CATEGORY_ICONS[c] || "✨"}</span> {c}
             </a>
