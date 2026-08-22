@@ -52,7 +52,7 @@ export function ContactForm({ artistId, artistName }: { artistId: string; artist
             </div>
             <div>
               <label>Date estimée de l&apos;événement</label>
-              <input name="eventDate" type="text" placeholder="ex. 14 juin 2027" maxLength={40} />
+              <input name="eventDate" type="date" min={new Date().toISOString().split("T")[0]} />
             </div>
           </div>
           <label>Votre message</label>
