@@ -63,6 +63,7 @@ export function DashboardClient({ initialArtist, initialLeads }: { initialArtist
   const [videoUrl, setVideoUrl] = useState("");
   const [subLoading, setSubLoading] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const [openTab, setOpenTab] = useState<"abonnement" | "stats" | "demandes" | null>(null);
 
   const newLeadsCount = leads.filter((l) => l.status === "new").length;
 
@@ -258,7 +259,7 @@ export function DashboardClient({ initialArtist, initialLeads }: { initialArtist
           : "● Profil non visible — abonnement inactif"}
       </div>
 
-      {!active ? (
+      {!active && (
         <div className="panel wide">
           <h2 style={{ fontSize: 24 }}>Activer l&apos;abonnement</h2>
           <p className="sub">Abonnement annuel, renouvelable automatiquement via Stripe. Requis pour apparaître dans le catalogue public.</p>
@@ -282,69 +283,88 @@ export function DashboardClient({ initialArtist, initialLeads }: { initialArtist
             {subLoading ? "Redirection..." : "S'abonner"}
           </button>
         </div>
-      ) : (
-        <div className="panel wide">
-          <h2 style={{ fontSize: 22 }}>Gestion de l&apos;abonnement</h2>
-          <p className="sub">
-            Renouvellement automatique le {new Date(artist.currentPeriodEnd as string).toLocaleDateString("fr-FR")}.
-          </p>
-          <button className="btn btn-outline" onClick={openPortal}>
-            Gérer / annuler mon abonnement
-          </button>
-        </div>
       )}
 
-      {/* Statistiques */}
-      <div className="panel wide">
-        <h2 style={{ fontSize: 24 }}>Statistiques</h2>
-        <div className="stats-row">
-          <div className="stat-box">
-            <span className="stat-value">{artist.views}</span>
-            <span className="stat-label">Vues du profil</span>
-          </div>
-          <div className="stat-box">
-            <span className="stat-value">{leads.length}</span>
-            <span className="stat-label">Demandes reçues</span>
-          </div>
-          <div className="stat-box">
-            <span className="stat-value">{artist.reviewsCount > 0 ? artist.rating.toFixed(1) : "—"}</span>
-            <span className="stat-label">Note moyenne{artist.reviewsCount > 0 ? ` (${artist.reviewsCount})` : ""}</span>
-          </div>
+      <div className="account-tabs" style={{ maxWidth: 1100 }}>
+        <div className="account-tabs-bar">
+          {active && (
+            <button
+              className={`account-tab ${openTab === "abonnement" ? "active" : ""}`}
+              onClick={() => setOpenTab(openTab === "abonnement" ? null : "abonnement")}
+            >
+              Abonnement
+            </button>
+          )}
+          <button className={`account-tab ${openTab === "stats" ? "active" : ""}`} onClick={() => setOpenTab(openTab === "stats" ? null : "stats")}>
+            Statistiques
+          </button>
+          <button className={`account-tab ${openTab === "demandes" ? "active" : ""}`} onClick={() => setOpenTab(openTab === "demandes" ? null : "demandes")}>
+            Demandes de contact
+            {newLeadsCount > 0 && <span className="lead-count-badge" style={{ marginLeft: 8 }}>{newLeadsCount}</span>}
+          </button>
         </div>
-      </div>
 
-      {/* Demandes de contact */}
-      <div className="panel wide">
-        <h2 style={{ fontSize: 24 }}>
-          Demandes de contact {newLeadsCount > 0 && <span className="lead-count-badge">{newLeadsCount} nouvelle{newLeadsCount > 1 ? "s" : ""}</span>}
-        </h2>
-        {leads.length === 0 ? (
-          <p className="hint">Aucune demande reçue pour le moment.</p>
-        ) : (
-          <div className="lead-list">
-            {leads.map((lead) => (
-              <div key={lead.id} className={`lead-card lead-${lead.status}`}>
-                <div className="lead-header">
-                  <div>
-                    <strong>{lead.senderName}</strong>{" "}
-                    <span className="mono" style={{ fontSize: 12, color: "var(--muted)" }}>
-                      {new Date(lead.createdAt).toLocaleDateString("fr-FR")}
-                    </span>
-                  </div>
-                  <select value={lead.status} onChange={(e) => updateLeadStatus(lead.id, e.target.value as Lead["status"])} className="lead-status-select">
-                    <option value="new">Nouveau</option>
-                    <option value="replied">Traité</option>
-                    <option value="archived">Archivé</option>
-                  </select>
-                </div>
-                <p className="lead-message">{lead.message}</p>
-                <div className="lead-contact">
-                  <a href={`mailto:${lead.senderEmail}`}>{lead.senderEmail}</a>
-                  {lead.senderPhone && <span> · {lead.senderPhone}</span>}
-                  {lead.eventDate && <span> · Événement : {lead.eventDate}</span>}
-                </div>
+        {openTab === "abonnement" && active && (
+          <div className="account-tab-panel">
+            <p className="sub" style={{ marginTop: 0 }}>
+              Renouvellement automatique le {new Date(artist.currentPeriodEnd as string).toLocaleDateString("fr-FR")}.
+            </p>
+            <button className="btn btn-outline" onClick={openPortal}>
+              Gérer / annuler mon abonnement
+            </button>
+          </div>
+        )}
+
+        {openTab === "stats" && (
+          <div className="account-tab-panel">
+            <div className="stats-row">
+              <div className="stat-box">
+                <span className="stat-value">{artist.views}</span>
+                <span className="stat-label">Vues du profil</span>
               </div>
-            ))}
+              <div className="stat-box">
+                <span className="stat-value">{leads.length}</span>
+                <span className="stat-label">Demandes reçues</span>
+              </div>
+              <div className="stat-box">
+                <span className="stat-value">{artist.reviewsCount > 0 ? artist.rating.toFixed(1) : "—"}</span>
+                <span className="stat-label">Note moyenne{artist.reviewsCount > 0 ? ` (${artist.reviewsCount})` : ""}</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {openTab === "demandes" && (
+          <div className="account-tab-panel">
+            {leads.length === 0 ? (
+              <p className="hint" style={{ margin: 0 }}>Aucune demande reçue pour le moment.</p>
+            ) : (
+              <div className="lead-list">
+                {leads.map((lead) => (
+                  <div key={lead.id} className={`lead-card lead-${lead.status}`}>
+                    <div className="lead-header">
+                      <div>
+                        <strong>{lead.senderName}</strong>{" "}
+                        <span className="mono" style={{ fontSize: 12, color: "var(--muted)" }}>
+                          {new Date(lead.createdAt).toLocaleDateString("fr-FR")}
+                        </span>
+                      </div>
+                      <select value={lead.status} onChange={(e) => updateLeadStatus(lead.id, e.target.value as Lead["status"])} className="lead-status-select">
+                        <option value="new">Nouveau</option>
+                        <option value="replied">Traité</option>
+                        <option value="archived">Archivé</option>
+                      </select>
+                    </div>
+                    <p className="lead-message">{lead.message}</p>
+                    <div className="lead-contact">
+                      <a href={`mailto:${lead.senderEmail}`}>{lead.senderEmail}</a>
+                      {lead.senderPhone && <span> · {lead.senderPhone}</span>}
+                      {lead.eventDate && <span> · Événement : {lead.eventDate}</span>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>
