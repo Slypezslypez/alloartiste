@@ -44,6 +44,10 @@ export function DashboardClient({ initialArtist, initialLeads }: { initialArtist
   });
 
   const [profileMsg, setProfileMsg] = useState<string | null>(null);
+  const isKnownCategory = CATEGORIES.includes(initialArtist.category as any);
+  const [category, setCategory] = useState<string>(isKnownCategory ? initialArtist.category : "Autre");
+  const [customCategory, setCustomCategory] = useState(isKnownCategory ? "" : initialArtist.category);
+  const isCustomCategory = category === "Autre";
   const [bioValue, setBioValue] = useState(initialArtist.bio);
   const [bioNotes, setBioNotes] = useState("");
   const [generatingBio, setGeneratingBio] = useState(false);
@@ -80,7 +84,7 @@ export function DashboardClient({ initialArtist, initialLeads }: { initialArtist
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Échec de la génération.");
-            setBioValue((data.bio || "").slice(0, 600));
+      setBioValue((data.bio || "").slice(0, 600));
     } catch (err: any) {
       setBioError(err.message || "Échec de la génération.");
     } finally {
@@ -91,12 +95,13 @@ export function DashboardClient({ initialArtist, initialLeads }: { initialArtist
   async function saveProfile(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
+    const finalCategory = isCustomCategory && customCategory.trim() ? customCategory.trim() : category;
     const res = await fetch("/api/artists/me", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         name: fd.get("name"),
-        category: fd.get("category"),
+        category: finalCategory,
         city: fd.get("city"),
         bio: bioValue,
         phone: fd.get("phone") || null,
@@ -279,7 +284,7 @@ export function DashboardClient({ initialArtist, initialLeads }: { initialArtist
           <div className="field-row">
             <div>
               <label>Catégorie</label>
-              <select name="category" defaultValue={artist.category}>
+              <select value={category} onChange={(e) => setCategory(e.target.value)}>
                 {CATEGORIES.map((c) => (
                   <option key={c} value={c}>
                     {c}
@@ -298,6 +303,19 @@ export function DashboardClient({ initialArtist, initialLeads }: { initialArtist
               </select>
             </div>
           </div>
+          {isCustomCategory && (
+            <>
+              <label>Précisez votre spécialité</label>
+              <input
+                type="text"
+                value={customCategory}
+                onChange={(e) => setCustomCategory(e.target.value)}
+                placeholder="ex. Magicien, Sculpteur sur glace, Groupe folklorique..."
+                maxLength={60}
+                required
+              />
+            </>
+          )}
           <label>Bio</label>
 
           <div className="ai-generate-box">
