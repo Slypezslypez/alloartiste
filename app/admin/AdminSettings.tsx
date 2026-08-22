@@ -183,3 +183,38 @@ export function AdminSettings({ initialSettings, artistOptions }: { initialSetti
             </select>
           </div>
           <div>
+            <label>2ème photo</label>
+            <select value={form.spotlightArtistId2 || ""} onChange={(e) => set("spotlightArtistId2", e.target.value || null)}>
+              <option value="">Automatique</option>
+              {artistOptions.map((a) => (
+                <option key={a.id} value={a.id}>
+                  {a.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div className="panel wide">
+        <h2 style={{ fontSize: 24 }}>Contact</h2>
+        <label>Email qui reçoit les messages du formulaire de contact général</label>
+        <input
+          type="email"
+          value={form.contactReceiverEmail || ""}
+          onChange={(e) => set("contactReceiverEmail", e.target.value || null)}
+          placeholder="contact@alloartiste.be"
+        />
+        <p className="hint">Si laissé vide, utilise la valeur définie dans les variables d&apos;environnement du serveur.</p>
+      </div>
+
+      {message && <p className={message.includes("Échec") ? "error" : "success"} style={{ marginLeft: 0 }}>{message}</p>}
+
+      <div style={{ marginTop: 4 }}>
+        <button type="submit" className="btn btn-gold" disabled={saving}>
+          {saving ? "Enregistrement..." : "Enregistrer les réglages"}
+        </button>
+      </div>
+    </form>
+  );
+}
