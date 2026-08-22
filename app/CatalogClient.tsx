@@ -24,6 +24,11 @@ export function CatalogClient({ artists }: { artists: ArtistCard[] }) {
   const [category, setCategory] = useState("Tous");
   const [sort, setSort] = useState<SortOption>("newest");
 
+  const allCategories = useMemo(() => {
+    const custom = new Set(artists.map((a) => a.category).filter((c) => !CATEGORIES.includes(c as any)));
+    return [...CATEGORIES, ...Array.from(custom).sort()];
+  }, [artists]);
+
   const cities = useMemo(() => {
     const set = new Set(artists.map((a) => a.city).filter(Boolean));
     return ["Toutes", ...Array.from(set).sort()];
@@ -67,6 +72,14 @@ export function CatalogClient({ artists }: { artists: ArtistCard[] }) {
             onChange={(e) => setSearch(e.target.value)}
             className="search-input"
           />
+          <select value={category} onChange={(e) => setCategory(e.target.value)} className="search-select">
+            <option value="Tous">Toutes les catégories</option>
+            {allCategories.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
           <select value={city} onChange={(e) => setCity(e.target.value)} className="search-select">
             {cities.map((c) => (
               <option key={c} value={c}>
@@ -79,17 +92,6 @@ export function CatalogClient({ artists }: { artists: ArtistCard[] }) {
             <option value="alpha">Ordre alphabétique</option>
             <option value="rating">Mieux notés</option>
           </select>
-        </div>
-
-        <div className="filters">
-          <button className={`chip ${category === "Tous" ? "active" : ""}`} onClick={() => setCategory("Tous")}>
-            Tous
-          </button>
-          {CATEGORIES.map((c) => (
-            <button key={c} className={`chip ${category === c ? "active" : ""}`} onClick={() => setCategory(c)}>
-              {c}
-            </button>
-          ))}
         </div>
 
         {hasActiveFilters && (
