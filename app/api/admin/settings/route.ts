@@ -18,6 +18,8 @@ const schema = z.object({
   logoPart2: z.string().min(1).max(30).optional(),
   tagline: z.string().min(1).max(200).optional(),
   headerBackgroundUrl: z.string().url().optional().nullable(),
+  headerBackgroundPositionX: z.number().min(0).max(100).optional(),
+  headerBackgroundPositionY: z.number().min(0).max(100).optional(),
   heroLine1: z.string().min(1).max(60).optional(),
   heroEmphasis: z.string().min(1).max(60).optional(),
   heroLine2: z.string().min(1).max(60).optional(),
