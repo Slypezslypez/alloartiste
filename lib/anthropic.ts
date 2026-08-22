@@ -57,3 +57,44 @@ export async function generateArticleDraft(topic: string): Promise<ArticleDraft>
     throw new Error("Réponse de l'IA illisible, réessayez.");
   }
 }
+
+export async function generateBioDraft(input: { name: string; category: string; city: string; notes: string }): Promise<string> {
+  if (!process.env.ANTHROPIC_API_KEY) {
+    throw new Error("La clé ANTHROPIC_API_KEY n'est pas configurée.");
+  }
+
+  const prompt = `Tu écris pour AlloArtiste, une plateforme belge qui met en relation des artistes avec des organisateurs d'événements.
+
+Un·e artiste souhaite une bio professionnelle pour son profil public. Voici ses informations :
+- Nom / nom de scène : ${input.name}
+- Catégorie : ${input.category}
+- Ville : ${input.city || "non précisée"}
+- Notes libres décrites par l'artiste : "${input.notes}"
+
+Rédige une bio en français, à la troisième personne, entre 60 et 120 mots, chaleureuse et professionnelle, qui donne envie de réserver cet·te artiste. Pas de titre, pas de guillemets, juste le texte de la bio directement.
+
+Réponds UNIQUEMENT avec le texte de la bio, sans aucun autre texte avant ou après.`;
+
+  const res = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": process.env.ANTHROPIC_API_KEY,
+      "anthropic-version": "2023-06-01"
+    },
+    body: JSON.stringify({
+      model: "claude-sonnet-5",
+      max_tokens: 500,
+      messages: [{ role: "user", content: prompt }]
+    })
+  });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`Erreur de l'API Claude (${res.status}): ${text.slice(0, 200)}`);
+  }
+
+  const data = await res.json();
+  const rawText = (data.content || []).map((block: any) => block.text || "").join("");
+  return rawText.trim();
+}
