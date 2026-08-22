@@ -12,7 +12,15 @@ const NAV_ITEMS = [
   { href: "/contact", label: "Contact / Organisateurs" }
 ];
 
-export function SiteHeader({ logoPart1 = "ALLO", logoPart2 = "ARTISTE" }: { logoPart1?: string; logoPart2?: string }) {
+export function SiteHeader({
+  logoPart1 = "ALLO",
+  logoPart2 = "ARTISTE",
+  backgroundUrl
+}: {
+  logoPart1?: string;
+  logoPart2?: string;
+  backgroundUrl?: string | null;
+}) {
   const pathname = usePathname();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
@@ -42,7 +50,17 @@ export function SiteHeader({ logoPart1 = "ALLO", logoPart2 = "ARTISTE" }: { logo
   }
 
   return (
-    <header>
+    <header
+      style={
+        backgroundUrl
+          ? {
+              backgroundImage: `linear-gradient(rgba(250,249,246,0.88), rgba(250,249,246,0.88)), url(${backgroundUrl})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center"
+            }
+          : undefined
+      }
+    >
       <div className="header-row">
         <Link href="/" className="logo">
           {logoPart1}<span>{logoPart2}</span>
