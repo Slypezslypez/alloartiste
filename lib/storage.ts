@@ -48,3 +48,19 @@ export async function createPresignedArticleUpload(fileExt: string, contentType:
 
   return { uploadUrl, publicUrl };
 }
+
+/** Upload d'image pour les réglages du site (fond du header...), réservé à l'admin. */
+export async function createPresignedSiteUpload(fileExt: string, contentType: string) {
+  const key = `site/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${fileExt}`;
+
+  const command = new PutObjectCommand({
+    Bucket: process.env.S3_BUCKET,
+    Key: key,
+    ContentType: contentType
+  });
+
+  const uploadUrl = await getSignedUrl(s3, command, { expiresIn: 300 });
+  const publicUrl = `${process.env.S3_PUBLIC_BASE_URL}/${key}`;
+
+  return { uploadUrl, publicUrl };
+}
