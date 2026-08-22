@@ -32,7 +32,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Link href="/faq">FAQ</Link>
             <Link href="/contact">Contact</Link>
           </div>
-          <p>La Coulisse — Annuaire d&apos;artistes pour producteurs &amp; demandeurs de devis</p>
+          <p>AlloArtiste — Annuaire d&apos;artistes pour producteurs &amp; demandeurs de devis</p>
         </footer>
       </body>
     </html>
