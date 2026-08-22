@@ -80,7 +80,7 @@ export function DashboardClient({ initialArtist, initialLeads }: { initialArtist
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Échec de la génération.");
-      setBioValue(data.bio);
+            setBioValue((data.bio || "").slice(0, 600));
     } catch (err: any) {
       setBioError(err.message || "Échec de la génération.");
     } finally {
