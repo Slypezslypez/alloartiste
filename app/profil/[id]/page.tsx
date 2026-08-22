@@ -3,7 +3,6 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { isSubscriptionVisible } from "@/lib/categories";
 import { ContactForm } from "./ContactForm";
-import { VideoEmbed } from "./VideoEmbed";
 import { ProfileGallery } from "./ProfileGallery";
 
 export const dynamic = "force-dynamic";
@@ -24,7 +23,7 @@ export default async function ProfilePage({ params }: { params: { id: string } }
       </Link>
 
       <div className="profile-two-col">
-        <ProfileGallery photos={artist.photos} artistName={artist.name} isVerified={artist.isVerified} />
+        <ProfileGallery photos={artist.photos} artistName={artist.name} isVerified={artist.isVerified} videos={artist.videos} />
 
         <div className="profile-right-col">
           <div className="profile-info-card">
@@ -87,17 +86,6 @@ export default async function ProfilePage({ params }: { params: { id: string } }
                       Instagram
                     </a>
                   )}
-                </div>
-              </>
-            )}
-
-            {artist.videos.length > 0 && (
-              <>
-                <p className="profile-section-label mono">Vidéos & extraits ({artist.videos.length})</p>
-                <div className="videos" style={{ marginBottom: 4 }}>
-                  {artist.videos.map((v) => (
-                    <VideoEmbed key={v} url={v} />
-                  ))}
                 </div>
               </>
             )}
