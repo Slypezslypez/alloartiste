@@ -44,6 +44,10 @@ export function DashboardClient({ initialArtist, initialLeads }: { initialArtist
   });
 
   const [profileMsg, setProfileMsg] = useState<string | null>(null);
+  const [bioValue, setBioValue] = useState(initialArtist.bio);
+  const [bioNotes, setBioNotes] = useState("");
+  const [generatingBio, setGeneratingBio] = useState(false);
+  const [bioError, setBioError] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [videoUrl, setVideoUrl] = useState("");
   const [subLoading, setSubLoading] = useState(false);
@@ -64,6 +68,26 @@ export function DashboardClient({ initialArtist, initialLeads }: { initialArtist
     if (body.url) window.location.href = body.url;
   }
 
+  async function generateBio() {
+    if (!bioNotes.trim()) return;
+    setGeneratingBio(true);
+    setBioError(null);
+    try {
+      const res = await fetch("/api/artists/me/generate-bio", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ notes: bioNotes.trim() })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Échec de la génération.");
+      setBioValue(data.bio);
+    } catch (err: any) {
+      setBioError(err.message || "Échec de la génération.");
+    } finally {
+      setGeneratingBio(false);
+    }
+  }
+
   async function saveProfile(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
@@ -74,7 +98,7 @@ export function DashboardClient({ initialArtist, initialLeads }: { initialArtist
         name: fd.get("name"),
         category: fd.get("category"),
         city: fd.get("city"),
-        bio: fd.get("bio"),
+        bio: bioValue,
         phone: fd.get("phone") || null,
         website: fd.get("website") || null,
         facebook: fd.get("facebook") || null,
@@ -275,7 +299,24 @@ export function DashboardClient({ initialArtist, initialLeads }: { initialArtist
             </div>
           </div>
           <label>Bio</label>
-          <textarea name="bio" maxLength={600} defaultValue={artist.bio} />
+
+          <div className="ai-generate-box">
+            <label style={{ margin: "0 0 8px" }}>✨ Laissez l&apos;IA rédiger votre bio</label>
+            <textarea
+              value={bioNotes}
+              onChange={(e) => setBioNotes(e.target.value)}
+              placeholder="Décrivez-vous en quelques mots : votre parcours, votre style, votre expérience, ce qui vous distingue..."
+              disabled={generatingBio}
+              style={{ minHeight: 60, marginBottom: 10 }}
+            />
+            <button type="button" className="btn btn-gold" onClick={generateBio} disabled={generatingBio || !bioNotes.trim()}>
+              {generatingBio ? "Génération..." : "Générer ma bio"}
+            </button>
+            {bioError && <p className="error">{bioError}</p>}
+            <p className="hint">Le résultat remplit le champ ci-dessous — relisez et ajustez avant d&apos;enregistrer.</p>
+          </div>
+
+          <textarea name="bio" maxLength={600} value={bioValue} onChange={(e) => setBioValue(e.target.value)} />
 
           <div className="field-row">
             <div>
