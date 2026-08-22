@@ -8,10 +8,20 @@ export default function InscriptionPage() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [category, setCategory] = useState<string>(CATEGORIES[0]);
+  const [customCategory, setCustomCategory] = useState("");
+  const isCustom = category === "Autre";
 
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
+
+    const finalCategory = isCustom && customCategory.trim() ? customCategory.trim() : category;
+    if (isCustom && !customCategory.trim()) {
+      setError("Précisez votre spécialité.");
+      return;
+    }
+
     setLoading(true);
     const fd = new FormData(e.currentTarget);
     const res = await fetch("/api/register", {
@@ -21,7 +31,7 @@ export default function InscriptionPage() {
         name: fd.get("name"),
         email: fd.get("email"),
         password: fd.get("password"),
-        category: fd.get("category"),
+        category: finalCategory,
         city: fd.get("city"),
         bio: fd.get("bio")
       })
@@ -40,20 +50,34 @@ export default function InscriptionPage() {
     <div className="panel">
       <h2>Créer mon profil</h2>
       <p className="sub">
-        L&apos;inscription est gratuite. Le profil devient visible dans le catalogue une fois l&apos;abonnement de
-        33€/an activé (renouvelable automatiquement).
+        L&apos;inscription est gratuite. Le profil devient visible dans le catalogue une fois l&apos;abonnement
+        activé (renouvelable automatiquement).
       </p>
       <form onSubmit={submit}>
         <label>Nom / nom de scène</label>
         <input name="name" type="text" required maxLength={60} />
         <label>Catégorie</label>
-        <select name="category" required defaultValue={CATEGORIES[0]}>
+        <select value={category} onChange={(e) => setCategory(e.target.value)} required>
           {CATEGORIES.map((c) => (
             <option key={c} value={c}>
               {c}
             </option>
           ))}
         </select>
+        {isCustom && (
+          <>
+            <label>Précisez votre spécialité</label>
+            <input
+              type="text"
+              value={customCategory}
+              onChange={(e) => setCustomCategory(e.target.value)}
+              placeholder="ex. Magicien, Sculpteur sur glace, Groupe folklorique..."
+              maxLength={60}
+              required
+            />
+            <p className="hint">Elle apparaîtra comme une vraie catégorie, filtrable par les organisateurs.</p>
+          </>
+        )}
         <label>Ville</label>
         <select name="city" required defaultValue={BELGIAN_CITIES[0]}>
           {BELGIAN_CITIES.map((c) => (
