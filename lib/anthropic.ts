@@ -8,7 +8,7 @@ type ArticleDraft = {
 };
 
 function buildPrompt(topic: string) {
-  return `Tu écris pour "La Coulisse", une plateforme belge qui met en relation des artistes (musiciens, danseurs, comédiens, DJs, plasticiens...) avec des organisateurs d'événements.
+  return `Tu écris pour "AlloArtiste", une plateforme belge qui met en relation des artistes (musiciens, danseurs, comédiens, DJs, plasticiens...) avec des organisateurs d'événements.
 
 Rédige un article de conseils pratiques en français sur le sujet suivant : "${topic}".
 
