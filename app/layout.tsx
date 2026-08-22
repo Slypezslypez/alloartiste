@@ -36,6 +36,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <Link href="/comment-ca-marche">Comment ça marche</Link>
             <Link href="/faq">FAQ</Link>
             <Link href="/contact">Contact</Link>
+            <Link href="/conditions">CGU</Link>
           </div>
           <p>{settings.siteName} — Annuaire d&apos;artistes pour producteurs &amp; demandeurs de devis</p>
         </footer>
