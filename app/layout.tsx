@@ -28,7 +28,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <span>✦</span>
           <span>{settings.tagline}</span>
         </div>
-        <SiteHeader logoPart1={settings.logoPart1} logoPart2={settings.logoPart2} backgroundUrl={settings.headerBackgroundUrl} />
+        <SiteHeader
+          logoPart1={settings.logoPart1}
+          logoPart2={settings.logoPart2}
+          backgroundUrl={settings.headerBackgroundUrl}
+          backgroundPositionX={settings.headerBackgroundPositionX}
+          backgroundPositionY={settings.headerBackgroundPositionY}
+        />
         <main>{children}</main>
         <footer>
           <div className="footer-links">
