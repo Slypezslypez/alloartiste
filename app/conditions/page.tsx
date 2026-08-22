@@ -66,7 +66,32 @@ export default function ConditionsPage() {
           responsabilité ni donner lieu à indemnisation.
         </p>
 
-        <p><strong>6. Droit applicable</strong></p>
+        <p><strong>6. Propriété intellectuelle</strong></p>
+        <p>
+          Le nom « AlloArtiste », le logo, la structure du site, son design et l&apos;ensemble des éléments qui le
+          composent (à l&apos;exception du contenu déposé par les artistes) sont la propriété exclusive
+          d&apos;AlloArtiste. Toute reproduction, extraction ou réutilisation non autorisée de ces éléments est
+          interdite.
+        </p>
+        <p>
+          Chaque artiste demeure seul titulaire des droits sur les photos, vidéos, textes et tout autre contenu
+          qu&apos;il dépose sur son profil. En publiant ce contenu sur la Plateforme, l&apos;artiste garantit être
+          titulaire des droits nécessaires (ou disposer des autorisations requises) et accorde à AlloArtiste une
+          licence non exclusive, limitée à l&apos;affichage de ce contenu sur le site et ses supports de
+          communication, dans le cadre normal du fonctionnement de la Plateforme. Cette licence prend fin à la
+          suppression du contenu ou du profil concerné.
+        </p>
+        <p>
+          AlloArtiste ne saurait être tenu responsable d&apos;une violation de droits de propriété intellectuelle
+          commise par un artiste via le contenu qu&apos;il publie. Toute personne estimant qu&apos;un contenu publié
+          sur la Plateforme porte atteinte à ses droits peut le signaler via la page{" "}
+          <a href="/contact" style={{ color: "var(--gold-deep)", fontWeight: 600 }}>
+            Contact
+          </a>
+          .
+        </p>
+
+        <p><strong>7. Droit applicable</strong></p>
         <p>
           Les présentes conditions sont régies par le droit belge. Tout litige relatif à leur interprétation ou leur
           exécution relève, à défaut de résolution amiable, des tribunaux compétents de Belgique.
