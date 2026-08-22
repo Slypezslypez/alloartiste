@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getSiteSettings } from "@/lib/settings";
 
 const ARTIST_STEPS = [
   { title: "Créez votre profil", text: "Nom, catégorie, ville, bio, photos et vidéos — en quelques minutes." },
@@ -12,7 +13,9 @@ const ORGANIZER_STEPS = [
   { title: "Contactez l'artiste", text: "Envoyez votre demande directement depuis le profil, gratuitement." }
 ];
 
-export default function HowItWorksPage() {
+export default async function HowItWorksPage() {
+  const settings = await getSiteSettings();
+
   return (
     <>
       <div className="panel">
@@ -21,35 +24,63 @@ export default function HowItWorksPage() {
       </div>
 
       <div className="panel wide">
-        <h2 style={{ fontSize: 24 }}>Pour les artistes</h2>
-        <div className="steps-grid">
-          {ARTIST_STEPS.map((s, i) => (
-            <div key={i} className="step-box">
-              <span className="step-num">{i + 1}</span>
-              <strong>{s.title}</strong>
-              <p>{s.text}</p>
+        <div className={settings.howArtistsImageUrl ? "how-panel-grid" : ""}>
+          {settings.howArtistsImageUrl && (
+            <img
+              src={settings.howArtistsImageUrl}
+              alt="Pour les artistes"
+              className="how-panel-image"
+              style={{
+                objectPosition: `${settings.howArtistsImagePositionX}% ${settings.howArtistsImagePositionY}%`
+              }}
+            />
+          )}
+          <div>
+            <h2 style={{ fontSize: 24 }}>Pour les artistes</h2>
+            <div className="steps-grid">
+              {ARTIST_STEPS.map((s, i) => (
+                <div key={i} className="step-box">
+                  <span className="step-num">{i + 1}</span>
+                  <strong>{s.title}</strong>
+                  <p>{s.text}</p>
+                </div>
+              ))}
             </div>
-          ))}
+            <Link className="btn btn-gold" href="/inscription" style={{ marginTop: 22, display: "inline-block" }}>
+              Créer mon profil
+            </Link>
+          </div>
         </div>
-        <Link className="btn btn-gold" href="/inscription" style={{ marginTop: 22, display: "inline-block" }}>
-          Créer mon profil
-        </Link>
       </div>
 
       <div className="panel wide">
-        <h2 style={{ fontSize: 24 }}>Pour les organisateurs</h2>
-        <div className="steps-grid">
-          {ORGANIZER_STEPS.map((s, i) => (
-            <div key={i} className="step-box">
-              <span className="step-num">{i + 1}</span>
-              <strong>{s.title}</strong>
-              <p>{s.text}</p>
+        <div className={settings.howOrganizersImageUrl ? "how-panel-grid" : ""}>
+          {settings.howOrganizersImageUrl && (
+            <img
+              src={settings.howOrganizersImageUrl}
+              alt="Pour les organisateurs"
+              className="how-panel-image"
+              style={{
+                objectPosition: `${settings.howOrganizersImagePositionX}% ${settings.howOrganizersImagePositionY}%`
+              }}
+            />
+          )}
+          <div>
+            <h2 style={{ fontSize: 24 }}>Pour les organisateurs</h2>
+            <div className="steps-grid">
+              {ORGANIZER_STEPS.map((s, i) => (
+                <div key={i} className="step-box">
+                  <span className="step-num">{i + 1}</span>
+                  <strong>{s.title}</strong>
+                  <p>{s.text}</p>
+                </div>
+              ))}
             </div>
-          ))}
+            <Link className="btn btn-outline" href="/#catalogue" style={{ marginTop: 22, display: "inline-block" }}>
+              Découvrir les artistes
+            </Link>
+          </div>
         </div>
-        <Link className="btn btn-outline" href="/#catalogue" style={{ marginTop: 22, display: "inline-block" }}>
-          Découvrir les artistes
-        </Link>
       </div>
     </>
   );
