@@ -105,7 +105,7 @@ main { max-width: 1400px; margin: 0 auto; padding: 0 28px 80px; }
 .result-count { color: var(--muted); font-size: 13px; margin: 0 0 20px; font-family: "JetBrains Mono", monospace; }
 .result-count strong { color: var(--gold-deep); }
 
-.marquee-grid { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 40px; align-items: center; }
+.marquee-grid { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 40px; align-items: center; max-width: 1180px; margin: 0 auto; }
 .stats-row-hero { display: flex; gap: 34px; margin-top: 38px; flex-wrap: wrap; }
 .stats-row-hero > div { display: flex; flex-direction: column; }
 .stat-num { font-family: "Playfair Display", serif; font-weight: 800; font-size: 30px; color: var(--ink); }
