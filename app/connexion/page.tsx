@@ -37,6 +37,11 @@ export default function ConnexionPage() {
         <input name="email" type="email" required />
         <label>Mot de passe</label>
         <input name="password" type="password" required />
+        <p style={{ textAlign: "right", margin: "8px 0 0" }}>
+          <a href="/mot-de-passe-oublie" style={{ color: "var(--gold-deep)", fontSize: 13, fontWeight: 600 }}>
+            Mot de passe oublié ?
+          </a>
+        </p>
         {error && <p className="error">{error}</p>}
         <div style={{ marginTop: 24 }}>
           <button type="submit" className="btn btn-gold" disabled={loading}>
