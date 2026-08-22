@@ -19,6 +19,8 @@ type Settings = {
   spotlightArtistId2: string | null;
   contactReceiverEmail: string | null;
   headerBackgroundUrl: string | null;
+  headerBackgroundPositionX: number;
+  headerBackgroundPositionY: number;
 };
 
 type ArtistOption = { id: string; name: string };
@@ -92,19 +94,58 @@ export function AdminSettings({ initialSettings, artistOptions }: { initialSetti
         <label>Image de fond de la barre de menu (optionnelle)</label>
         {form.headerBackgroundUrl ? (
           <div style={{ marginBottom: 10 }}>
+            <p className="hint" style={{ marginTop: 0, marginBottom: 8 }}>
+              Cliquez sur l&apos;image pour choisir la partie à toujours garder visible dans la barre de menu.
+            </p>
             <div
+              onClick={(e) => {
+                const rect = e.currentTarget.getBoundingClientRect();
+                const x = Math.round(((e.clientX - rect.left) / rect.width) * 100);
+                const y = Math.round(((e.clientY - rect.top) / rect.height) * 100);
+                setForm((f) => ({
+                  ...f,
+                  headerBackgroundPositionX: Math.max(0, Math.min(100, x)),
+                  headerBackgroundPositionY: Math.max(0, Math.min(100, y))
+                }));
+              }}
               style={{
+                position: "relative",
                 width: "100%",
                 maxWidth: 500,
                 aspectRatio: "16/4",
                 borderRadius: 10,
                 overflow: "hidden",
                 border: "1px solid var(--line)",
-                backgroundImage: `url(${form.headerBackgroundUrl})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center"
+                cursor: "crosshair"
               }}
-            />
+            >
+              <img
+                src={form.headerBackgroundUrl}
+                alt=""
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  objectPosition: `${form.headerBackgroundPositionX}% ${form.headerBackgroundPositionY}%`,
+                  display: "block"
+                }}
+              />
+              <div
+                style={{
+                  position: "absolute",
+                  left: `${form.headerBackgroundPositionX}%`,
+                  top: `${form.headerBackgroundPositionY}%`,
+                  width: 16,
+                  height: 16,
+                  marginLeft: -8,
+                  marginTop: -8,
+                  borderRadius: "50%",
+                  border: "2px solid #fff",
+                  background: "var(--gold)",
+                  boxShadow: "0 0 0 1px rgba(0,0,0,0.3)"
+                }}
+              />
+            </div>
             <button
               type="button"
               className="btn btn-outline"
