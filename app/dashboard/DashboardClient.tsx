@@ -349,226 +349,242 @@ export function DashboardClient({ initialArtist, initialLeads }: { initialArtist
         )}
       </div>
 
-      <div className="panel wide">
-        <h2 style={{ fontSize: 24 }}>Mon profil</h2>
-        <p className="hint" style={{ marginTop: -6, marginBottom: 20 }}>
-          Cet écran reprend la même présentation que votre fiche publique, pour que vous voyiez exactement ce que verront les organisateurs.
-        </p>
-        <form onSubmit={saveProfile}>
-          <p className="profile-section-label mono" style={{ margin: "0 0 10px" }}>Identité</p>
-          <label>Nom / nom de scène</label>
-          <input name="name" type="text" defaultValue={artist.name} required />
-          <div className="field-row">
-            <div>
-              <label>Catégorie</label>
-              <select value={category} onChange={(e) => setCategory(e.target.value)}>
-                {CATEGORIES.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label>Ville</label>
-              <select name="city" defaultValue={artist.city || BELGIAN_CITIES[0]}>
-                {BELGIAN_CITIES.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-          {isCustomCategory && (
-            <>
-              <label>Précisez votre spécialité</label>
-              <input
-                type="text"
-                value={customCategory}
-                onChange={(e) => setCustomCategory(e.target.value)}
-                placeholder="ex. Magicien, Sculpteur sur glace, Groupe folklorique..."
-                maxLength={60}
-                required
-              />
-              <p className="hint">Elle sera automatiquement corrigée par l&apos;IA en enregistrant.</p>
-            </>
-          )}
-
-          {artist.reviewsCount > 0 && (
-            <div className="profile-rating-badge" style={{ marginTop: 16 }}>
-              <span className="profile-stars">
-                {[1, 2, 3, 4, 5].map((n) => (
-                  <span key={n} className={n <= Math.round(artist.rating) ? "star-filled" : "star-empty"}>
-                    ★
-                  </span>
-                ))}
-              </span>
-              <span>{artist.rating.toFixed(1)}</span>
-              <span className="dim">{artist.reviewsCount} avis — non modifiable, basé sur vos évaluations reçues</span>
-            </div>
-          )}
-
-          <p className="profile-section-label mono" style={{ margin: "26px 0 10px" }}>Citation courte</p>
-          <input
-            type="text"
-            value={taglineValue}
-            onChange={(e) => setTaglineValue(e.target.value)}
-            placeholder="ex. Spécialiste de la musique électronique, événements corporate haut de gamme."
-            maxLength={180}
-          />
-          {taglineValue.trim() && <p className="profile-tagline" style={{ marginTop: 12, paddingBottom: 0, borderBottom: "none" }}>&ldquo;{taglineValue}&rdquo;</p>}
-          <p className="hint">Affichée en italique, en évidence, tout en haut de votre fiche publique.</p>
-
-          <p className="profile-section-label mono" style={{ margin: "26px 0 10px" }}>Biographie & démarche</p>
-
-          <div className="ai-generate-box">
-            <label style={{ margin: "0 0 8px" }}>✨ Laissez l&apos;IA rédiger votre bio</label>
-            <textarea
-              value={bioNotes}
-              onChange={(e) => setBioNotes(e.target.value)}
-              placeholder="Décrivez-vous en quelques mots : votre parcours, votre style, votre expérience, ce qui vous distingue..."
-              disabled={generatingBio}
-              style={{ minHeight: 60, marginBottom: 10 }}
-            />
-            <button type="button" className="btn btn-gold" onClick={generateBio} disabled={generatingBio || !bioNotes.trim()}>
-              {generatingBio ? "Génération..." : "Générer ma bio"}
-            </button>
-            {bioError && <p className="error">{bioError}</p>}
-            <p className="hint">Le résultat remplit le champ ci-dessous — relisez et ajustez avant d&apos;enregistrer.</p>
+      <div className="profile-two-col" style={{ marginTop: 0 }}>
+        {/* Colonne gauche : photo principale + galerie + vidéos, même disposition que la fiche publique */}
+        <div className="profile-media-col" style={{ position: "static" }}>
+          <div className="profile-main-photo-wrap">
+            {artist.photos[0] ? (
+              <img className="profile-main-photo" src={artist.photos[0]} alt={artist.name} />
+            ) : (
+              <div className="profile-main-photo profile-main-photo-empty" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <span className="hint" style={{ margin: 0 }}>Aucune photo</span>
+              </div>
+            )}
           </div>
 
-          <textarea name="bio" maxLength={600} value={bioValue} onChange={(e) => setBioValue(e.target.value)} />
-
-          <p className="profile-section-label mono" style={{ margin: "26px 0 10px" }}>Formules & prestations</p>
-          <div className="profile-services-row" style={{ marginBottom: 12 }}>
-            {services.map((s) => (
-              <span key={s} className="profile-service-pill">
-                <span className="service-check">✓</span> {s}
+          <p className="profile-media-label mono">
+            Galerie médias ({artist.photos.length}/{MAX_PHOTOS})
+          </p>
+          <div className="profile-thumbs" style={{ marginBottom: 14 }}>
+            {artist.photos.map((p) => (
+              <div key={p} style={{ position: "relative" }}>
+                <img src={p} alt="" className="profile-thumb active" style={{ cursor: "default" }} />
                 <button
-                  type="button"
-                  onClick={() => removeService(s)}
-                  style={{ background: "none", border: "none", color: "inherit", marginLeft: 4, cursor: "pointer", fontWeight: 700 }}
+                  onClick={() => removePhoto(p)}
+                  style={{
+                    position: "absolute",
+                    top: -6,
+                    right: -6,
+                    width: 20,
+                    height: 20,
+                    borderRadius: "50%",
+                    background: "var(--red, #b3261e)",
+                    color: "#fff",
+                    border: "2px solid var(--white)",
+                    fontSize: 12,
+                    lineHeight: 1,
+                    cursor: "pointer"
+                  }}
                 >
                   ×
                 </button>
-              </span>
+              </div>
             ))}
-            {services.length === 0 && <p className="hint" style={{ margin: 0 }}>Aucune formule ajoutée pour le moment.</p>}
           </div>
-          {services.length < 6 && (
-            <div style={{ display: "flex", gap: 10, marginBottom: 10 }}>
+          {artist.photos.length < MAX_PHOTOS ? (
+            <>
               <input
-                type="text"
-                value={newService}
-                onChange={(e) => setNewService(e.target.value)}
-                placeholder="ex. Mariages premium"
-                maxLength={40}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    addService();
-                  }
-                }}
+                type="file"
+                accept="image/*"
+                disabled={uploading}
+                onChange={(e) => e.target.files?.[0] && uploadPhoto(e.target.files[0])}
               />
-              <button type="button" className="btn btn-outline" onClick={addService} style={{ whiteSpace: "nowrap" }}>
-                Ajouter
-              </button>
-            </div>
+              <p className="hint">{uploading ? "Envoi en cours..." : "JPEG, PNG ou WebP — la première photo devient la photo principale."}</p>
+            </>
+          ) : (
+            <p className="hint">Nombre maximum de photos atteint.</p>
           )}
-          <div className="ai-generate-box">
-            <label style={{ margin: "0 0 8px" }}>✨ Suggérer des formules avec l&apos;IA</label>
-            <p className="hint" style={{ marginTop: 0 }}>Basé sur votre catégorie et votre bio actuelle.</p>
-            <button type="button" className="btn btn-gold" onClick={generateServices} disabled={generatingServices || services.length >= 6}>
-              {generatingServices ? "Génération..." : "Suggérer avec l'IA"}
-            </button>
-            {servicesError && <p className="error">{servicesError}</p>}
-          </div>
 
-          <p className="profile-section-label mono" style={{ margin: "26px 0 10px" }}>Liens directs</p>
-          <div className="field-row">
-            <div>
-              <label>Téléphone (optionnel)</label>
-              <input name="phone" type="text" defaultValue={artist.phone || ""} maxLength={30} />
-            </div>
-            <div>
-              <label>Site web (optionnel)</label>
-              <input name="website" type="text" defaultValue={artist.website || ""} maxLength={200} placeholder="monsite.be" />
-            </div>
-          </div>
-          <div className="field-row">
-            <div>
-              <label>Facebook (optionnel)</label>
-              <input name="facebook" type="text" defaultValue={artist.facebook || ""} maxLength={200} placeholder="facebook.com/..." />
-            </div>
-            <div>
-              <label>Instagram (optionnel)</label>
-              <input name="instagram" type="text" defaultValue={artist.instagram || ""} maxLength={200} placeholder="instagram.com/..." />
-            </div>
-          </div>
-
-          {profileMsg && <p className="success">{profileMsg}</p>}
-          <div style={{ marginTop: 20 }}>
-            <button type="submit" className="btn btn-gold">
-              Enregistrer
-            </button>
-          </div>
-        </form>
-      </div>
-
-      <div className="panel wide">
-        <h2 style={{ fontSize: 24 }}>
-          Photos ({artist.photos.length}/{MAX_PHOTOS})
-        </h2>
-        <div className="media-row">
-          {artist.photos.map((p) => (
-            <div className="thumb-wrap" key={p}>
-              <img className="thumb" src={p} alt="" />
-              <button className="rm" onClick={() => removePhoto(p)}>
-                ×
-              </button>
+          <p className="profile-section-label mono" style={{ margin: "22px 0 10px" }}>
+            Vidéos & extraits ({artist.videos.length}/{MAX_VIDEOS})
+          </p>
+          {artist.videos.map((v) => (
+            <div className="video-item" key={v}>
+              <span className="mono" style={{ fontSize: 12, wordBreak: "break-all" }}>{v}</span>
+              <button onClick={() => removeVideo(v)}>×</button>
             </div>
           ))}
-        </div>
-        {artist.photos.length < MAX_PHOTOS ? (
-          <>
-            <label style={{ marginTop: 20 }}>Ajouter une photo</label>
-            <input
-              type="file"
-              accept="image/*"
-              disabled={uploading}
-              onChange={(e) => e.target.files?.[0] && uploadPhoto(e.target.files[0])}
-            />
-            <p className="hint">{uploading ? "Envoi en cours..." : "JPEG, PNG ou WebP."}</p>
-          </>
-        ) : (
-          <p className="hint" style={{ marginTop: 14 }}>
-            Nombre maximum de photos atteint.
-          </p>
-        )}
-      </div>
-
-      <div className="panel wide">
-        <h2 style={{ fontSize: 24 }}>
-          Vidéos ({artist.videos.length}/{MAX_VIDEOS})
-        </h2>
-        {artist.videos.map((v) => (
-          <div className="video-item" key={v}>
-            <span className="mono">{v}</span>
-            <button onClick={() => removeVideo(v)}>×</button>
-          </div>
-        ))}
-        {artist.videos.length < MAX_VIDEOS && (
-          <>
-            <label style={{ marginTop: 20 }}>Ajouter un lien vidéo (YouTube, Vimeo, MP4...)</label>
-            <div style={{ display: "flex", gap: 10 }}>
+          {artist.videos.length < MAX_VIDEOS && (
+            <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
               <input type="url" value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} placeholder="https://youtube.com/watch?v=..." />
               <button className="btn btn-outline" onClick={addVideo} style={{ whiteSpace: "nowrap" }}>
                 Ajouter
               </button>
             </div>
-          </>
-        )}
+          )}
+        </div>
+
+        {/* Colonne droite : formulaire, même disposition que la fiche publique */}
+        <div className="profile-right-col">
+          <div className="profile-info-card">
+            <form onSubmit={saveProfile}>
+              <div className="field-row" style={{ marginBottom: 4 }}>
+                <div>
+                  <label>Catégorie</label>
+                  <select value={category} onChange={(e) => setCategory(e.target.value)}>
+                    {CATEGORIES.map((c) => (
+                      <option key={c} value={c}>
+                        {c}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label>Ville</label>
+                  <select name="city" defaultValue={artist.city || BELGIAN_CITIES[0]}>
+                    {BELGIAN_CITIES.map((c) => (
+                      <option key={c} value={c}>
+                        {c}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              {isCustomCategory && (
+                <>
+                  <label>Précisez votre spécialité</label>
+                  <input
+                    type="text"
+                    value={customCategory}
+                    onChange={(e) => setCustomCategory(e.target.value)}
+                    placeholder="ex. Magicien, Sculpteur sur glace, Groupe folklorique..."
+                    maxLength={60}
+                    required
+                  />
+                  <p className="hint">Elle sera automatiquement corrigée par l&apos;IA en enregistrant.</p>
+                </>
+              )}
+
+              <label>Nom / nom de scène</label>
+              <input name="name" type="text" defaultValue={artist.name} required style={{ fontSize: 22, fontFamily: "'Playfair Display', serif", fontWeight: 700 }} />
+
+              {artist.reviewsCount > 0 && (
+                <div className="profile-rating-badge">
+                  <span className="profile-stars">
+                    {[1, 2, 3, 4, 5].map((n) => (
+                      <span key={n} className={n <= Math.round(artist.rating) ? "star-filled" : "star-empty"}>
+                        ★
+                      </span>
+                    ))}
+                  </span>
+                  <span>{artist.rating.toFixed(1)}</span>
+                  <span className="dim">{artist.reviewsCount} avis</span>
+                </div>
+              )}
+
+              <input
+                type="text"
+                value={taglineValue}
+                onChange={(e) => setTaglineValue(e.target.value)}
+                placeholder="Citation courte, ex. Spécialiste de la musique électronique, événements corporate haut de gamme."
+                maxLength={180}
+                style={{ fontStyle: "italic", fontFamily: "'Playfair Display', serif", color: "var(--gold-deep)" }}
+              />
+
+              <p className="profile-section-label mono">Biographie & démarche</p>
+
+              <div className="ai-generate-box">
+                <label style={{ margin: "0 0 8px" }}>✨ Laissez l&apos;IA rédiger votre bio</label>
+                <textarea
+                  value={bioNotes}
+                  onChange={(e) => setBioNotes(e.target.value)}
+                  placeholder="Décrivez-vous en quelques mots : votre parcours, votre style, votre expérience, ce qui vous distingue..."
+                  disabled={generatingBio}
+                  style={{ minHeight: 60, marginBottom: 10 }}
+                />
+                <button type="button" className="btn btn-gold" onClick={generateBio} disabled={generatingBio || !bioNotes.trim()}>
+                  {generatingBio ? "Génération..." : "Générer ma bio"}
+                </button>
+                {bioError && <p className="error">{bioError}</p>}
+              </div>
+
+              <textarea name="bio" maxLength={600} value={bioValue} onChange={(e) => setBioValue(e.target.value)} />
+
+              <p className="profile-section-label mono">Formules & prestations</p>
+              <div className="profile-services-row" style={{ marginBottom: 12 }}>
+                {services.map((s) => (
+                  <span key={s} className="profile-service-pill">
+                    <span className="service-check">✓</span> {s}
+                    <button
+                      type="button"
+                      onClick={() => removeService(s)}
+                      style={{ background: "none", border: "none", color: "inherit", marginLeft: 4, cursor: "pointer", fontWeight: 700 }}
+                    >
+                      ×
+                    </button>
+                  </span>
+                ))}
+                {services.length === 0 && <p className="hint" style={{ margin: 0 }}>Aucune formule ajoutée pour le moment.</p>}
+              </div>
+              {services.length < 6 && (
+                <div style={{ display: "flex", gap: 10, marginBottom: 10 }}>
+                  <input
+                    type="text"
+                    value={newService}
+                    onChange={(e) => setNewService(e.target.value)}
+                    placeholder="ex. Mariages premium"
+                    maxLength={40}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        addService();
+                      }
+                    }}
+                  />
+                  <button type="button" className="btn btn-outline" onClick={addService} style={{ whiteSpace: "nowrap" }}>
+                    Ajouter
+                  </button>
+                </div>
+              )}
+              <div className="ai-generate-box">
+                <label style={{ margin: "0 0 8px" }}>✨ Suggérer des formules avec l&apos;IA</label>
+                <button type="button" className="btn btn-gold" onClick={generateServices} disabled={generatingServices || services.length >= 6}>
+                  {generatingServices ? "Génération..." : "Suggérer avec l'IA"}
+                </button>
+                {servicesError && <p className="error">{servicesError}</p>}
+              </div>
+
+              <p className="profile-section-label mono">Liens directs</p>
+              <div className="field-row">
+                <div>
+                  <label>Téléphone</label>
+                  <input name="phone" type="text" defaultValue={artist.phone || ""} maxLength={30} />
+                </div>
+                <div>
+                  <label>Site web</label>
+                  <input name="website" type="text" defaultValue={artist.website || ""} maxLength={200} placeholder="monsite.be" />
+                </div>
+              </div>
+              <div className="field-row">
+                <div>
+                  <label>Facebook</label>
+                  <input name="facebook" type="text" defaultValue={artist.facebook || ""} maxLength={200} placeholder="facebook.com/..." />
+                </div>
+                <div>
+                  <label>Instagram</label>
+                  <input name="instagram" type="text" defaultValue={artist.instagram || ""} maxLength={200} placeholder="instagram.com/..." />
+                </div>
+              </div>
+
+              {profileMsg && <p className="success">{profileMsg}</p>}
+              <div style={{ marginTop: 20 }}>
+                <button type="submit" className="btn btn-gold">
+                  Enregistrer
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       </div>
     </>
   );
