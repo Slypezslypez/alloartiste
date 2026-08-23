@@ -28,9 +28,14 @@ export function InscriptionForm({ categories }: { categories: string[] }) {
       return;
     }
 
-    setLoading(true);
-
     const fd = new FormData(e.currentTarget); // capturé tout de suite, avant tout "await" (sinon React invalide la référence)
+
+    if (fd.get("password") !== fd.get("passwordConfirm")) {
+      setError("Les deux mots de passe ne correspondent pas.");
+      return;
+    }
+
+    setLoading(true);
 
     let finalCategory = category;
     if (isCustom) {
@@ -66,7 +71,7 @@ export function InscriptionForm({ categories }: { categories: string[] }) {
       setError(body.error || "Une erreur est survenue.");
       return;
     }
-    router.push("/dashboard");
+    router.push("/verifier-email");
     router.refresh();
   }
 
@@ -128,6 +133,8 @@ export function InscriptionForm({ categories }: { categories: string[] }) {
         <input name="email" type="email" required />
         <label>Mot de passe</label>
         <input name="password" type="password" required minLength={8} />
+        <label>Confirmez le mot de passe</label>
+        <input name="passwordConfirm" type="password" required minLength={8} />
         <label>Bio courte</label>
         <textarea name="bio" maxLength={600} placeholder="Présentez votre parcours, votre style, vos disponibilités..." />
         {error && <p className="error">{error}</p>}

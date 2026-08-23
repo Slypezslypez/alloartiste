@@ -84,3 +84,21 @@ Votre compte a bien été créé. Activez votre abonnement (33€/an) depuis vot
 L'équipe AlloArtiste`
   });
 }
+
+export async function sendVerificationEmail(artistName: string, artistEmail: string, verifyUrl: string) {
+  return resend.emails.send({
+    from: process.env.EMAIL_FROM as string,
+    to: artistEmail,
+    subject: "Confirmez votre adresse email — AlloArtiste",
+    text: `Bonjour ${artistName},
+
+Votre compte AlloArtiste a bien été créé. Il ne reste qu'une étape : confirmez votre adresse email en cliquant sur le lien suivant (valable 24 heures) :
+${verifyUrl}
+
+Une fois confirmé, vous pourrez accéder à votre espace et activer votre abonnement (33€/an) pour rendre votre profil visible dans le catalogue.
+
+Si vous n'êtes pas à l'origine de cette inscription, ignorez simplement cet email.
+
+L'équipe AlloArtiste`
+  });
+}

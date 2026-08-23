@@ -31,6 +31,10 @@ model Artist {
   views        Int     @default(0)
   isVerified   Boolean @default(false)
 
+  emailVerified               Boolean   @default(false)
+  emailVerificationTokenHash  String?   @unique
+  emailVerificationExpiresAt  DateTime?
+
   // Stripe
   stripeCustomerId     String?   @unique
   stripeSubscriptionId String?   @unique

@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import crypto from "crypto";
 import { prisma } from "@/lib/prisma";
 import { hashPassword, createSession } from "@/lib/auth";
-import { sendWelcomeEmail } from "@/lib/email";
+import { sendVerificationEmail } from "@/lib/email";
 import { CATEGORIES, COUNTRIES, CITIES_BY_COUNTRY } from "@/lib/categories";
 
 const schema = z
@@ -33,6 +34,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Un compte existe déjà avec cet email." }, { status: 409 });
   }
 
+  // Jeton de confirmation d'email : on ne stocke jamais le jeton en clair, seulement son empreinte.
+  const rawToken = crypto.randomBytes(32).toString("hex");
+  const tokenHash = crypto.createHash("sha256").update(rawToken).digest("hex");
+  const tokenExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // valable 24h
+
   const artist = await prisma.artist.create({
     data: {
       name,
@@ -41,15 +47,18 @@ export async function POST(req: NextRequest) {
       category,
       country,
       city,
-      bio
+      bio,
+      emailVerificationTokenHash: tokenHash,
+      emailVerificationExpiresAt: tokenExpiresAt
     }
   });
 
   await createSession(artist.id);
   try {
-    await sendWelcomeEmail(artist.name, artist.email);
+    const verifyUrl = `${process.env.NEXT_PUBLIC_SITE_URL || "https://alloartiste.be"}/api/verify-email?token=${rawToken}`;
+    await sendVerificationEmail(artist.name, artist.email, verifyUrl);
   } catch (err) {
-    console.error("Échec de l'envoi de l'email de bienvenue:", err);
+    console.error("Échec de l'envoi de l'email de confirmation:", err);
   }
 
   return NextResponse.json({ ok: true, artistId: artist.id });

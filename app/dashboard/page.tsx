@@ -8,6 +8,7 @@ export const dynamic = "force-dynamic";
 export default async function DashboardPage() {
   const artist = await getCurrentArtist();
   if (!artist) redirect("/connexion");
+  if (!artist.emailVerified) redirect("/verifier-email");
 
   const leads = await prisma.lead.findMany({
     where: { artistId: artist.id },
