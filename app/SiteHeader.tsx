@@ -58,7 +58,7 @@ export function SiteHeader({
       style={
         backgroundUrl
           ? {
-              backgroundImage: `linear-gradient(rgba(250,249,246,0.88), rgba(250,249,246,0.88)), url(${backgroundUrl})`,
+              backgroundImage: `linear-gradient(rgba(250,249,246,0.35), rgba(250,249,246,0.35)), url(${backgroundUrl})`,
               backgroundSize: "cover",
               backgroundPosition: `${backgroundPositionX}% ${backgroundPositionY}%`
             }
