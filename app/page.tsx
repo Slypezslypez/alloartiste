@@ -1,96 +1,87 @@
 import Link from "next/link";
-import { prisma } from "@/lib/prisma";
-import { isSubscriptionVisible } from "@/lib/categories";
 import { getSiteSettings } from "@/lib/settings";
-import { CatalogClient } from "./CatalogClient";
 
-export const dynamic = "force-dynamic"; // toujours à jour (abonnements qui expirent, nouveaux artistes)
+const ARTIST_STEPS = [
+  { title: "Créez votre profil", text: "Nom, catégorie, ville, bio, photos et vidéos — en quelques minutes." },
+  { title: "Activez votre abonnement", text: "Rendez votre profil visible dans le catalogue public, renouvelable automatiquement." },
+  { title: "Recevez des demandes", text: "Les organisateurs vous contactent directement, sans intermédiaire ni commission." }
+];
 
-export default async function HomePage() {
-  const [all, settings] = await Promise.all([
-    prisma.artist.findMany({ orderBy: { createdAt: "desc" } }),
-    getSiteSettings()
-  ]);
+const ORGANIZER_STEPS = [
+  { title: "Parcourez le catalogue", text: "Filtrez par ville, discipline, ou recherchez un nom précis." },
+  { title: "Consultez le profil", text: "Photos, vidéos, note, avis, coordonnées — tout ce qu'il faut pour décider." },
+  { title: "Contactez l'artiste", text: "Envoyez votre demande directement depuis le profil, gratuitement." }
+];
 
-  const visibleRaw = all.filter(isSubscriptionVisible);
-  const visible = visibleRaw.map((a) => ({
-    id: a.id,
-    name: a.name,
-    category: a.category,
-    city: a.city,
-    photos: a.photos,
-    rating: a.rating,
-    reviewsCount: a.reviewsCount,
-    isVerified: a.isVerified,
-    createdAt: a.createdAt.toISOString()
-  }));
-
-  // Photos mises en avant : sélection manuelle depuis l'admin si définie, sinon automatique.
-  const withPhotos = visible.filter((a) => a.photos.length > 0);
-  const manualPicks = [settings.spotlightArtistId1, settings.spotlightArtistId2]
-    .filter((id): id is string => !!id)
-    .map((id) => withPhotos.find((a) => a.id === id))
-    .filter((a): a is (typeof withPhotos)[number] => !!a);
-  const spotlight = manualPicks.length > 0 ? [...manualPicks, ...withPhotos.filter((a) => !manualPicks.includes(a))].slice(0, 4) : withPhotos.slice(0, 4);
+export default async function HowItWorksPage() {
+  const settings = await getSiteSettings();
 
   return (
     <>
-      <section className="marquee">
-        <div className="marquee-grid">
+      <div className="panel">
+        <h2>Comment ça marche</h2>
+        <p className="sub">Deux parcours simples, sans commission ni intermédiaire.</p>
+      </div>
+
+      <div className="how-section">
+        <h2 style={{ fontSize: 24 }}>Pour les artistes</h2>
+        <div className={settings.howArtistsImageUrl ? "how-panel-grid" : ""}>
+          {settings.howArtistsImageUrl && (
+            <img
+              src={settings.howArtistsImageUrl}
+              alt="Pour les artistes"
+              className="how-panel-image"
+              style={{
+                objectPosition: `${settings.howArtistsImagePositionX}% ${settings.howArtistsImagePositionY}%`
+              }}
+            />
+          )}
           <div>
-            <div className="eyebrow mono">Annuaire d&apos;artistes pour producteurs & organisateurs</div>
-            <h1>
-              {settings.heroLine1} <em>{settings.heroEmphasis}</em>
-              <br />
-              {settings.heroLine2}
-            </h1>
-            <p>{settings.heroSubtitle}</p>
-            <div className="ctas">
-              <Link className="btn btn-gold" href="/inscription">
-                Je m&apos;inscris
-              </Link>
-              <a className="btn btn-outline" href="#catalogue">
-                Découvrir les artistes
-              </a>
-            </div>
-
-            <div className="stats-row-hero">
-              <div>
-                <span className="stat-num">{visible.length}+</span>
-                <span className="stat-cap mono">Artistes belges</span>
-              </div>
-              <div>
-                <span className="stat-num">{settings.statCommissionValue}</span>
-                <span className="stat-cap mono">{settings.statCommissionLabel}</span>
-              </div>
-              <div>
-                <span className="stat-num">{settings.statDirectValue}</span>
-                <span className="stat-cap mono">{settings.statDirectLabel}</span>
-              </div>
-            </div>
-          </div>
-
-          {spotlight.length > 0 && (
-            <div className="marquee-photos">
-              {spotlight.map((a) => (
-                <Link key={a.id} href={`/profil/${a.id}`} className="spotlight-card">
-                  <img src={a.photos[0]} alt={a.name} />
-                  <div className="spotlight-overlay">
-                    <span className="spotlight-cat mono">{a.category}</span>
-                    <span className="spotlight-name">{a.name}</span>
-                    <span className="spotlight-city mono">
-                      {a.city || "Belgique"}
-                      {a.reviewsCount > 0 ? ` · ★ ${a.rating.toFixed(1)}` : ""}
-                    </span>
-                  </div>
-                </Link>
+            <div className="steps-grid">
+              {ARTIST_STEPS.map((s, i) => (
+                <div key={i} className="step-box">
+                  <span className="step-num">{i + 1}</span>
+                  <strong>{s.title}</strong>
+                  <p>{s.text}</p>
+                </div>
               ))}
             </div>
-          )}
+            <Link className="btn btn-gold" href="/inscription" style={{ marginTop: 22, display: "inline-block" }}>
+              Créer mon profil
+            </Link>
+          </div>
         </div>
-      </section>
+      </div>
 
-      <CatalogClient artists={visible} />
+      <div className="how-section">
+        <h2 style={{ fontSize: 24 }}>Pour les organisateurs</h2>
+        <div className={settings.howOrganizersImageUrl ? "how-panel-grid" : ""}>
+          {settings.howOrganizersImageUrl && (
+            <img
+              src={settings.howOrganizersImageUrl}
+              alt="Pour les organisateurs"
+              className="how-panel-image"
+              style={{
+                objectPosition: `${settings.howOrganizersImagePositionX}% ${settings.howOrganizersImagePositionY}%`
+              }}
+            />
+          )}
+          <div>
+            <div className="steps-grid">
+              {ORGANIZER_STEPS.map((s, i) => (
+                <div key={i} className="step-box">
+                  <span className="step-num">{i + 1}</span>
+                  <strong>{s.title}</strong>
+                  <p>{s.text}</p>
+                </div>
+              ))}
+            </div>
+            <Link className="btn btn-outline" href="/#catalogue" style={{ marginTop: 22, display: "inline-block" }}>
+              Découvrir les artistes
+            </Link>
+          </div>
+        </div>
+      </div>
     </>
   );
 }
