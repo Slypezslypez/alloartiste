@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { isSubscriptionVisible } from "@/lib/categories";
 import { getSiteSettings } from "@/lib/settings";
 import { CatalogClient } from "./CatalogClient";
+import { PromoCarousel } from "./PromoCarousel";
 
 export const dynamic = "force-dynamic"; // toujours à jour (abonnements qui expirent, nouveaux artistes)
 
@@ -70,23 +71,7 @@ export default async function HomePage() {
             </div>
           </div>
 
-          {spotlight.length > 0 && (
-            <div className="marquee-photos">
-              {spotlight.map((a) => (
-                <Link key={a.id} href={`/profil/${a.id}`} className="spotlight-card">
-                  <img src={a.photos[0]} alt={a.name} />
-                  <div className="spotlight-overlay">
-                    <span className="spotlight-cat mono">{a.category}</span>
-                    <span className="spotlight-name">{a.name}</span>
-                    <span className="spotlight-city mono">
-                      {a.city || "Belgique"}
-                      {a.reviewsCount > 0 ? ` · ★ ${a.rating.toFixed(1)}` : ""}
-                    </span>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          )}
+          <PromoCarousel spotlight={spotlight} promoImages={settings.promoImages} />
         </div>
       </section>
 
