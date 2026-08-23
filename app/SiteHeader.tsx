@@ -54,17 +54,17 @@ export function SiteHeader({
   }
 
   return (
-    <header
-      style={
-        backgroundUrl
-          ? {
-              backgroundImage: `linear-gradient(rgba(250,249,246,0.35), rgba(250,249,246,0.35)), url(${backgroundUrl})`,
-              backgroundSize: "cover",
-              backgroundPosition: `${backgroundPositionX}% ${backgroundPositionY}%`
-            }
-          : undefined
-      }
-    >
+    <header>
+      {backgroundUrl && (
+        <div
+          className="header-image-strip"
+          style={{
+            backgroundImage: `url(${backgroundUrl})`,
+            backgroundSize: "cover",
+            backgroundPosition: `${backgroundPositionX}% ${backgroundPositionY}%`
+          }}
+        />
+      )}
       <div className="header-row">
         <Link href="/" className="logo">
           {logoPart1}<span>{logoPart2}</span>
