@@ -98,7 +98,7 @@ main { max-width: 1400px; margin: 0 auto; padding: 0 28px 80px; }
 .btn-outline:hover { border-color: var(--gold); color: var(--gold-deep); }
 
 .search-panel { background: transparent; border: none; padding: 22px 0; margin-bottom: 26px; box-shadow: none; }
-.search-row { display: flex; flex-wrap: wrap; gap: 2px; margin-bottom: 16px; background: var(--shell); border-radius: var(--radius); padding: 6px; }
+.search-row { display: flex; flex-wrap: wrap; gap: 2px; margin-bottom: 16px; background: var(--shell); border-radius: var(--radius); padding: 6px; box-shadow: 0 6px 18px rgba(28,25,23,0.05); }
 .search-input { flex: 2; min-width: 200px; background: transparent; border: none; color: var(--ink); padding: 11px 15px; font-family: "Inter", sans-serif; font-size: 14px; border-radius: calc(var(--radius) - 2px); }
 .search-input:focus { outline: none; box-shadow: 0 0 0 2px var(--gold-soft); }
 .search-select { flex: 1; min-width: 150px; background: transparent; border: none; border-left: 1px solid var(--line); color: var(--ink-soft); padding: 11px 34px 11px 15px; font-family: "JetBrains Mono", monospace; font-size: 13px; border-radius: 0; }
@@ -213,13 +213,13 @@ select {
 .sub-badge.inactive { border-color: var(--red); background: #fef2f2; color: var(--red); }
 
 .stats-row { display: flex; flex-wrap: wrap; gap: 16px; }
-.stat-box { flex: 1; min-width: 140px; background: var(--cream); border: 1px solid var(--line); border-radius: 12px; padding: 20px; text-align: center; }
+.stat-box { flex: 1; min-width: 140px; background: var(--cream); border: 1px solid var(--line); border-radius: 12px; padding: 20px; text-align: center; box-shadow: 0 6px 18px rgba(28,25,23,0.05); }
 .stat-value { display: block; font-family: "Playfair Display", serif; font-weight: 800; font-size: 32px; color: var(--gold-deep); }
 .stat-label { display: block; font-family: "JetBrains Mono", monospace; font-size: 11px; color: var(--muted); text-transform: uppercase; margin-top: 4px; }
 
 .lead-count-badge { display: inline-block; background: var(--red); color: #fff; font-family: "JetBrains Mono", monospace; font-size: 11px; padding: 3px 10px; border-radius: 999px; margin-left: 8px; vertical-align: middle; }
 .lead-list { display: flex; flex-direction: column; gap: 14px; }
-.lead-card { background: var(--cream); border: 1px solid var(--line); border-left: 3px solid var(--line); border-radius: 12px; padding: 15px 18px; }
+.lead-card { background: var(--cream); border: 1px solid var(--line); border-left: 3px solid var(--line); border-radius: 12px; padding: 15px 18px; box-shadow: 0 6px 18px rgba(28,25,23,0.05); }
 .lead-card.lead-new { border-left-color: var(--gold); }
 .lead-card.lead-archived { opacity: 0.55; }
 .lead-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px; }
@@ -241,7 +241,7 @@ select {
 .faq-item p { color: var(--ink-soft); font-size: 14px; line-height: 1.6; margin: 10px 0 0; font-weight: 300; }
 
 .steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; }
-.step-box { background: var(--shell); border: 1px solid var(--line); border-radius: 12px; padding: 20px; }
+.step-box { background: var(--shell); border: 1px solid var(--line); border-radius: 12px; padding: 20px; box-shadow: 0 6px 18px rgba(28,25,23,0.05); }
 .step-num { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(90deg, var(--gold), var(--gold-deep)); color: #fff; font-weight: 700; font-size: 13px; margin-bottom: 10px; }
 .step-box strong { display: block; font-family: "Playfair Display", serif; font-size: 16px; margin-bottom: 6px; color: var(--ink); }
 .step-box p { color: var(--muted); font-size: 13px; line-height: 1.5; margin: 0; }
@@ -275,7 +275,7 @@ select {
 .article-body { margin-top: 26px; max-width: 680px; }
 .article-body p { color: var(--ink-soft); font-size: 15px; line-height: 1.75; margin: 0 0 18px; font-weight: 300; }
 
-.ai-generate-box { background: var(--gold-soft); border: 1px dashed var(--gold); border-radius: 12px; padding: 18px 20px; margin: 18px 0 24px; }
+.ai-generate-box { background: var(--gold-soft); border: 1px dashed var(--gold); border-radius: 12px; padding: 18px 20px; margin: 18px 0 24px; box-shadow: 0 6px 18px rgba(28,25,23,0.04); }
 
 .media-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 10px; }
 .thumb { width: 100px; height: 120px; border-radius: 12px; object-fit: cover; border: 1px solid var(--line); }
@@ -287,6 +287,7 @@ select {
 .video-item {
   display: flex; align-items: center; gap: 10px; background: var(--shell); border: 1px solid var(--line);
   padding: 10px 14px; border-radius: 10px; margin-top: 8px; font-size: 13px; word-break: break-all;
+  box-shadow: 0 6px 18px rgba(28,25,23,0.05);
 }
 .video-item button { margin-left: auto; background: none; border: none; color: var(--red); font-size: 16px; }
 
@@ -343,7 +344,7 @@ select {
 .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; margin-bottom: 44px; }
 .gallery img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 12px; border: 1px solid var(--line); }
 .videos { display: grid; gap: 16px; }
-.video-embed { aspect-ratio: 16 / 9; width: 100%; background: var(--white); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.video-embed { aspect-ratio: 16 / 9; width: 100%; background: var(--white); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; box-shadow: 0 6px 18px rgba(28,25,23,0.05); }
 .video-embed iframe, .video-embed video { width: 100%; height: 100%; border: 0; }
 
 .backlink { display: inline-block; margin-bottom: 26px; color: var(--muted); font-size: 13px; font-family: "JetBrains Mono", monospace; font-weight: 600; }
@@ -379,8 +380,10 @@ footer { text-align: center; padding: 34px; color: var(--muted); font-size: 12px
 
   header { background: rgba(19, 17, 14, 0.88); }
 
-  .search-panel, .panel, .ticket, .stat-box, .lead-card, .step-box, .video-embed, .video-item {
-    box-shadow: none;
+  .search-panel { box-shadow: none; }
+  .panel, .ticket, .stat-box, .lead-card, .step-box, .video-embed, .video-item, .search-row,
+  .ai-generate-box, .blog-card, .profile-info-card, .profile-contact-box, .how-panel-image {
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.28);
   }
 
   .spotlight-card { box-shadow: 0 10px 26px rgba(0, 0, 0, 0.35); }
