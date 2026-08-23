@@ -98,7 +98,7 @@ export function SiteHeader({
 
         <div className="desktop-actions">
           <select
-            className="country-select"
+            className="country-select-inline"
             value={country}
             onChange={(e) => changeCountry(e.target.value)}
             aria-label="Pays des artistes recherchés"
@@ -111,19 +111,19 @@ export function SiteHeader({
           </select>
           {loggedIn ? (
             <>
-              <Link className={`navbtn ${pathname === "/dashboard" ? "primary" : ""}`} href="/dashboard">
+              <Link className={`nav-link ${pathname === "/dashboard" ? "nav-link-active" : ""}`} href="/dashboard">
                 Mon espace
               </Link>
-              <button className="navbtn" onClick={logout}>
+              <button className="nav-link" onClick={logout}>
                 Déconnexion
               </button>
             </>
           ) : (
             <>
-              <Link className="navbtn" href="/connexion">
+              <Link className="nav-link" href="/connexion">
                 Connexion Artiste
               </Link>
-              <Link className="navbtn primary" href="/inscription">
+              <Link className="nav-link" href="/inscription">
                 Je m&apos;inscris
               </Link>
             </>
