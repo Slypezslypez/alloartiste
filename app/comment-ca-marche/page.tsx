@@ -23,7 +23,8 @@ export default async function HowItWorksPage() {
         <p className="sub">Deux parcours simples, sans commission ni intermédiaire.</p>
       </div>
 
-      <div className="panel wide">
+      <div className="how-section">
+        <h2 style={{ fontSize: 24 }}>Pour les artistes</h2>
         <div className={settings.howArtistsImageUrl ? "how-panel-grid" : ""}>
           {settings.howArtistsImageUrl && (
             <img
@@ -36,7 +37,6 @@ export default async function HowItWorksPage() {
             />
           )}
           <div>
-            <h2 style={{ fontSize: 24 }}>Pour les artistes</h2>
             <div className="steps-grid">
               {ARTIST_STEPS.map((s, i) => (
                 <div key={i} className="step-box">
@@ -53,7 +53,8 @@ export default async function HowItWorksPage() {
         </div>
       </div>
 
-      <div className="panel wide">
+      <div className="how-section">
+        <h2 style={{ fontSize: 24 }}>Pour les organisateurs</h2>
         <div className={settings.howOrganizersImageUrl ? "how-panel-grid" : ""}>
           {settings.howOrganizersImageUrl && (
             <img
@@ -66,7 +67,6 @@ export default async function HowItWorksPage() {
             />
           )}
           <div>
-            <h2 style={{ fontSize: 24 }}>Pour les organisateurs</h2>
             <div className="steps-grid">
               {ORGANIZER_STEPS.map((s, i) => (
                 <div key={i} className="step-box">
