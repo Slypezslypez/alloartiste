@@ -62,7 +62,8 @@ export function InscriptionForm({ categories }: { categories: string[] }) {
         category: finalCategory,
         country,
         city,
-        bio: fd.get("bio")
+        bio: fd.get("bio"),
+        promoCode: fd.get("promoCode") || undefined
       })
     });
     setLoading(false);
@@ -137,6 +138,8 @@ export function InscriptionForm({ categories }: { categories: string[] }) {
         <input name="passwordConfirm" type="password" required minLength={8} />
         <label>Bio courte</label>
         <textarea name="bio" maxLength={600} placeholder="Présentez votre parcours, votre style, vos disponibilités..." />
+        <label>Code promo (facultatif)</label>
+        <input name="promoCode" type="text" maxLength={60} placeholder="Laissez vide si vous n'en avez pas" />
         {error && <p className="error">{error}</p>}
         <div style={{ marginTop: 24 }}>
           <button type="submit" className="btn btn-gold" disabled={loading}>
