@@ -30,6 +30,8 @@ export function InscriptionForm({ categories }: { categories: string[] }) {
 
     setLoading(true);
 
+    const fd = new FormData(e.currentTarget); // capturé tout de suite, avant tout "await" (sinon React invalide la référence)
+
     let finalCategory = category;
     if (isCustom) {
       try {
@@ -45,7 +47,6 @@ export function InscriptionForm({ categories }: { categories: string[] }) {
       }
     }
 
-    const fd = new FormData(e.currentTarget);
     const res = await fetch("/api/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
