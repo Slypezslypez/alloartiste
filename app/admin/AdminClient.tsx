@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { isSubscriptionVisible } from "@/lib/categories";
 import { AdminArticles } from "./AdminArticles";
 import { AdminSettings } from "./AdminSettings";
+import { AdminBilling } from "./AdminBilling";
 
 type Artist = {
   id: string;
@@ -96,7 +97,7 @@ export function AdminClient({
   initialSettings: Settings;
 }) {
   const router = useRouter();
-  const [tab, setTab] = useState<"artists" | "leads" | "messages" | "articles" | "settings">("artists");
+  const [tab, setTab] = useState<"artists" | "leads" | "messages" | "articles" | "billing" | "settings">("artists");
   const [artists, setArtists] = useState(initialArtists);
   const [leads, setLeads] = useState(initialLeads);
   const [messages, setMessages] = useState(initialMessages);
@@ -178,6 +179,9 @@ export function AdminClient({
         </button>
         <button className={`chip ${tab === "articles" ? "active" : ""}`} onClick={() => setTab("articles")}>
           Articles ({initialArticles.length})
+        </button>
+        <button className={`chip ${tab === "billing" ? "active" : ""}`} onClick={() => setTab("billing")}>
+          Comptabilité
         </button>
         <button className={`chip ${tab === "settings" ? "active" : ""}`} onClick={() => setTab("settings")}>
           Réglages
@@ -291,6 +295,7 @@ export function AdminClient({
         </div>
       )}
       {tab === "articles" && <AdminArticles initialArticles={initialArticles} />}
+      {tab === "billing" && <AdminBilling />}
       {tab === "settings" && (
         <AdminSettings initialSettings={initialSettings} artistOptions={artists.map((a) => ({ id: a.id, name: a.name }))} />
       )}

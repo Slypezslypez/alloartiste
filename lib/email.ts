@@ -102,3 +102,19 @@ Si vous n'êtes pas à l'origine de cette inscription, ignorez simplement cet em
 L'équipe AlloArtiste`
   });
 }
+
+export async function sendInvoiceEmail(artistName: string, artistEmail: string, invoiceUrl: string, invoiceNumber?: string) {
+  return resend.emails.send({
+    from: process.env.EMAIL_FROM as string,
+    to: artistEmail,
+    subject: invoiceNumber ? `Votre facture AlloArtiste n°${invoiceNumber}` : "Votre facture AlloArtiste",
+    text: `Bonjour ${artistName},
+
+Voici le lien vers votre facture d'abonnement AlloArtiste${invoiceNumber ? ` (n°${invoiceNumber})` : ""} :
+${invoiceUrl}
+
+Vous pouvez la consulter et la télécharger en PDF depuis cette page.
+
+L'équipe AlloArtiste`
+  });
+}
