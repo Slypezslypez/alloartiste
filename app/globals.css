@@ -245,6 +245,8 @@ select {
 .step-box strong { display: block; font-family: "Playfair Display", serif; font-size: 16px; margin-bottom: 6px; color: var(--ink); }
 .step-box p { color: var(--muted); font-size: 13px; line-height: 1.5; margin: 0; }
 
+.how-section { background: transparent; padding: 8px 0 40px; margin: 0; }
+.how-section h2 { font-family: "Playfair Display", serif; font-weight: 700; margin: 0 0 20px; color: var(--ink); }
 .how-panel-grid { display: grid; grid-template-columns: 220px 1fr; gap: 28px; align-items: start; }
 .how-panel-image { width: 100%; max-width: 220px; aspect-ratio: 4/3; object-fit: cover; border-radius: 12px; border: 1px solid var(--line); box-shadow: 0 1px 3px rgba(0,0,0,0.03); }
 @media (max-width: 640px) {
