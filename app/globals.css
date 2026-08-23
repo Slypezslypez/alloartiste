@@ -37,13 +37,16 @@ button { font-family: inherit; cursor: pointer; }
 
 header {
   position: sticky; top: 0; z-index: 50;
-  background: rgba(243, 241, 236, 0.85);
-  backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--line);
+}
+.header-image-strip {
+  width: 100%; height: 54px; background-repeat: no-repeat;
 }
 .header-row {
   display: flex; align-items: center; justify-content: space-between;
   padding: 16px 28px; gap: 20px; max-width: 1400px; margin: 0 auto;
+  background: rgba(243, 241, 236, 0.94);
+  backdrop-filter: blur(10px);
 }
 .logo { font-family: "Playfair Display", serif; font-weight: 700; font-size: 24px; letter-spacing: -0.01em; color: var(--ink); white-space: nowrap; }
 .logo span { background: linear-gradient(90deg, var(--gold-deep), var(--gold)); -webkit-background-clip: text; background-clip: text; color: transparent; }
@@ -382,7 +385,7 @@ footer { text-align: center; padding: 34px; color: var(--muted); font-size: 12px
     --shell: #2a251f;
   }
 
-  header { background: rgba(19, 17, 14, 0.88); }
+  .header-row { background: rgba(19, 17, 14, 0.94); }
 
   .search-panel { box-shadow: none; }
   .panel, .ticket, .stat-box, .lead-card, .step-box, .video-embed, .video-item, .search-row,
