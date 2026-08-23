@@ -29,7 +29,12 @@ export default async function ProfilePage({ params }: { params: { id: string } }
           <div className="profile-info-card">
             <div className="profile-top-row">
               <span className="cat mono">{artist.category}</span>
-              {artist.city && <span className="mono profile-city">📍 {artist.city}</span>}
+              {artist.city && (
+                <span className="mono profile-city">
+                  📍 {artist.city}
+                  {artist.country && artist.country !== "Belgique" ? `, ${artist.country}` : ""}
+                </span>
+              )}
             </div>
 
             <h1 className="profile-name">{artist.name}</h1>
