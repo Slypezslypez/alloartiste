@@ -326,9 +326,7 @@ export function DashboardClient({ initialArtist, initialLeads }: { initialArtist
         Mon espace — {artist.name}
         <span className={`dashboard-status ${active ? "is-active" : "is-inactive"}`}>
           <span className="dot">●</span>
-          {active
-            ? `Abonnement actif — visible jusqu'au ${new Date(artist.currentPeriodEnd as string).toLocaleDateString("fr-FR")}`
-            : "Profil non visible — abonnement inactif"}
+          {active ? "Abonnement actif" : "Profil non visible — abonnement inactif"}
         </span>
       </h2>
 
