@@ -246,6 +246,10 @@ select {
 .step-box strong { display: block; font-family: "Playfair Display", serif; font-size: 16px; margin-bottom: 6px; color: var(--ink); }
 .step-box p { color: var(--muted); font-size: 13px; line-height: 1.5; margin: 0; }
 
+.how-hero-title { padding: 20px 0 28px; }
+.how-hero-title h2 { font-family: "Playfair Display", serif; font-weight: 800; font-size: clamp(32px, 5vw, 52px); color: var(--gold-deep); text-shadow: 0 3px 8px rgba(28,25,23,0.15); margin: 0 0 10px; }
+.how-hero-title .sub { color: var(--muted); font-size: 16px; margin: 0; }
+
 .how-section { background: transparent; padding: 8px 0 40px; margin: 0; }
 .how-section h2 { font-family: "Playfair Display", serif; font-weight: 700; margin: 0 0 20px; color: var(--ink); }
 .how-panel-grid { display: grid; grid-template-columns: 220px 1fr; gap: 28px; align-items: start; }
