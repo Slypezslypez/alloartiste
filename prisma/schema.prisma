@@ -56,6 +56,14 @@ model Artist {
   @@index([country])
 }
 
+model InviteCode {
+  id             String    @id @default(cuid())
+  code           String    @unique
+  usedAt         DateTime?
+  usedByArtistId String?
+  createdAt      DateTime  @default(now())
+}
+
 model Lead {
   id          String   @id @default(cuid())
   artistId    String

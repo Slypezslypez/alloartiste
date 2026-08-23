@@ -14,7 +14,8 @@ const schema = z
     category: z.string().min(2).max(60),
     country: z.enum(COUNTRIES).optional().default("Belgique"),
     city: z.string().min(1).max(60).optional().default("Autre"),
-    bio: z.string().max(600).optional().default("")
+    bio: z.string().max(600).optional().default(""),
+    promoCode: z.string().max(60).optional()
   })
   .refine((data) => CITIES_BY_COUNTRY[data.country].includes(data.city as any), {
     message: "Ville invalide pour ce pays.",
@@ -27,7 +28,7 @@ export async function POST(req: NextRequest) {
   if (!parsed.success) {
     return NextResponse.json({ error: "Champs invalides." }, { status: 400 });
   }
-  const { name, email, password, category, country, city, bio } = parsed.data;
+  const { name, email, password, category, country, city, bio, promoCode } = parsed.data;
 
   const existing = await prisma.artist.findUnique({ where: { email: email.toLowerCase() } });
   if (existing) {
@@ -39,6 +40,18 @@ export async function POST(req: NextRequest) {
   const tokenHash = crypto.createHash("sha256").update(rawToken).digest("hex");
   const tokenExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // valable 24h
 
+  // Code promo à usage unique : on ne le "consomme" que si le champ est rempli, et de façon atomique
+  // (WHERE usedAt IS NULL) pour empêcher deux inscriptions simultanées d'utiliser le même code.
+  const normalizedCode = promoCode?.trim().toUpperCase() || null;
+  let grantsFreeAccess = false;
+  if (normalizedCode) {
+    const claim = await prisma.inviteCode.updateMany({
+      where: { code: normalizedCode, usedAt: null },
+      data: { usedAt: new Date() }
+    });
+    grantsFreeAccess = claim.count === 1;
+  }
+
   const artist = await prisma.artist.create({
     data: {
       name,
@@ -49,9 +62,19 @@ export async function POST(req: NextRequest) {
       city,
       bio,
       emailVerificationTokenHash: tokenHash,
-      emailVerificationExpiresAt: tokenExpiresAt
+      emailVerificationExpiresAt: tokenExpiresAt,
+      ...(grantsFreeAccess
+        ? {
+            subscriptionStatus: "active",
+            currentPeriodEnd: new Date(Date.now() + 5 * 365 * 24 * 60 * 60 * 1000) // 5 ans, offert via code promo
+          }
+        : {})
     }
   });
+
+  if (grantsFreeAccess && normalizedCode) {
+    await prisma.inviteCode.update({ where: { code: normalizedCode }, data: { usedByArtistId: artist.id } }).catch(() => {});
+  }
 
   await createSession(artist.id);
   try {
@@ -61,5 +84,5 @@ export async function POST(req: NextRequest) {
     console.error("Échec de l'envoi de l'email de confirmation:", err);
   }
 
-  return NextResponse.json({ ok: true, artistId: artist.id });
+  return NextResponse.json({ ok: true, artistId: artist.id, freeAccess: grantsFreeAccess });
 }
