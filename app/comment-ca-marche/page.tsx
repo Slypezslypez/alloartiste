@@ -18,7 +18,7 @@ export default async function HowItWorksPage() {
 
   return (
     <>
-      <div className="panel">
+      <div className="how-hero-title">
         <h2>Comment ça marche</h2>
         <p className="sub">Deux parcours simples, sans commission ni intermédiaire.</p>
       </div>
