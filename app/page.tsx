@@ -19,6 +19,7 @@ export default async function HomePage() {
     name: a.name,
     category: a.category,
     city: a.city,
+    country: a.country,
     photos: a.photos,
     rating: a.rating,
     reviewsCount: a.reviewsCount,
