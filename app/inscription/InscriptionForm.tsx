@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { BELGIAN_CITIES } from "@/lib/categories";
+import { COUNTRIES, CITIES_BY_COUNTRY, type Country } from "@/lib/categories";
 
 export function InscriptionForm({ categories }: { categories: string[] }) {
   const router = useRouter();
@@ -11,6 +11,13 @@ export function InscriptionForm({ categories }: { categories: string[] }) {
   const [category, setCategory] = useState<string>(categories[0] || "Autre");
   const [customCategory, setCustomCategory] = useState("");
   const isCustom = category === "Autre";
+  const [country, setCountry] = useState<Country>("Belgique");
+  const [city, setCity] = useState<string>(CITIES_BY_COUNTRY["Belgique"][0]);
+
+  function changeCountry(value: Country) {
+    setCountry(value);
+    setCity(CITIES_BY_COUNTRY[value][0]);
+  }
 
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -47,7 +54,8 @@ export function InscriptionForm({ categories }: { categories: string[] }) {
         email: fd.get("email"),
         password: fd.get("password"),
         category: finalCategory,
-        city: fd.get("city"),
+        country,
+        city,
         bio: fd.get("bio")
       })
     });
@@ -93,14 +101,28 @@ export function InscriptionForm({ categories }: { categories: string[] }) {
             <p className="hint">Elle sera automatiquement corrigée par l&apos;IA et deviendra une vraie catégorie, filtrable par les organisateurs.</p>
           </>
         )}
-        <label>Ville</label>
-        <select name="city" required defaultValue={BELGIAN_CITIES[0]}>
-          {BELGIAN_CITIES.map((c) => (
-            <option key={c} value={c}>
-              {c}
-            </option>
-          ))}
-        </select>
+        <div className="field-row">
+          <div>
+            <label>Pays</label>
+            <select value={country} onChange={(e) => changeCountry(e.target.value as Country)} required>
+              {COUNTRIES.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label>Ville</label>
+            <select value={city} onChange={(e) => setCity(e.target.value)} required>
+              {CITIES_BY_COUNTRY[country].map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
         <label>Email de contact</label>
         <input name="email" type="email" required />
         <label>Mot de passe</label>
