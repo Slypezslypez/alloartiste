@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CATEGORIES, COUNTRIES, CITIES_BY_COUNTRY, MAX_PHOTOS, MAX_VIDEOS, isSubscriptionVisible, type Country } from "@/lib/categories";
 
 type Artist = {
@@ -23,6 +23,8 @@ type Artist = {
   rating: number;
   reviewsCount: number;
   stripeCustomerId: string | null;
+  paypalSubscriptionId: string | null;
+  paymentProvider: string | null;
   subscriptionStatus: string | null;
   currentPeriodEnd: string | null;
 };
@@ -68,6 +70,65 @@ export function DashboardClient({ initialArtist, initialLeads }: { initialArtist
   const [subLoading, setSubLoading] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [openTab, setOpenTab] = useState<"abonnement" | "stats" | "demandes" | null>(null);
+
+  // --- PayPal (abonnement récurrent alternatif à Stripe) ---
+  const paypalRef = useRef<HTMLDivElement>(null);
+  const [paypalMsg, setPaypalMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (active || !termsAccepted) return;
+    const clientId = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID;
+    const planId = process.env.NEXT_PUBLIC_PAYPAL_PLAN_ID;
+    if (!clientId || !planId) return;
+
+    function renderButtons() {
+      const paypal = (window as any).paypal;
+      if (!paypal || !paypalRef.current) return;
+      paypalRef.current.innerHTML = "";
+      paypal
+        .Buttons({
+          style: { shape: "rect", color: "gold", label: "subscribe" },
+          createSubscription: (_data: any, actions: any) =>
+            actions.subscription.create({ plan_id: planId, custom_id: artist.id }),
+          onApprove: async (data: any) => {
+            setPaypalMsg("Confirmation en cours...");
+            try {
+              const res = await fetch("/api/paypal/confirm", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ subscriptionId: data.subscriptionID })
+              });
+              const body = await res.json();
+              if (!res.ok) throw new Error(body.error || "Échec de la confirmation.");
+              setArtist((a) => ({ ...a, ...body }));
+              setPaypalMsg(null);
+            } catch (err: any) {
+              setPaypalMsg(
+                err.message || "Le paiement a été reçu par PayPal mais la confirmation a échoué — contactez-nous."
+              );
+            }
+          },
+          onError: () => setPaypalMsg("Une erreur PayPal est survenue.")
+        })
+        .render(paypalRef.current);
+    }
+
+    if ((window as any).paypal) {
+      renderButtons();
+      return;
+    }
+
+    const scriptId = "paypal-sdk";
+    let script = document.getElementById(scriptId) as HTMLScriptElement | null;
+    if (!script) {
+      script = document.createElement("script");
+      script.id = scriptId;
+      script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}&vault=true&intent=subscription&currency=EUR`;
+      document.body.appendChild(script);
+    }
+    script.addEventListener("load", renderButtons);
+    return () => script?.removeEventListener("load", renderButtons);
+  }, [active, termsAccepted, artist.id]);
 
   const newLeadsCount = leads.filter((l) => l.status === "new").length;
 
@@ -261,18 +322,20 @@ export function DashboardClient({ initialArtist, initialLeads }: { initialArtist
 
   return (
     <>
-      <h2 className="section-title">Mon espace — {artist.name}</h2>
-
-      <div className={`sub-badge ${active ? "active" : "inactive"}`}>
-        {active
-          ? `● Abonnement actif — visible jusqu'au ${new Date(artist.currentPeriodEnd as string).toLocaleDateString("fr-FR")} (renouvellement auto)`
-          : "● Profil non visible — abonnement inactif"}
-      </div>
+      <h2 className="section-title">
+        Mon espace — {artist.name}
+        <span className={`dashboard-status ${active ? "is-active" : "is-inactive"}`}>
+          <span className="dot">●</span>
+          {active
+            ? `Abonnement actif — visible jusqu'au ${new Date(artist.currentPeriodEnd as string).toLocaleDateString("fr-FR")}`
+            : "Profil non visible — abonnement inactif"}
+        </span>
+      </h2>
 
       {!active && (
         <div className="panel wide">
           <h2 style={{ fontSize: 24 }}>Activer l&apos;abonnement</h2>
-          <p className="sub">Abonnement annuel, renouvelable automatiquement via Stripe. Requis pour apparaître dans le catalogue public.</p>
+          <p className="sub">Abonnement annuel, renouvelable automatiquement. Requis pour apparaître dans le catalogue public.</p>
           <label style={{ display: "flex", alignItems: "flex-start", gap: 10, marginBottom: 20 }}>
             <input
               type="checkbox"
@@ -290,8 +353,16 @@ export function DashboardClient({ initialArtist, initialLeads }: { initialArtist
             </span>
           </label>
           <button className="btn btn-gold" onClick={startSubscription} disabled={subLoading || !termsAccepted}>
-            {subLoading ? "Redirection..." : "S'abonner"}
+            {subLoading ? "Redirection..." : "S'abonner avec carte bancaire (Stripe)"}
           </button>
+
+          <p className="hint" style={{ marginTop: 20, marginBottom: 8 }}>Ou payez avec PayPal :</p>
+          {termsAccepted ? (
+            <div ref={paypalRef} />
+          ) : (
+            <p className="hint">Cochez la case ci-dessus pour afficher le bouton PayPal.</p>
+          )}
+          {paypalMsg && <p className="hint">{paypalMsg}</p>}
         </div>
       )}
 
@@ -319,9 +390,16 @@ export function DashboardClient({ initialArtist, initialLeads }: { initialArtist
             <p className="sub" style={{ marginTop: 0 }}>
               Renouvellement automatique le {new Date(artist.currentPeriodEnd as string).toLocaleDateString("fr-FR")}.
             </p>
-            <button className="btn btn-outline" onClick={openPortal}>
-              Gérer / annuler mon abonnement
-            </button>
+            {artist.stripeCustomerId ? (
+              <button className="btn btn-outline" onClick={openPortal}>
+                Gérer / annuler mon abonnement
+              </button>
+            ) : artist.paypalSubscriptionId ? (
+              <p className="hint">
+                Abonnement PayPal — gérez ou annulez le renouvellement automatique directement depuis votre compte
+                PayPal, dans Paramètres → Paiements automatiques.
+              </p>
+            ) : null}
           </div>
         )}
 
