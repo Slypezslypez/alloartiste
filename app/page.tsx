@@ -1,22 +1,10 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { isSubscriptionVisible, CATEGORIES } from "@/lib/categories";
+import { isSubscriptionVisible } from "@/lib/categories";
 import { getSiteSettings } from "@/lib/settings";
 import { CatalogClient } from "./CatalogClient";
 
 export const dynamic = "force-dynamic"; // toujours à jour (abonnements qui expirent, nouveaux artistes)
-
-const CATEGORY_ICONS: Record<string, string> = {
-  "Musicien·ne": "🎸",
-  "Chanteur·se": "🎤",
-  "Danseur·se": "💃",
-  "Comédien·ne": "🎭",
-  DJ: "🎧",
-  Humoriste: "😂",
-  "Peintre / Plasticien·ne": "🎨",
-  Photographe: "📷",
-  Autre: "✨"
-};
 
 export default async function HomePage() {
   const [all, settings] = await Promise.all([
@@ -44,10 +32,6 @@ export default async function HomePage() {
     .map((id) => withPhotos.find((a) => a.id === id))
     .filter((a): a is (typeof withPhotos)[number] => !!a);
   const spotlight = manualPicks.length > 0 ? [...manualPicks, ...withPhotos.filter((a) => !manualPicks.includes(a))].slice(0, 4) : withPhotos.slice(0, 4);
-
-  // Pills "Rechercher par discipline" : catégories de base + celles créées par les artistes.
-  const customCategories = Array.from(new Set(visible.map((a) => a.category).filter((c) => !CATEGORIES.includes(c as any)))).sort();
-  const quickCategories = [...CATEGORIES.filter((c) => c !== "Autre"), ...customCategories];
 
   return (
     <>
@@ -105,17 +89,6 @@ export default async function HomePage() {
           )}
         </div>
       </section>
-
-      <div className="quick-disciplines">
-        <p className="quick-title mono">Rechercher par discipline</p>
-        <div className="quick-pills">
-          {quickCategories.map((c) => (
-            <a key={c} href="#catalogue" className="quick-pill">
-              <span>{CATEGORY_ICONS[c] || "✨"}</span> {c}
-            </a>
-          ))}
-        </div>
-      </div>
 
       <CatalogClient artists={visible} />
     </>
