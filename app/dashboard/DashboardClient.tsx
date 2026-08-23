@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CATEGORIES, BELGIAN_CITIES, MAX_PHOTOS, MAX_VIDEOS, isSubscriptionVisible } from "@/lib/categories";
+import { CATEGORIES, COUNTRIES, CITIES_BY_COUNTRY, MAX_PHOTOS, MAX_VIDEOS, isSubscriptionVisible, type Country } from "@/lib/categories";
 
 type Artist = {
   id: string;
@@ -9,6 +9,7 @@ type Artist = {
   email: string;
   category: string;
   city: string;
+  country: string;
   bio: string;
   tagline: string | null;
   services: string[];
@@ -50,6 +51,9 @@ export function DashboardClient({ initialArtist, initialLeads }: { initialArtist
   const [category, setCategory] = useState<string>(isKnownCategory ? initialArtist.category : "Autre");
   const [customCategory, setCustomCategory] = useState(isKnownCategory ? "" : initialArtist.category);
   const isCustomCategory = category === "Autre";
+  const isKnownCountry = COUNTRIES.includes(initialArtist.country as any);
+  const [country, setCountry] = useState<Country>(isKnownCountry ? (initialArtist.country as Country) : "Belgique");
+  const [city, setCity] = useState<string>(initialArtist.city || CITIES_BY_COUNTRY[isKnownCountry ? (initialArtist.country as Country) : "Belgique"][0]);
   const [bioValue, setBioValue] = useState(initialArtist.bio);
   const [bioNotes, setBioNotes] = useState("");
   const [generatingBio, setGeneratingBio] = useState(false);
@@ -66,6 +70,11 @@ export function DashboardClient({ initialArtist, initialLeads }: { initialArtist
   const [openTab, setOpenTab] = useState<"abonnement" | "stats" | "demandes" | null>(null);
 
   const newLeadsCount = leads.filter((l) => l.status === "new").length;
+
+  function changeCountry(value: Country) {
+    setCountry(value);
+    setCity(CITIES_BY_COUNTRY[value][0]);
+  }
 
   async function startSubscription() {
     if (!termsAccepted) return;
@@ -158,7 +167,8 @@ export function DashboardClient({ initialArtist, initialLeads }: { initialArtist
       body: JSON.stringify({
         name: fd.get("name"),
         category: finalCategory,
-        city: fd.get("city"),
+        country,
+        city,
         bio: bioValue,
         tagline: taglineValue.trim() || null,
         services,
@@ -460,9 +470,19 @@ export function DashboardClient({ initialArtist, initialLeads }: { initialArtist
                   </select>
                 </div>
                 <div>
+                  <label>Pays</label>
+                  <select value={country} onChange={(e) => changeCountry(e.target.value as Country)}>
+                    {COUNTRIES.map((c) => (
+                      <option key={c} value={c}>
+                        {c}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
                   <label>Ville</label>
-                  <select name="city" defaultValue={artist.city || BELGIAN_CITIES[0]}>
-                    {BELGIAN_CITIES.map((c) => (
+                  <select value={city} onChange={(e) => setCity(e.target.value)}>
+                    {CITIES_BY_COUNTRY[country].map((c) => (
                       <option key={c} value={c}>
                         {c}
                       </option>
