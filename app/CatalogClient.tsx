@@ -61,7 +61,7 @@ export function CatalogClient({ artists }: { artists: ArtistCard[] }) {
 
   return (
     <div id="catalogue">
-      <h2 className="section-title">Le catalogue</h2>
+      <h2 className="section-title">L&apos;annuaire</h2>
 
       <div className="search-panel">
         <div className="search-row">
