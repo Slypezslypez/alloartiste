@@ -52,3 +52,33 @@ export const BELGIAN_CITIES = [
   "Ostende",
   "Autre"
 ] as const;
+
+export const FRENCH_CITIES = [
+  "Paris",
+  "Lyon",
+  "Marseille",
+  "Toulouse",
+  "Nice",
+  "Nantes",
+  "Strasbourg",
+  "Montpellier",
+  "Bordeaux",
+  "Lille",
+  "Rennes",
+  "Reims",
+  "Le Havre",
+  "Saint-Étienne",
+  "Toulon",
+  "Grenoble",
+  "Autre"
+] as const;
+
+/** Pays pris en charge pour l'inscription et la recherche d'artistes. */
+export const COUNTRIES = ["Belgique", "France"] as const;
+export type Country = (typeof COUNTRIES)[number];
+
+/** Liste de villes proposée dans le menu déroulant, selon le pays choisi. */
+export const CITIES_BY_COUNTRY: Record<Country, readonly string[]> = {
+  Belgique: BELGIAN_CITIES,
+  France: FRENCH_CITIES
+};
