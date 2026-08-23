@@ -96,11 +96,11 @@ main { max-width: 1400px; margin: 0 auto; padding: 0 28px 80px; }
 .btn-outline { border-color: var(--line); color: var(--ink-soft); background: var(--white); }
 .btn-outline:hover { border-color: var(--gold); color: var(--gold-deep); }
 
-.search-panel { background: var(--white); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; margin-bottom: 26px; box-shadow: 0 1px 3px rgba(0,0,0,0.03); }
+.search-panel { background: transparent; border: none; padding: 22px 0; margin-bottom: 26px; box-shadow: none; }
 .search-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
 .search-input { flex: 2; min-width: 200px; background: var(--white); border: 1px solid var(--line); color: var(--ink); padding: 11px 15px; font-family: "Inter", sans-serif; font-size: 14px; border-radius: 12px; }
 .search-input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-soft); }
-.search-select { flex: 1; min-width: 150px; background: var(--white); border: 1px solid var(--line); color: var(--ink-soft); padding: 11px 15px; font-family: "JetBrains Mono", monospace; font-size: 13px; border-radius: 12px; }
+.search-select { flex: 1; min-width: 150px; background: var(--white); border: 1px solid var(--line); color: var(--ink-soft); padding: 11px 34px 11px 15px; font-family: "JetBrains Mono", monospace; font-size: 13px; border-radius: 12px; }
 .reset-link { background: none; border: none; color: var(--gold-deep); font-family: "JetBrains Mono", monospace; font-size: 12px; margin-top: 4px; padding: 0; font-weight: 600; }
 .reset-link:hover { text-decoration: underline; }
 .result-count { color: var(--muted); font-size: 13px; margin: 0 0 20px; font-family: "JetBrains Mono", monospace; }
@@ -189,6 +189,15 @@ input, textarea, select {
 }
 input:focus, textarea:focus, select:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-soft); }
 textarea { resize: vertical; min-height: 90px; }
+select {
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236b7280' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 34px;
+  cursor: pointer;
+}
 .field-row { display: flex; gap: 12px; }
 .field-row > div { flex: 1; }
 .error { color: var(--red); font-size: 13px; margin-top: 10px; }
