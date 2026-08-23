@@ -1,14 +1,15 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { CATEGORIES, isNewArrival } from "@/lib/categories";
+import { CATEGORIES, COUNTRIES, isNewArrival } from "@/lib/categories";
 
 type ArtistCard = {
   id: string;
   name: string;
   category: string;
   city: string;
+  country: string;
   photos: string[];
   rating: number;
   reviewsCount: number;
@@ -20,9 +21,28 @@ type SortOption = "newest" | "alpha" | "rating";
 
 export function CatalogClient({ artists }: { artists: ArtistCard[] }) {
   const [search, setSearch] = useState("");
+  const [country, setCountry] = useState("Tous");
   const [city, setCity] = useState("Toutes");
   const [category, setCategory] = useState("Tous");
   const [sort, setSort] = useState<SortOption>("newest");
+
+  // Synchronise avec le sélecteur de pays du menu (en haut du site) : lecture au chargement + écoute des changements en direct.
+  useEffect(() => {
+    function applyCountry(value: string | null) {
+      if (value === "Belgique" || value === "France" || value === "Tous") {
+        setCountry(value);
+        setCity("Toutes");
+      }
+    }
+    const params = new URLSearchParams(window.location.search);
+    applyCountry(params.get("country") || window.localStorage.getItem("alloartiste_country"));
+
+    function onCountryChanged(e: Event) {
+      applyCountry((e as CustomEvent<string>).detail);
+    }
+    window.addEventListener("alloartiste:country-changed", onCountryChanged);
+    return () => window.removeEventListener("alloartiste:country-changed", onCountryChanged);
+  }, []);
 
   const allCategories = useMemo(() => {
     const custom = new Set(artists.map((a) => a.category).filter((c) => !CATEGORIES.includes(c as any)));
@@ -30,17 +50,19 @@ export function CatalogClient({ artists }: { artists: ArtistCard[] }) {
   }, [artists]);
 
   const cities = useMemo(() => {
-    const set = new Set(artists.map((a) => a.city).filter(Boolean));
+    const relevant = country === "Tous" ? artists : artists.filter((a) => (a.country || "Belgique") === country);
+    const set = new Set(relevant.map((a) => a.city).filter(Boolean));
     return ["Toutes", ...Array.from(set).sort()];
-  }, [artists]);
+  }, [artists, country]);
 
   const filtered = useMemo(() => {
     return artists
       .filter((a) => {
         const matchesSearch = !search || a.name.toLowerCase().includes(search.toLowerCase());
+        const matchesCountry = country === "Tous" || (a.country || "Belgique") === country;
         const matchesCity = city === "Toutes" || a.city === city;
         const matchesCategory = category === "Tous" || a.category === category;
-        return matchesSearch && matchesCity && matchesCategory;
+        return matchesSearch && matchesCountry && matchesCity && matchesCategory;
       })
       .sort((a, b) => {
         if (sort === "alpha") return a.name.localeCompare(b.name, "fr");
@@ -48,16 +70,22 @@ export function CatalogClient({ artists }: { artists: ArtistCard[] }) {
         if (sort === "newest") return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
         return 0;
       });
-  }, [artists, search, city, category, sort]);
+  }, [artists, search, country, city, category, sort]);
 
   function resetFilters() {
     setSearch("");
+    setCountry("Tous");
     setCity("Toutes");
     setCategory("Tous");
     setSort("newest");
   }
 
-  const hasActiveFilters = search || city !== "Toutes" || category !== "Tous";
+  function changeCountry(value: string) {
+    setCountry(value);
+    setCity("Toutes");
+  }
+
+  const hasActiveFilters = search || country !== "Tous" || city !== "Toutes" || category !== "Tous";
 
   return (
     <div id="catalogue">
@@ -74,6 +102,14 @@ export function CatalogClient({ artists }: { artists: ArtistCard[] }) {
             autoComplete="off"
             name="artist-search-query"
           />
+          <select value={country} onChange={(e) => changeCountry(e.target.value)} className="search-select">
+            <option value="Tous">Tous les pays</option>
+            {COUNTRIES.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
           <select value={category} onChange={(e) => setCategory(e.target.value)} className="search-select">
             <option value="Tous">Toutes les catégories</option>
             {allCategories.map((c) => (
@@ -132,7 +168,10 @@ export function CatalogClient({ artists }: { artists: ArtistCard[] }) {
                   </p>
                   <span className="cat mono">{a.category}</span>
                   <div className="ticket-meta">
-                    <span className="mono">{a.city || "Belgique"}</span>
+                    <span className="mono">
+                      {a.city || "Belgique"}
+                      {a.country && a.country !== "Belgique" ? `, ${a.country}` : ""}
+                    </span>
                     {a.reviewsCount > 0 && (
                       <span className="rating">
                         ★ {a.rating.toFixed(1)} <span className="dim">({a.reviewsCount})</span>
