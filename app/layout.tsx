@@ -48,6 +48,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <p style={{ marginTop: 6, fontSize: 11, color: "var(--muted)" }}>
             © {new Date().getFullYear()} {settings.siteName}. Tous droits réservés.
           </p>
+          <Link href="/admin" className="footer-admin-link">
+            Administration
+          </Link>
         </footer>
       </body>
     </html>
