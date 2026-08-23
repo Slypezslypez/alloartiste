@@ -14,6 +14,7 @@ model Artist {
   passwordHash String
   category     String
   city         String   @default("")
+  country      String   @default("Belgique")
   bio          String   @default("")
   tagline      String? // courte citation en italique affichée sur le profil
   services     String[] @default([]) // formules & prestations (max 6, suggérées par IA)
@@ -48,6 +49,7 @@ model Artist {
 
   @@index([category])
   @@index([city])
+  @@index([country])
 }
 
 model Lead {
