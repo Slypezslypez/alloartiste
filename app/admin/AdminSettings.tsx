@@ -17,6 +17,7 @@ type Settings = {
   statDirectLabel: string;
   spotlightArtistId1: string | null;
   spotlightArtistId2: string | null;
+  promoImages: string[];
   contactReceiverEmail: string | null;
   headerBackgroundUrl: string | null;
   headerBackgroundPositionX: number;
@@ -30,6 +31,8 @@ type Settings = {
 };
 
 type ArtistOption = { id: string; name: string };
+
+const MAX_PROMO_IMAGES = 10;
 
 /** Petit sélecteur d'image avec point focal cliquable, réutilisé pour plusieurs champs. */
 function FocalImagePicker({
@@ -120,6 +123,7 @@ export function AdminSettings({ initialSettings, artistOptions }: { initialSetti
   const [uploadingHeaderBg, setUploadingHeaderBg] = useState(false);
   const [uploadingHowArtists, setUploadingHowArtists] = useState(false);
   const [uploadingHowOrganizers, setUploadingHowOrganizers] = useState(false);
+  const [uploadingPromo, setUploadingPromo] = useState(false);
 
   function set<K extends keyof Settings>(key: K, value: Settings[K]) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -143,6 +147,25 @@ export function AdminSettings({ initialSettings, artistOptions }: { initialSetti
     } finally {
       setUploading(false);
     }
+  }
+
+  function addPromoImage(file: File) {
+    uploadSiteImage(file, (url) => set("promoImages", [...form.promoImages, url]), setUploadingPromo);
+  }
+
+  function removePromoImage(index: number) {
+    set(
+      "promoImages",
+      form.promoImages.filter((_, i) => i !== index)
+    );
+  }
+
+  function movePromoImage(index: number, direction: -1 | 1) {
+    const target = index + direction;
+    if (target < 0 || target >= form.promoImages.length) return;
+    const next = [...form.promoImages];
+    [next[index], next[target]] = [next[target], next[index]];
+    set("promoImages", next);
   }
 
   async function save(e: React.FormEvent) {
@@ -269,6 +292,53 @@ export function AdminSettings({ initialSettings, artistOptions }: { initialSetti
             </select>
           </div>
         </div>
+      </div>
+
+      <div className="panel wide">
+        <h2 style={{ fontSize: 24 }}>Carrousel promotionnel de l&apos;accueil</h2>
+        <p className="sub">
+          Ce cadre défile automatiquement : le premier cadre est la sélection ci-dessus (photos mises en avant), puis chaque
+          image ajoutée ici arrive à son tour depuis la droite, pendant 5 secondes, jusqu&apos;à {MAX_PROMO_IMAGES} images maximum.
+        </p>
+
+        {form.promoImages.length === 0 && (
+          <p className="hint" style={{ marginTop: 0 }}>Aucune image ajoutée pour l&apos;instant — le carrousel affichera uniquement le premier cadre.</p>
+        )}
+
+        <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 14 }}>
+          {form.promoImages.map((url, i) => (
+            <div key={url + i} style={{ display: "flex", alignItems: "center", gap: 12, background: "var(--shell)", borderRadius: 10, padding: 10 }}>
+              <img src={url} alt="" style={{ width: 64, height: 48, objectFit: "cover", borderRadius: 8, border: "1px solid var(--line)" }} />
+              <span className="hint" style={{ margin: 0, flex: 1 }}>Image {i + 1}</span>
+              <button type="button" className="btn btn-outline" style={{ padding: "5px 10px", fontSize: 12 }} onClick={() => movePromoImage(i, -1)} disabled={i === 0}>
+                ↑
+              </button>
+              <button
+                type="button"
+                className="btn btn-outline"
+                style={{ padding: "5px 10px", fontSize: 12 }}
+                onClick={() => movePromoImage(i, 1)}
+                disabled={i === form.promoImages.length - 1}
+              >
+                ↓
+              </button>
+              <button type="button" className="btn btn-outline" style={{ padding: "5px 10px", fontSize: 12, color: "var(--red)" }} onClick={() => removePromoImage(i)}>
+                Retirer
+              </button>
+            </div>
+          ))}
+        </div>
+
+        {form.promoImages.length < MAX_PROMO_IMAGES ? (
+          <>
+            <input type="file" accept="image/*" disabled={uploadingPromo} onChange={(e) => e.target.files?.[0] && addPromoImage(e.target.files[0])} />
+            <p className="hint">
+              {uploadingPromo ? "Envoi en cours..." : `Format large recommandé (ex. 1200×1200px). ${form.promoImages.length}/${MAX_PROMO_IMAGES} images.`}
+            </p>
+          </>
+        ) : (
+          <p className="hint">Limite de {MAX_PROMO_IMAGES} images atteinte. Retirez-en une pour en ajouter une nouvelle.</p>
+        )}
       </div>
 
       <div className="panel wide">
