@@ -69,6 +69,7 @@ type Settings = {
   statDirectLabel: string;
   spotlightArtistId1: string | null;
   spotlightArtistId2: string | null;
+  promoImages: string[];
   contactReceiverEmail: string | null;
   headerBackgroundUrl: string | null;
   headerBackgroundPositionX: number;
