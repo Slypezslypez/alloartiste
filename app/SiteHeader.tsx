@@ -79,9 +79,6 @@ export function SiteHeader({
         </nav>
 
         <div className="desktop-actions">
-          <Link href="/admin" className="admin-pill" title="Panneau d'administration">
-            ⚙ Admin
-          </Link>
           {loggedIn ? (
             <>
               <Link className={`navbtn ${pathname === "/dashboard" ? "primary" : ""}`} href="/dashboard">
@@ -135,9 +132,6 @@ export function SiteHeader({
               </Link>
             </>
           )}
-          <Link href="/admin" className="admin-pill" style={{ textAlign: "center", justifyContent: "center" }}>
-            ⚙ Admin
-          </Link>
         </div>
       )}
     </header>
