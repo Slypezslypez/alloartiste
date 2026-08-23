@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { COUNTRIES } from "@/lib/categories";
 
 const NAV_ITEMS = [
   { href: "/", label: "Accueil" },
@@ -29,6 +30,7 @@ export function SiteHeader({
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [loggedIn, setLoggedIn] = useState<boolean | null>(null);
+  const [country, setCountry] = useState<string>("Belgique");
 
   useEffect(() => {
     fetch("/api/artists/me")
@@ -39,6 +41,11 @@ export function SiteHeader({
   useEffect(() => {
     setIsOpen(false);
   }, [pathname]);
+
+  useEffect(() => {
+    const saved = window.localStorage.getItem("alloartiste_country");
+    if (saved) setCountry(saved);
+  }, []);
 
   async function logout() {
     setLoggedIn(false); // mise à jour immédiate de l'affichage, sans attendre le rechargement
@@ -51,6 +58,17 @@ export function SiteHeader({
     if (href === "/") return pathname === "/";
     if (href.startsWith("/#")) return false; // ancre, jamais "active" par elle-même
     return pathname.startsWith(href);
+  }
+
+  function changeCountry(value: string) {
+    setCountry(value);
+    window.localStorage.setItem("alloartiste_country", value);
+    window.dispatchEvent(new CustomEvent("alloartiste:country-changed", { detail: value }));
+    if (pathname !== "/") {
+      router.push(`/?country=${encodeURIComponent(value)}#catalogue`);
+    } else {
+      document.getElementById("catalogue")?.scrollIntoView({ behavior: "smooth" });
+    }
   }
 
   return (
@@ -79,6 +97,18 @@ export function SiteHeader({
         </nav>
 
         <div className="desktop-actions">
+          <select
+            className="country-select"
+            value={country}
+            onChange={(e) => changeCountry(e.target.value)}
+            aria-label="Pays des artistes recherchés"
+          >
+            {COUNTRIES.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
           {loggedIn ? (
             <>
               <Link className={`navbtn ${pathname === "/dashboard" ? "primary" : ""}`} href="/dashboard">
@@ -107,6 +137,18 @@ export function SiteHeader({
 
       {isOpen && (
         <div className="mobile-drawer">
+          <select
+            className="country-select"
+            value={country}
+            onChange={(e) => changeCountry(e.target.value)}
+            aria-label="Pays des artistes recherchés"
+          >
+            {COUNTRIES.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
           {NAV_ITEMS.map((item) => (
             <Link key={item.href} href={item.href} className="mobile-link">
               {item.label}
