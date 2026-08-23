@@ -3,16 +3,22 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { hashPassword, createSession } from "@/lib/auth";
 import { sendWelcomeEmail } from "@/lib/email";
-import { CATEGORIES, BELGIAN_CITIES } from "@/lib/categories";
+import { CATEGORIES, COUNTRIES, CITIES_BY_COUNTRY } from "@/lib/categories";
 
-const schema = z.object({
-  name: z.string().min(2).max(60),
-  email: z.string().email(),
-  password: z.string().min(8),
-  category: z.string().min(2).max(60),
-  city: z.enum(BELGIAN_CITIES).optional().default("Autre"),
-  bio: z.string().max(600).optional().default("")
-});
+const schema = z
+  .object({
+    name: z.string().min(2).max(60),
+    email: z.string().email(),
+    password: z.string().min(8),
+    category: z.string().min(2).max(60),
+    country: z.enum(COUNTRIES).optional().default("Belgique"),
+    city: z.string().min(1).max(60).optional().default("Autre"),
+    bio: z.string().max(600).optional().default("")
+  })
+  .refine((data) => CITIES_BY_COUNTRY[data.country].includes(data.city as any), {
+    message: "Ville invalide pour ce pays.",
+    path: ["city"]
+  });
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
@@ -20,7 +26,7 @@ export async function POST(req: NextRequest) {
   if (!parsed.success) {
     return NextResponse.json({ error: "Champs invalides." }, { status: 400 });
   }
-  const { name, email, password, category, city, bio } = parsed.data;
+  const { name, email, password, category, country, city, bio } = parsed.data;
 
   const existing = await prisma.artist.findUnique({ where: { email: email.toLowerCase() } });
   if (existing) {
@@ -33,6 +39,7 @@ export async function POST(req: NextRequest) {
       email: email.toLowerCase(),
       passwordHash: await hashPassword(password),
       category,
+      country,
       city,
       bio
     }
