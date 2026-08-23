@@ -241,6 +241,32 @@ select {
 .sub-badge.active { border-color: var(--green); background: #f0fdf4; color: var(--green); }
 .sub-badge.inactive { border-color: var(--red); background: #fef2f2; color: var(--red); }
 
+/* Statut d'abonnement affiché directement à côté du nom dans "Mon espace" — texte simple, sans cadre. */
+.dashboard-status {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-family: "Inter", sans-serif; font-size: 14px; font-weight: 500; color: var(--ink);
+  white-space: nowrap;
+}
+.dashboard-status .dot { font-size: 9px; line-height: 1; }
+.dashboard-status.is-active .dot { color: var(--green); }
+.dashboard-status.is-inactive .dot { color: var(--red); }
+@media (max-width: 640px) {
+  .dashboard-status { font-size: 12.5px; white-space: normal; }
+}
+
+/* Onglets "Mon espace" (Abonnement / Statistiques / Demandes de contact) */
+.account-tabs { margin: 0 0 40px; }
+.account-tabs-bar { display: flex; gap: 30px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.account-tab {
+  background: none; border: none; padding: 12px 2px; margin-bottom: -1px;
+  font-family: "JetBrains Mono", monospace; font-size: 12.5px; letter-spacing: 0.05em; text-transform: uppercase;
+  font-weight: 600; color: var(--muted); border-bottom: 2px solid transparent; transition: color 0.2s, border-color 0.2s;
+  display: flex; align-items: center;
+}
+.account-tab:hover { color: var(--gold-deep); }
+.account-tab.active { color: var(--gold-deep); border-bottom-color: var(--gold); }
+.account-tab-panel { padding: 26px 0 6px; }
+
 .stats-row { display: flex; flex-wrap: wrap; gap: 16px; }
 .stat-box { flex: 1; min-width: 140px; background: var(--cream); border: 1px solid var(--line); border-radius: 12px; padding: 20px; text-align: center; box-shadow: 0 3px 8px rgba(28,25,23,0.15); }
 .stat-value { display: block; font-family: "Playfair Display", serif; font-weight: 800; font-size: 32px; color: var(--gold-deep); }
