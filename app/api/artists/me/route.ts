@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getCurrentArtist } from "@/lib/auth";
-import { CATEGORIES, BELGIAN_CITIES } from "@/lib/categories";
+import { COUNTRIES, CITIES_BY_COUNTRY } from "@/lib/categories";
 
 export async function GET() {
   const artist = await getCurrentArtist();
@@ -11,18 +11,27 @@ export async function GET() {
   return NextResponse.json(safe);
 }
 
-const schema = z.object({
-  name: z.string().min(2).max(60).optional(),
-  category: z.string().min(2).max(60).optional(),
-  city: z.enum(BELGIAN_CITIES).optional(),
-  bio: z.string().max(600).optional(),
-  tagline: z.string().max(180).optional().nullable(),
-  services: z.array(z.string().max(40)).max(6).optional(),
-  phone: z.string().max(30).optional().nullable(),
-  website: z.string().max(200).optional().nullable(),
-  facebook: z.string().max(200).optional().nullable(),
-  instagram: z.string().max(200).optional().nullable()
-});
+const schema = z
+  .object({
+    name: z.string().min(2).max(60).optional(),
+    category: z.string().min(2).max(60).optional(),
+    country: z.enum(COUNTRIES).optional(),
+    city: z.string().min(1).max(60).optional(),
+    bio: z.string().max(600).optional(),
+    tagline: z.string().max(180).optional().nullable(),
+    services: z.array(z.string().max(40)).max(6).optional(),
+    phone: z.string().max(30).optional().nullable(),
+    website: z.string().max(200).optional().nullable(),
+    facebook: z.string().max(200).optional().nullable(),
+    instagram: z.string().max(200).optional().nullable()
+  })
+  .refine(
+    (data) => {
+      if (!data.city || !data.country) return true; // pas les deux à la fois : pas de croisement à vérifier
+      return CITIES_BY_COUNTRY[data.country].includes(data.city as any);
+    },
+    { message: "Ville invalide pour ce pays.", path: ["city"] }
+  );
 
 export async function PATCH(req: NextRequest) {
   const artist = await getCurrentArtist();
