@@ -1,9 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
+// useSearchParams() exige une limite Suspense pour que Next.js puisse pré-générer
+// cette page statiquement au build (sinon : erreur "should be wrapped in a suspense boundary").
 export default function ReinitialiserMotDePassePage() {
+  return (
+    <Suspense fallback={<div className="panel" />}>
+      <ReinitialiserMotDePasseForm />
+    </Suspense>
+  );
+}
+
+function ReinitialiserMotDePasseForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token") || "";
