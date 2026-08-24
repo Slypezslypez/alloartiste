@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import "./globals.css";
 import { SiteHeader } from "./SiteHeader";
+import { NavigationProgress } from "./NavigationProgress";
 import { getSiteSettings } from "@/lib/settings";
 
 export const metadata: Metadata = {
@@ -22,6 +23,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         />
       </head>
       <body>
+        <NavigationProgress />
         <div className="top-banner">
           <span>✦</span>
           <span>{settings.tagline}</span>
