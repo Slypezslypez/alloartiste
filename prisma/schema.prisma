@@ -42,6 +42,7 @@ model Artist {
   currentPeriodEnd     DateTime? // fin de la période payée en cours
 
   leads Lead[]
+  unavailableDates UnavailableDate[]
 
   termsAcceptedAt DateTime? // date d'acceptation des CGU (preuve, lors de l'abonnement)
 
@@ -76,6 +77,17 @@ model Lead {
   status      String   @default("new") // new | replied | archived
   createdAt   DateTime @default(now())
 
+  @@index([artistId])
+}
+
+model UnavailableDate {
+  id        String   @id @default(cuid())
+  artistId  String
+  artist    Artist   @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  date      DateTime // un seul jour (minuit UTC), pas d'heure précise
+  createdAt DateTime @default(now())
+
+  @@unique([artistId, date])
   @@index([artistId])
 }
 
