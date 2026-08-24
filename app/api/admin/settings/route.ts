@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/requireAdmin";
@@ -55,5 +56,6 @@ export async function PATCH(req: NextRequest) {
   if (data.spotlightArtistId2 === "") data.spotlightArtistId2 = null;
 
   const updated = await prisma.siteSettings.update({ where: { id: "singleton" }, data });
+  revalidateTag("site-settings"); // le nouveau contenu s'affiche immédiatement, sans attendre le cache de 60s
   return NextResponse.json(updated);
 }
