@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { sendContactEmail } from "@/lib/email";
+import { sendContactEmail, sendContactConfirmationEmail } from "@/lib/email";
 import { isSubscriptionVisible } from "@/lib/categories";
 
 const schema = z.object({
@@ -44,6 +44,16 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     });
   } catch (err) {
     console.error("Échec de l'envoi de l'email de contact artiste:", err);
+  }
+
+  try {
+    await sendContactConfirmationEmail({
+      senderName: parsed.data.senderName,
+      senderEmail: parsed.data.senderEmail,
+      artistName: artist.name
+    });
+  } catch (err) {
+    console.error("Échec de l'envoi de l'email de confirmation au producteur:", err);
   }
 
   return NextResponse.json({ ok: true });
