@@ -120,6 +120,36 @@ main { max-width: 1400px; margin: 0 auto; padding: 0 28px 80px; }
 .btn-outline { border-color: var(--line); color: var(--ink-soft); background: var(--white); }
 .btn-outline:hover { border-color: var(--gold); color: var(--gold-deep); }
 
+/* Retour visuel immédiat au clic : le bouton se tasse légèrement, qu'il soit encore en train
+   de traiter la demande ou non. */
+.btn:active, button:not(:disabled):active { transform: scale(0.96); }
+
+/* Pendant le traitement (bouton désactivé + texte du type "Envoi...") : petite roue qui tourne,
+   pour bien montrer que la demande a été prise en compte. */
+.btn:disabled { cursor: progress; opacity: 0.75; transform: none; }
+.btn:disabled::after {
+  content: ""; display: inline-block; width: 12px; height: 12px; margin-left: 9px; vertical-align: -2px;
+  border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%;
+  animation: btn-spin 0.6s linear infinite;
+}
+@keyframes btn-spin { to { transform: rotate(360deg); } }
+
+/* Barre de progression en haut de l'écran pendant qu'une nouvelle page se charge, pour montrer
+   que le clic a bien été pris en compte même si l'affichage met un instant à suivre. */
+.nav-progress-bar {
+  position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 9999;
+  background: var(--gold-soft); overflow: hidden; pointer-events: none;
+}
+.nav-progress-bar::after {
+  content: ""; position: absolute; top: 0; left: 0; height: 100%; width: 40%;
+  background: linear-gradient(90deg, var(--gold), var(--gold-deep));
+  animation: nav-progress-slide 1s ease-in-out infinite;
+}
+@keyframes nav-progress-slide {
+  0% { left: -40%; }
+  100% { left: 100%; }
+}
+
 .search-panel { background: transparent; border: none; padding: 22px 0; margin-bottom: 26px; box-shadow: none; }
 .search-row { display: flex; flex-wrap: wrap; gap: 2px; margin-bottom: 16px; background: var(--shell); border-radius: var(--radius); padding: 6px; box-shadow: 0 3px 8px rgba(28,25,23,0.15); }
 .search-input { flex: 2; min-width: 200px; background: transparent; border: none; color: var(--ink); padding: 11px 15px; font-family: "Inter", sans-serif; font-size: 14px; border-radius: calc(var(--radius) - 2px); }
