@@ -9,8 +9,6 @@ export const metadata: Metadata = {
   description: "Annuaire d'artistes pour producteurs et demandeurs de devis."
 };
 
-export const dynamic = "force-dynamic";
-
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const settings = await getSiteSettings();
 
