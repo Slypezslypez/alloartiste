@@ -108,6 +108,7 @@ export function SiteHeader({
                 {c}
               </option>
             ))}
+            <option value="Tous">Belgique et France</option>
           </select>
           {loggedIn ? (
             <>
@@ -148,6 +149,7 @@ export function SiteHeader({
                 {c}
               </option>
             ))}
+            <option value="Tous">Belgique et France</option>
           </select>
           {NAV_ITEMS.map((item) => (
             <Link key={item.href} href={item.href} className="mobile-link">
