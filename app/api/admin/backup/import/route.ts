@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
         for (const a of artists) {
           const { id, ...rest } = a;
           if (!id) continue;
-          const data = {
+          const data: any = {
             ...rest,
             createdAt: toDate(rest.createdAt),
             updatedAt: toDate(rest.updatedAt),
