@@ -74,7 +74,10 @@ export function CatalogClient({ artists }: { artists: ArtistCard[] }) {
 
   function resetFilters() {
     setSearch("");
-    setCountry("Tous");
+    // Le pays revient à celui choisi dans le menu du site (Belgique, France, ou Belgique et France),
+    // pour rester cohérent avec ce qui est affiché en haut de page après un clic sur "Réinitialiser".
+    const saved = window.localStorage.getItem("alloartiste_country");
+    setCountry(saved === "France" || saved === "Tous" ? saved : "Belgique");
     setCity("Toutes");
     setCategory("Tous");
     setSort("newest");
