@@ -23,7 +23,12 @@ export async function sendContactEmail(opts: {
       <p style="margin:0 0 14px;padding:14px 16px;background:#f3f1ec;border-radius:8px;border-left:3px solid #c9922c;">
         ${nl2br(escapeHtml(message))}
       </p>
-      <p style="margin:0;font-size:13px;color:#8c8578;">Vous pouvez répondre directement à cet email.</p>
+      <p style="margin:0 0 10px;font-size:13px;color:#8c8578;">Vous pouvez répondre directement à cet email.</p>
+      <p style="margin:0;font-size:12px;color:#8c8578;">
+        Astuce : le tout premier échange entre deux adresses email inconnues termine parfois dans les indésirables
+        (spam) du destinataire — ce n'est pas un problème de votre côté. Si vous n'avez pas de nouvelles après
+        quelques jours, n'hésitez pas à relancer par un autre moyen.
+      </p>
     `,
     ctaLabel: "Répondre",
     ctaUrl: `mailto:${senderEmail}`
@@ -41,7 +46,45 @@ ${senderName} (${senderEmail}) vous contacte via AlloArtiste au sujet d'une pres
 ${message}
 
 ---
-Vous pouvez répondre directement à cet email, il arrivera chez ${senderName}.`,
+Vous pouvez répondre directement à cet email, il arrivera chez ${senderName}.
+
+Astuce : le tout premier échange entre deux adresses email inconnues termine parfois dans les indésirables (spam) du destinataire — ce n'est pas un problème de votre côté. Si vous n'avez pas de nouvelles après quelques jours, n'hésitez pas à relancer par un autre moyen.`,
+    html
+  });
+}
+
+// Confirmation envoyée au producteur/organisateur juste après l'envoi de sa demande de contact,
+// pour qu'il sache que son message est bien parti et pense à vérifier ses indésirables pour la réponse.
+export async function sendContactConfirmationEmail(opts: { senderName: string; senderEmail: string; artistName: string }) {
+  const { senderName, senderEmail, artistName } = opts;
+
+  const html = renderEmail({
+    title: "Votre message a bien été envoyé",
+    bodyHtml: `
+      <p style="margin:0 0 14px;">Bonjour ${escapeHtml(senderName)},</p>
+      <p style="margin:0 0 14px;">
+        Votre demande a bien été transmise à <strong>${escapeHtml(artistName)}</strong>, qui va recevoir votre
+        message par email et pourra vous répondre directement.
+      </p>
+      <p style="margin:0;font-size:13px;color:#8c8578;">
+        Astuce : si vous ne voyez pas la réponse de l'artiste dans votre boîte de réception, pensez à vérifier votre
+        dossier <strong>indésirables / spam</strong> — les premiers échanges entre deux adresses inconnues y
+        atterrissent parfois par erreur.
+      </p>
+    `
+  });
+
+  return resend.emails.send({
+    from: process.env.EMAIL_FROM as string,
+    to: senderEmail,
+    subject: `Votre message à ${artistName} a bien été envoyé`,
+    text: `Bonjour ${senderName},
+
+Votre demande a bien été transmise à ${artistName}, qui va recevoir votre message par email et pourra vous répondre directement.
+
+Astuce : si vous ne voyez pas la réponse de l'artiste dans votre boîte de réception, pensez à vérifier votre dossier indésirables / spam — les premiers échanges entre deux adresses inconnues y atterrissent parfois par erreur.
+
+L'équipe AlloArtiste`,
     html
   });
 }
