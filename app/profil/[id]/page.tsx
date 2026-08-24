@@ -1,18 +1,55 @@
+import { cache } from "react";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { isSubscriptionVisible } from "@/lib/categories";
 import { ContactForm } from "./ContactForm";
 import { ProfileGallery } from "./ProfileGallery";
+import { AvailabilityCalendar } from "@/app/AvailabilityCalendar";
 
 export const dynamic = "force-dynamic";
 
+// Mise en cache par requête : évite d'interroger la base deux fois (une pour les métadonnées SEO,
+// une pour l'affichage de la page) pour un même chargement.
+const getArtist = cache(async (id: string) => prisma.artist.findUnique({ where: { id } }));
+
+export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+  const artist = await getArtist(params.id);
+  if (!artist || !isSubscriptionVisible(artist)) {
+    return { title: "Profil introuvable — AlloArtiste" };
+  }
+
+  const location = artist.city ? `${artist.city}${artist.country && artist.country !== "Belgique" ? `, ${artist.country}` : ""}` : "";
+  const description = (
+    artist.tagline ||
+    artist.bio ||
+    `${artist.name}, ${artist.category}${location ? ` à ${location}` : ""}. Contactez directement cet·te artiste sur AlloArtiste.`
+  ).slice(0, 160);
+
+  return {
+    title: `${artist.name} — ${artist.category}${location ? ` à ${location}` : ""} | AlloArtiste`,
+    description,
+    openGraph: {
+      title: artist.name,
+      description,
+      images: artist.photos[0] ? [artist.photos[0]] : undefined
+    }
+  };
+}
+
 export default async function ProfilePage({ params }: { params: { id: string } }) {
-  const artist = await prisma.artist.findUnique({ where: { id: params.id } });
+  const artist = await getArtist(params.id);
   if (!artist || !isSubscriptionVisible(artist)) notFound();
 
   // Comptabilise la vue (non bloquant pour l'affichage).
   prisma.artist.update({ where: { id: artist.id }, data: { views: { increment: 1 } } }).catch(() => {});
+
+  const todayMidnightUTC = new Date(`${new Date().toISOString().slice(0, 10)}T00:00:00.000Z`);
+  const unavailableDates = await prisma.unavailableDate.findMany({
+    where: { artistId: artist.id, date: { gte: todayMidnightUTC } },
+    orderBy: { date: "asc" }
+  });
 
   const filledStars = Math.round(artist.rating);
 
@@ -94,6 +131,11 @@ export default async function ProfilePage({ params }: { params: { id: string } }
                 </div>
               </>
             )}
+          </div>
+
+          <div className="profile-info-card">
+            <p className="profile-section-label mono">Disponibilités</p>
+            <AvailabilityCalendar unavailableDates={unavailableDates.map((d) => d.date.toISOString().slice(0, 10))} />
           </div>
 
           <ContactForm artistId={artist.id} artistName={artist.name} />

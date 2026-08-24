@@ -395,6 +395,35 @@ select {
 .profile-contact-title { font-family: "Playfair Display", serif; font-weight: 700; font-size: 19px; margin: 0 0 8px; color: var(--ink); }
 .profile-contact-desc { color: var(--muted); font-size: 13px; line-height: 1.5; margin: 0 0 20px; }
 
+/* Calendrier de disponibilité (tableau de bord artiste + fiche publique) */
+.availability-calendar { max-width: 340px; }
+.availability-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.availability-month-label { font-size: 13px; font-weight: 700; color: var(--ink); text-transform: uppercase; letter-spacing: 0.03em; }
+.availability-nav {
+  display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px;
+  background: var(--white); border: 1px solid var(--line); border-radius: 999px; color: var(--ink-soft);
+  font-size: 16px; cursor: pointer; transition: 0.2s;
+}
+.availability-nav:hover { border-color: var(--gold); color: var(--gold-deep); }
+.availability-weekdays, .availability-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+.availability-weekday { text-align: center; font-size: 11px; color: var(--muted); padding-bottom: 6px; }
+.availability-day {
+  position: relative; aspect-ratio: 1 / 1; display: flex; align-items: center; justify-content: center;
+  border-radius: 8px; font-size: 13px; color: var(--ink-soft); background: var(--cream); border: 1px solid transparent;
+}
+.availability-day.empty { background: transparent; }
+.availability-day.today { border-color: var(--gold); font-weight: 700; color: var(--ink); }
+.availability-day.past { opacity: 0.35; }
+.availability-day.unavailable { background: #fef2f2; color: var(--red); font-weight: 600; }
+.availability-day.clickable { cursor: pointer; font-family: inherit; transition: 0.15s; }
+.availability-day.clickable:hover { border-color: var(--gold); }
+.availability-day.clickable:disabled { opacity: 0.5; cursor: wait; }
+.availability-legend { display: flex; gap: 18px; margin-top: 14px; }
+.availability-legend-item { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+.availability-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+.availability-dot.available { background: var(--cream); border: 1px solid var(--line); }
+.availability-dot.unavailable { background: var(--red); }
+
 @media (max-width: 860px) {
   .profile-two-col { grid-template-columns: 1fr; gap: 30px; }
   .profile-media-col { position: static; }

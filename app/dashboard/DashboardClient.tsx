@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { CATEGORIES, COUNTRIES, CITIES_BY_COUNTRY, MAX_PHOTOS, MAX_VIDEOS, isSubscriptionVisible, type Country } from "@/lib/categories";
+import { AvailabilityCalendar } from "@/app/AvailabilityCalendar";
 
 type Artist = {
   id: string;
@@ -40,9 +41,19 @@ type Lead = {
   createdAt: string;
 };
 
-export function DashboardClient({ initialArtist, initialLeads }: { initialArtist: Artist; initialLeads: Lead[] }) {
+export function DashboardClient({
+  initialArtist,
+  initialLeads,
+  initialUnavailableDates
+}: {
+  initialArtist: Artist;
+  initialLeads: Lead[];
+  initialUnavailableDates: string[];
+}) {
   const [artist, setArtist] = useState(initialArtist);
   const [leads, setLeads] = useState(initialLeads);
+  const [unavailableDates, setUnavailableDates] = useState<string[]>(initialUnavailableDates || []);
+  const [pendingDate, setPendingDate] = useState<string | null>(null);
   const active = isSubscriptionVisible({
     subscriptionStatus: artist.subscriptionStatus,
     currentPeriodEnd: artist.currentPeriodEnd ? new Date(artist.currentPeriodEnd) : null
@@ -69,7 +80,7 @@ export function DashboardClient({ initialArtist, initialLeads }: { initialArtist
   const [videoUrl, setVideoUrl] = useState("");
   const [subLoading, setSubLoading] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
-  const [openTab, setOpenTab] = useState<"abonnement" | "stats" | "demandes" | null>(null);
+  const [openTab, setOpenTab] = useState<"abonnement" | "stats" | "demandes" | "calendrier" | null>(null);
 
   // --- PayPal (abonnement récurrent alternatif à Stripe) ---
   const paypalRef = useRef<HTMLDivElement>(null);
@@ -309,6 +320,23 @@ export function DashboardClient({ initialArtist, initialLeads }: { initialArtist
     setArtist((a) => ({ ...a, videos: res.videos }));
   }
 
+  async function toggleUnavailableDate(dateKey: string, isCurrentlyUnavailable: boolean) {
+    setPendingDate(dateKey);
+    try {
+      const res = await fetch("/api/artists/me/unavailable-dates", {
+        method: isCurrentlyUnavailable ? "DELETE" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ date: dateKey })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setUnavailableDates(data.dates || []);
+      }
+    } finally {
+      setPendingDate(null);
+    }
+  }
+
   async function updateLeadStatus(id: string, status: Lead["status"]) {
     const res = await fetch(`/api/leads/${id}`, {
       method: "PATCH",
@@ -381,6 +409,9 @@ export function DashboardClient({ initialArtist, initialLeads }: { initialArtist
             Demandes de contact
             {newLeadsCount > 0 && <span className="lead-count-badge" style={{ marginLeft: 8 }}>{newLeadsCount}</span>}
           </button>
+          <button className={`account-tab ${openTab === "calendrier" ? "active" : ""}`} onClick={() => setOpenTab(openTab === "calendrier" ? null : "calendrier")}>
+            Calendrier
+          </button>
         </div>
 
         {openTab === "abonnement" && active && (
@@ -451,6 +482,21 @@ export function DashboardClient({ initialArtist, initialLeads }: { initialArtist
                 ))}
               </div>
             )}
+          </div>
+        )}
+
+        {openTab === "calendrier" && (
+          <div className="account-tab-panel">
+            <p className="sub" style={{ marginTop: 0 }}>
+              Cliquez sur une date pour la marquer comme indisponible (ou la libérer). Ce calendrier est visible par
+              les organisateurs sur votre fiche publique.
+            </p>
+            <AvailabilityCalendar
+              unavailableDates={unavailableDates}
+              editable
+              onToggleDate={toggleUnavailableDate}
+              pendingDate={pendingDate}
+            />
           </div>
         )}
       </div>
