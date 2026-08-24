@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { CATEGORIES, COUNTRIES, CITIES_BY_COUNTRY, MAX_PHOTOS, MAX_VIDEOS, isSubscriptionVisible, type Country } from "@/lib/categories";
 import { AvailabilityCalendar } from "@/app/AvailabilityCalendar";
 
@@ -28,6 +29,7 @@ type Artist = {
   paymentProvider: string | null;
   subscriptionStatus: string | null;
   currentPeriodEnd: string | null;
+  calendarVisible: boolean;
 };
 
 type Lead = {
@@ -110,7 +112,7 @@ export function DashboardClient({
   const [videoUrl, setVideoUrl] = useState("");
   const [subLoading, setSubLoading] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
-  const [openTab, setOpenTab] = useState<"abonnement" | "stats" | "demandes" | "calendrier" | null>(null);
+  const [openTab, setOpenTab] = useState<"abonnement" | "stats" | "calendrier" | null>(null);
 
   // --- PayPal (abonnement récurrent alternatif à Stripe) ---
   const paypalRef = useRef<HTMLDivElement>(null);
@@ -368,16 +370,22 @@ export function DashboardClient({
     }
   }
 
-  async function updateLeadStatus(id: string, status: Lead["status"]) {
-    const res = await fetch(`/api/leads/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status })
-    });
-    if (res.ok) {
-      setLeads((ls) => ls.map((l) => (l.id === id ? { ...l, status } : l)));
+  const [savingCalendarVisible, setSavingCalendarVisible] = useState(false);
+
+  async function toggleCalendarVisible(visible: boolean) {
+    setSavingCalendarVisible(true);
+    try {
+      const res = await fetch("/api/artists/me", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ calendarVisible: visible })
+      });
+      if (res.ok) setArtist((a) => ({ ...a, calendarVisible: visible }));
+    } finally {
+      setSavingCalendarVisible(false);
     }
   }
+
 
   return (
     <>
@@ -436,10 +444,10 @@ export function DashboardClient({
           <button className={`account-tab ${openTab === "stats" ? "active" : ""}`} onClick={() => setOpenTab(openTab === "stats" ? null : "stats")}>
             Statistiques
           </button>
-          <button className={`account-tab ${openTab === "demandes" ? "active" : ""}`} onClick={() => setOpenTab(openTab === "demandes" ? null : "demandes")}>
+          <Link href="/dashboard/demandes" className="account-tab">
             Demandes de contact
             {newLeadsCount > 0 && <span className="lead-count-badge" style={{ marginLeft: 8 }}>{newLeadsCount}</span>}
-          </button>
+          </Link>
           <button className={`account-tab ${openTab === "calendrier" ? "active" : ""}`} onClick={() => setOpenTab(openTab === "calendrier" ? null : "calendrier")}>
             Calendrier
           </button>
@@ -482,46 +490,24 @@ export function DashboardClient({
           </div>
         )}
 
-        {openTab === "demandes" && (
-          <div className="account-tab-panel">
-            {leads.length === 0 ? (
-              <p className="hint" style={{ margin: 0 }}>Aucune demande reçue pour le moment.</p>
-            ) : (
-              <div className="lead-list">
-                {leads.map((lead) => (
-                  <div key={lead.id} className={`lead-card lead-${lead.status}`}>
-                    <div className="lead-header">
-                      <div>
-                        <strong>{lead.senderName}</strong>{" "}
-                        <span className="mono" style={{ fontSize: 12, color: "var(--muted)" }}>
-                          {new Date(lead.createdAt).toLocaleDateString("fr-FR")}
-                        </span>
-                      </div>
-                      <select value={lead.status} onChange={(e) => updateLeadStatus(lead.id, e.target.value as Lead["status"])} className="lead-status-select">
-                        <option value="new">Nouveau</option>
-                        <option value="replied">Traité</option>
-                        <option value="archived">Archivé</option>
-                      </select>
-                    </div>
-                    <p className="lead-message">{lead.message}</p>
-                    <div className="lead-contact">
-                      <a href={`mailto:${lead.senderEmail}`}>{lead.senderEmail}</a>
-                      {lead.senderPhone && <span> · {lead.senderPhone}</span>}
-                      {lead.eventDate && <span> · Événement : {lead.eventDate}</span>}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
         {openTab === "calendrier" && (
           <div className="account-tab-panel">
             <p className="sub" style={{ marginTop: 0 }}>
-              Cliquez sur une date pour la marquer comme indisponible (ou la libérer). Ce calendrier est visible par
-              les organisateurs sur votre fiche publique.
+              Cliquez sur une date pour la marquer comme indisponible (ou la libérer).
             </p>
+
+            <label className="calendar-visibility-toggle">
+              <input
+                type="checkbox"
+                checked={artist.calendarVisible}
+                onChange={(e) => toggleCalendarVisible(e.target.checked)}
+                disabled={savingCalendarVisible}
+              />
+              <span>
+                Afficher mon calendrier de disponibilité sur ma fiche publique et dans le formulaire de contact
+              </span>
+            </label>
+
             <AvailabilityCalendar
               unavailableDates={unavailableDates}
               editable

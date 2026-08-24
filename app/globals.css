@@ -283,6 +283,44 @@ select {
 .lead-contact { font-size: 12px; color: var(--muted); }
 .lead-contact a { color: var(--gold-deep); font-weight: 600; }
 
+/* Page "Demandes de contact" (liste + fil de conversation) */
+.lead-card-link { display: block; text-decoration: none; color: inherit; transition: 0.15s; }
+.lead-card-link:hover { border-left-color: var(--gold); transform: translateX(2px); }
+.lead-message-clamp {
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.lead-status-pill { font-family: "JetBrains Mono", monospace; font-size: 11px; font-weight: 700; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; white-space: nowrap; }
+.lead-status-pill.status-new { background: var(--gold-soft); color: var(--gold-deep); }
+.lead-status-pill.status-replied { background: #f0fdf4; color: var(--green); }
+.lead-status-pill.status-archived { background: var(--shell); color: var(--muted); }
+
+.demandes-filters { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 24px; }
+.demandes-filter {
+  font-size: 13px; font-weight: 500; color: var(--ink-soft); background: var(--white);
+  border: 1px solid var(--line); border-radius: 999px; padding: 8px 16px; text-decoration: none; transition: 0.2s;
+}
+.demandes-filter.active { background: var(--ink); color: var(--white); border-color: var(--ink); }
+.demandes-filter:not(.active):hover { border-color: var(--gold); color: var(--gold-deep); }
+
+.thread-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; }
+.thread-actions { display: flex; align-items: center; gap: 10px; }
+
+.thread-messages { display: flex; flex-direction: column; gap: 14px; margin-bottom: 24px; }
+.thread-bubble { max-width: 80%; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--line); }
+.thread-bubble p { margin: 0; font-size: 14px; line-height: 1.55; color: var(--ink-soft); white-space: pre-wrap; }
+.thread-bubble-meta { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 6px; font-size: 12px; }
+.thread-bubble-meta strong { color: var(--ink); }
+.thread-bubble-meta .mono { color: var(--muted); font-size: 11px; }
+.thread-bubble-producer { background: var(--cream); align-self: flex-start; border-left: 3px solid var(--line); }
+.thread-bubble-artist { background: var(--gold-soft); align-self: flex-end; border-right: 3px solid var(--gold); border-left: none; }
+
+.thread-reply-form { display: flex; flex-direction: column; gap: 12px; }
+.thread-reply-form textarea { min-height: 100px; }
+
+@media (max-width: 640px) {
+  .thread-bubble { max-width: 100%; }
+}
+
 .admin-tag { font-family: "JetBrains Mono", monospace; font-size: 10px; font-weight: 700; text-transform: uppercase; padding: 4px 9px; border-radius: 999px; }
 .tag-active { background: #f0fdf4; color: var(--green); }
 .tag-inactive { background: #fef2f2; color: var(--red); }
@@ -416,6 +454,13 @@ select {
 .availability-day.today { border-color: var(--gold); font-weight: 700; color: var(--ink); }
 .availability-day.past { opacity: 0.35; }
 .availability-day.unavailable { background: #fef2f2; color: var(--red); font-weight: 600; }
+.availability-day.selected { background: var(--gold); color: #fff; font-weight: 700; }
+
+.calendar-visibility-toggle {
+  display: flex; align-items: flex-start; gap: 10px; margin-bottom: 20px; cursor: pointer;
+  font-size: 13px; color: var(--ink-soft); max-width: 420px;
+}
+.calendar-visibility-toggle input { width: auto; margin-top: 3px; }
 .availability-day.clickable { cursor: pointer; font-family: inherit; transition: 0.15s; }
 .availability-day.clickable:hover { border-color: var(--gold); }
 .availability-day.clickable:disabled { opacity: 0.5; cursor: wait; }

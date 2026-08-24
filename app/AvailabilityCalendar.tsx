@@ -20,20 +20,28 @@ function todayKey() {
 }
 
 /**
- * Calendrier mensuel réutilisable :
+ * Calendrier mensuel réutilisable, trois modes :
  * - editable=true (tableau de bord artiste) : clic sur un jour futur = bascule disponible/indisponible.
- * - editable=false (fiche publique) : affichage seul, pour que l'organisateur voie d'un coup d'œil les dates prises.
+ * - pickable=true (formulaire de contact) : clic sur un jour futur ET disponible = le sélectionne comme date
+ *   d'événement ; les jours indisponibles ne sont pas cliquables.
+ * - par défaut (fiche publique) : affichage seul, pour que l'organisateur voie d'un coup d'œil les dates prises.
  */
 export function AvailabilityCalendar({
   unavailableDates,
   editable = false,
   onToggleDate,
-  pendingDate
+  pendingDate,
+  pickable = false,
+  selectedDate,
+  onSelectDate
 }: {
   unavailableDates: string[];
   editable?: boolean;
   onToggleDate?: (dateKey: string, isCurrentlyUnavailable: boolean) => void;
   pendingDate?: string | null;
+  pickable?: boolean;
+  selectedDate?: string | null;
+  onSelectDate?: (dateKey: string) => void;
 }) {
   const now = new Date();
   const [viewYear, setViewYear] = useState(now.getFullYear());
@@ -97,10 +105,12 @@ export function AvailabilityCalendar({
           const isPast = key < today;
           const isToday = key === today;
           const isUnavailable = unavailableSet.has(key);
+          const isSelected = pickable && selectedDate === key;
           const classes = ["availability-day"];
           if (isUnavailable) classes.push("unavailable");
           if (isPast) classes.push("past");
           if (isToday) classes.push("today");
+          if (isSelected) classes.push("selected");
 
           if (editable && !isPast) {
             classes.push("clickable");
@@ -117,8 +127,24 @@ export function AvailabilityCalendar({
               </button>
             );
           }
+
+          if (pickable && !isPast && !isUnavailable) {
+            classes.push("clickable");
+            return (
+              <button
+                key={key}
+                type="button"
+                className={classes.join(" ")}
+                onClick={() => onSelectDate?.(key)}
+                title="Choisir cette date"
+              >
+                <span className="availability-day-num">{day}</span>
+              </button>
+            );
+          }
+
           return (
-            <span key={key} className={classes.join(" ")}>
+            <span key={key} className={classes.join(" ")} title={pickable && isUnavailable ? "Artiste indisponible ce jour-là" : undefined}>
               <span className="availability-day-num">{day}</span>
             </span>
           );

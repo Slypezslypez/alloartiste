@@ -1,9 +1,21 @@
 "use client";
 
 import { useState } from "react";
+import { AvailabilityCalendar } from "@/app/AvailabilityCalendar";
 
-export function ContactForm({ artistId, artistName }: { artistId: string; artistName: string }) {
+export function ContactForm({
+  artistId,
+  artistName,
+  unavailableDates = [],
+  calendarVisible = false
+}: {
+  artistId: string;
+  artistName: string;
+  unavailableDates?: string[];
+  calendarVisible?: boolean;
+}) {
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [eventDate, setEventDate] = useState<string | null>(null);
 
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -16,7 +28,7 @@ export function ContactForm({ artistId, artistName }: { artistId: string; artist
         senderName: fd.get("senderName"),
         senderEmail: fd.get("senderEmail"),
         senderPhone: fd.get("senderPhone") || undefined,
-        eventDate: fd.get("eventDate") || undefined,
+        eventDate: (calendarVisible ? eventDate : fd.get("eventDate")) || undefined,
         message: fd.get("message")
       })
     });
@@ -50,11 +62,32 @@ export function ContactForm({ artistId, artistName }: { artistId: string; artist
               <label>Téléphone (optionnel)</label>
               <input name="senderPhone" type="text" maxLength={30} />
             </div>
-            <div>
-              <label>Date estimée de l&apos;événement</label>
-              <input name="eventDate" type="date" min={new Date().toISOString().split("T")[0]} />
-            </div>
+            {!calendarVisible && (
+              <div>
+                <label>Date estimée de l&apos;événement</label>
+                <input name="eventDate" type="date" min={new Date().toISOString().split("T")[0]} />
+              </div>
+            )}
           </div>
+
+          {calendarVisible && (
+            <>
+              <label>Date estimée de l&apos;événement (optionnel)</label>
+              <p className="hint" style={{ marginTop: -4 }}>
+                Les dates grisées sont indiquées comme indisponibles par l&apos;artiste.
+              </p>
+              <AvailabilityCalendar unavailableDates={unavailableDates} pickable selectedDate={eventDate} onSelectDate={setEventDate} />
+              {eventDate && (
+                <p className="hint" style={{ marginTop: 10 }}>
+                  Date sélectionnée : <strong>{new Date(eventDate + "T00:00:00").toLocaleDateString("fr-FR")}</strong>{" "}
+                  <button type="button" onClick={() => setEventDate(null)} style={{ background: "none", border: "none", color: "var(--gold-deep)", cursor: "pointer", fontWeight: 600, padding: 0 }}>
+                    Retirer
+                  </button>
+                </p>
+              )}
+            </>
+          )}
+
           <label>Votre message</label>
           <textarea name="message" required minLength={10} maxLength={3000} placeholder="Décrivez votre événement, le lieu, le budget..." />
           {status === "error" && <p className="error">L&apos;envoi a échoué, réessayez.</p>}

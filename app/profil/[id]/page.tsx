@@ -46,10 +46,13 @@ export default async function ProfilePage({ params }: { params: { id: string } }
   prisma.artist.update({ where: { id: artist.id }, data: { views: { increment: 1 } } }).catch(() => {});
 
   const todayMidnightUTC = new Date(`${new Date().toISOString().slice(0, 10)}T00:00:00.000Z`);
-  const unavailableDates = await prisma.unavailableDate.findMany({
-    where: { artistId: artist.id, date: { gte: todayMidnightUTC } },
-    orderBy: { date: "asc" }
-  });
+  const unavailableDates = artist.calendarVisible
+    ? await prisma.unavailableDate.findMany({
+        where: { artistId: artist.id, date: { gte: todayMidnightUTC } },
+        orderBy: { date: "asc" }
+      })
+    : [];
+  const unavailableDateStrings = unavailableDates.map((d) => d.date.toISOString().slice(0, 10));
 
   const filledStars = Math.round(artist.rating);
 
@@ -133,12 +136,19 @@ export default async function ProfilePage({ params }: { params: { id: string } }
             )}
           </div>
 
-          <div className="profile-info-card">
-            <p className="profile-section-label mono">Disponibilités</p>
-            <AvailabilityCalendar unavailableDates={unavailableDates.map((d) => d.date.toISOString().slice(0, 10))} />
-          </div>
+          {artist.calendarVisible && (
+            <div className="profile-info-card">
+              <p className="profile-section-label mono">Disponibilités</p>
+              <AvailabilityCalendar unavailableDates={unavailableDateStrings} />
+            </div>
+          )}
 
-          <ContactForm artistId={artist.id} artistName={artist.name} />
+          <ContactForm
+            artistId={artist.id}
+            artistName={artist.name}
+            unavailableDates={unavailableDateStrings}
+            calendarVisible={artist.calendarVisible}
+          />
         </div>
       </div>
     </>

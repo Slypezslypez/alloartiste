@@ -23,7 +23,8 @@ const schema = z
     phone: z.string().max(30).optional().nullable(),
     website: z.string().max(200).optional().nullable(),
     facebook: z.string().max(200).optional().nullable(),
-    instagram: z.string().max(200).optional().nullable()
+    instagram: z.string().max(200).optional().nullable(),
+    calendarVisible: z.boolean().optional()
   })
   .refine(
     (data) => {
