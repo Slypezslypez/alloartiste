@@ -6,7 +6,6 @@ import { prisma } from "@/lib/prisma";
 import { isSubscriptionVisible } from "@/lib/categories";
 import { ContactForm } from "./ContactForm";
 import { ProfileGallery } from "./ProfileGallery";
-import { AvailabilityCalendar } from "@/app/AvailabilityCalendar";
 
 export const dynamic = "force-dynamic";
 
@@ -135,13 +134,6 @@ export default async function ProfilePage({ params }: { params: { id: string } }
               </>
             )}
           </div>
-
-          {artist.calendarVisible && (
-            <div className="profile-info-card">
-              <p className="profile-section-label mono">Disponibilités</p>
-              <AvailabilityCalendar unavailableDates={unavailableDateStrings} />
-            </div>
-          )}
 
           <ContactForm
             artistId={artist.id}
