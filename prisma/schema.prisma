@@ -67,31 +67,18 @@ model InviteCode {
 }
 
 model Lead {
-  id             String   @id @default(cuid())
-  artistId       String
-  artist         Artist   @relation(fields: [artistId], references: [id], onDelete: Cascade)
-  senderName     String
-  senderEmail    String
-  senderPhone    String?
-  eventDate      String?
-  message        String
-  status         String   @default("new") // new | replied | archived
-  followupToken  String   @unique @default(cuid()) // lien public (sans connexion) permettant au producteur de suivre le fil
-  messages       LeadMessage[]
-  createdAt      DateTime @default(now())
+  id          String   @id @default(cuid())
+  artistId    String
+  artist      Artist   @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  senderName  String
+  senderEmail String
+  senderPhone String?
+  eventDate   String?
+  message     String
+  status      String   @default("new") // new | replied | archived
+  createdAt   DateTime @default(now())
 
   @@index([artistId])
-}
-
-model LeadMessage {
-  id        String   @id @default(cuid())
-  leadId    String
-  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
-  sender    String   // "artist" | "producer"
-  message   String
-  createdAt DateTime @default(now())
-
-  @@index([leadId])
 }
 
 model UnavailableDate {
