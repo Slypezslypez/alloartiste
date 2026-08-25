@@ -179,7 +179,7 @@ export function AdminClient({
           Messages ({messages.length}){newMessagesCount > 0 && ` · ${newMessagesCount} nouveau${newMessagesCount > 1 ? "x" : ""}`}
         </button>
         <button className={`chip ${tab === "articles" ? "active" : ""}`} onClick={() => setTab("articles")}>
-          Articles ({initialArticles.length})
+          Actualité conseil ({initialArticles.length})
         </button>
         <button className={`chip ${tab === "billing" ? "active" : ""}`} onClick={() => setTab("billing")}>
           Comptabilité
