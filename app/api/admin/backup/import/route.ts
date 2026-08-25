@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
         for (const code of inviteCodes) {
           const { id, ...rest } = code;
           if (!id) continue;
-          const data = { ...rest, usedAt: toDate(rest.usedAt), createdAt: toDate(rest.createdAt) };
+          const data: any = { ...rest, usedAt: toDate(rest.usedAt), createdAt: toDate(rest.createdAt) };
           await tx.inviteCode.upsert({ where: { id }, create: { id, ...data }, update: data });
           c.inviteCodes++;
         }
@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
         for (const l of leads) {
           const { id, ...rest } = l;
           if (!id) continue;
-          const data = { ...rest, createdAt: toDate(rest.createdAt) };
+          const data: any = { ...rest, createdAt: toDate(rest.createdAt) };
           await tx.lead.upsert({ where: { id }, create: { id, ...data }, update: data });
           c.leads++;
         }
@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
         for (const u of unavailableDates) {
           const { id, ...rest } = u;
           if (!id) continue;
-          const data = { ...rest, date: toDate(rest.date), createdAt: toDate(rest.createdAt) };
+          const data: any = { ...rest, date: toDate(rest.date), createdAt: toDate(rest.createdAt) };
           await tx.unavailableDate.upsert({ where: { id }, create: { id, ...data }, update: data });
           c.unavailableDates++;
         }
@@ -87,7 +87,7 @@ export async function POST(req: NextRequest) {
         for (const m of contactMessages) {
           const { id, ...rest } = m;
           if (!id) continue;
-          const data = { ...rest, createdAt: toDate(rest.createdAt) };
+          const data: any = { ...rest, createdAt: toDate(rest.createdAt) };
           await tx.contactMessage.upsert({ where: { id }, create: { id, ...data }, update: data });
           c.contactMessages++;
         }
@@ -95,7 +95,7 @@ export async function POST(req: NextRequest) {
         for (const art of articles) {
           const { id, ...rest } = art;
           if (!id) continue;
-          const data = { ...rest, createdAt: toDate(rest.createdAt), updatedAt: toDate(rest.updatedAt) };
+          const data: any = { ...rest, createdAt: toDate(rest.createdAt), updatedAt: toDate(rest.updatedAt) };
           await tx.article.upsert({ where: { id }, create: { id, ...data }, update: data });
           c.articles++;
         }
@@ -103,7 +103,7 @@ export async function POST(req: NextRequest) {
         for (const s of settings) {
           const { id, ...rest } = s;
           if (!id) continue;
-          const data = { ...rest, updatedAt: toDate(rest.updatedAt) };
+          const data: any = { ...rest, updatedAt: toDate(rest.updatedAt) };
           await tx.siteSettings.upsert({ where: { id }, create: { id, ...data }, update: data });
           c.settings++;
         }
