@@ -35,9 +35,11 @@ export default async function ActualitesPage() {
                 ) : (
                   <span className="blog-icon">{a.icon}</span>
                 )}
-                <span className="blog-cat-badge mono">{a.category}</span>
               </div>
               <div className="blog-card-body">
+                <span className="blog-cat-badge mono" style={{ position: "static", marginBottom: 10, display: "inline-block" }}>
+                  {a.category}
+                </span>
                 <div className="blog-byline mono">
                   L&apos;équipe AlloArtiste · {new Date(a.createdAt).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
                 </div>
