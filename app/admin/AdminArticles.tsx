@@ -34,6 +34,7 @@ const EMPTY_FORM = {
 
 export function AdminArticles({ initialArticles }: { initialArticles: Article[] }) {
   const [articles, setArticles] = useState(initialArticles);
+  const knownCategories = Array.from(new Set(articles.map((a) => a.category).filter(Boolean)));
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ ...EMPTY_FORM });
@@ -215,8 +216,20 @@ export function AdminArticles({ initialArticles }: { initialArticles: Article[] 
 
           <div className="field-row">
             <div>
-              <label>Catégorie</label>
-              <input value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} required />
+              <label>Rubrique (catégorie)</label>
+              <input
+                value={form.category}
+                onChange={(e) => setForm({ ...form, category: e.target.value })}
+                required
+                list="rubriques-existantes"
+                placeholder="Ex. Conseils carrière"
+              />
+              <datalist id="rubriques-existantes">
+                {knownCategories.map((c) => (
+                  <option key={c} value={c} />
+                ))}
+              </datalist>
+              <p className="hint" style={{ marginTop: 4 }}>Choisissez une rubrique existante ou tapez-en une nouvelle.</p>
             </div>
             <div>
               <label>Temps de lecture</label>
@@ -319,11 +332,37 @@ export function AdminArticles({ initialArticles }: { initialArticles: Article[] 
         {articles.map((a) => (
           <div key={a.id} className="lead-card">
             <div className="lead-header">
-              <div>
-                <strong>{a.title}</strong>{" "}
-                <span className="mono" style={{ fontSize: 12, color: "var(--muted)" }}>
-                  {a.category}
-                </span>
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                {a.imageUrl ? (
+                  <img
+                    src={a.imageUrl}
+                    alt=""
+                    style={{ width: 56, height: 56, borderRadius: 8, objectFit: "cover", objectPosition: `${(a as any).imagePositionX ?? 50}% ${(a as any).imagePositionY ?? 50}%`, flexShrink: 0 }}
+                  />
+                ) : (
+                  <div
+                    style={{
+                      width: 56,
+                      height: 56,
+                      borderRadius: 8,
+                      flexShrink: 0,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: 22,
+                      background: a.gradient
+                    }}
+                  >
+                    {a.icon}
+                  </div>
+                )}
+                <div>
+                  <strong>{a.title}</strong>{" "}
+                  <br />
+                  <span className="mono" style={{ fontSize: 12, color: "var(--muted)" }}>
+                    {a.category}
+                  </span>
+                </div>
               </div>
               <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
                 <span className={`admin-tag ${a.published ? "tag-active" : "tag-inactive"}`}>{a.published ? "Publié" : "Brouillon"}</span>
