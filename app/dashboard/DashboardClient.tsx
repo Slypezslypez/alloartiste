@@ -448,6 +448,9 @@ export function DashboardClient({
             Demandes de contact
             {newLeadsCount > 0 && <span className="lead-count-badge" style={{ marginLeft: 8 }}>{newLeadsCount}</span>}
           </Link>
+          <Link href="/dashboard/salles" className="account-tab">
+            Salles à proximité
+          </Link>
           <button className={`account-tab ${openTab === "calendrier" ? "active" : ""}`} onClick={() => setOpenTab(openTab === "calendrier" ? null : "calendrier")}>
             Calendrier
           </button>
