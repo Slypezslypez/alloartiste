@@ -8,10 +8,20 @@ import { PromoCarousel } from "./PromoCarousel";
 export const dynamic = "force-dynamic"; // toujours à jour (abonnements qui expirent, nouveaux artistes)
 
 export default async function HomePage() {
-  const [all, settings] = await Promise.all([
+  const [all, settings, upcomingEvents] = await Promise.all([
     prisma.artist.findMany({ orderBy: { createdAt: "desc" } }),
-    getSiteSettings()
+    getSiteSettings(),
+    // Un seul événement (le plus proche) par artiste : la liste est triée par date croissante,
+    // donc la première occurrence rencontrée pour un artiste donné est la bonne.
+    prisma.event.findMany({ where: { date: { gte: new Date() } }, orderBy: { date: "asc" } })
   ]);
+
+  const nextEventByArtist = new Map<string, { title: string; date: string }>();
+  for (const ev of upcomingEvents) {
+    if (!nextEventByArtist.has(ev.artistId)) {
+      nextEventByArtist.set(ev.artistId, { title: ev.title, date: ev.date.toISOString() });
+    }
+  }
 
   const visibleRaw = all.filter(isSubscriptionVisible);
   const visible = visibleRaw.map((a) => ({
@@ -24,7 +34,8 @@ export default async function HomePage() {
     rating: a.rating,
     reviewsCount: a.reviewsCount,
     isVerified: a.isVerified,
-    createdAt: a.createdAt.toISOString()
+    createdAt: a.createdAt.toISOString(),
+    nextEvent: nextEventByArtist.get(a.id) || null
   }));
 
   // Photos mises en avant : sélection manuelle depuis l'admin si définie, sinon automatique.

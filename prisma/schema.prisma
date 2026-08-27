@@ -43,6 +43,7 @@ model Artist {
 
   leads Lead[]
   unavailableDates UnavailableDate[]
+  events Event[]
   calendarVisible  Boolean @default(true) // l'artiste peut masquer son calendrier de disponibilité du public
 
   termsAcceptedAt DateTime? // date d'acceptation des CGU (preuve, lors de l'abonnement)
@@ -79,6 +80,19 @@ model Lead {
   createdAt   DateTime @default(now())
 
   @@index([artistId])
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  artistId    String
+  artist      Artist   @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  title       String
+  date        DateTime
+  description String?
+  createdAt   DateTime @default(now())
+
+  @@index([artistId])
+  @@index([date])
 }
 
 model UnavailableDate {

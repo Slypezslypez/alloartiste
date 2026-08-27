@@ -53,6 +53,11 @@ export default async function ProfilePage({ params }: { params: { id: string } }
     : [];
   const unavailableDateStrings = unavailableDates.map((d) => d.date.toISOString().slice(0, 10));
 
+  // Nettoyage au passage : les événements déjà passés sont supprimés, pas besoin de tâche
+  // planifiée pour garder la table légère.
+  await prisma.event.deleteMany({ where: { artistId: artist.id, date: { lt: new Date() } } });
+  const events = await prisma.event.findMany({ where: { artistId: artist.id }, orderBy: { date: "asc" } });
+
   const filledStars = Math.round(artist.rating);
 
   return (
@@ -93,6 +98,23 @@ export default async function ProfilePage({ params }: { params: { id: string } }
             )}
 
             {artist.tagline && <p className="profile-tagline">&ldquo;{artist.tagline}&rdquo;</p>}
+
+            {events.length > 0 && (
+              <>
+                <p className="profile-section-label mono">Prochains événements</p>
+                <div className="profile-events-list">
+                  {events.map((ev) => (
+                    <div key={ev.id} className="profile-event-item">
+                      <span className="profile-event-date mono">
+                        {new Date(ev.date).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
+                      </span>
+                      <strong>{ev.title}</strong>
+                      {ev.description && <p>{ev.description}</p>}
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
 
             <p className="profile-section-label mono">Biographie & démarche</p>
             <p className="profile-bio-text">{artist.bio || "Cet·te artiste n'a pas encore ajouté de description."}</p>

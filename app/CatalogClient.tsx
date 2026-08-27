@@ -15,6 +15,7 @@ type ArtistCard = {
   reviewsCount: number;
   isVerified: boolean;
   createdAt: string; // ISO
+  nextEvent: { title: string; date: string } | null;
 };
 
 type SortOption = "newest" | "alpha" | "rating";
@@ -157,8 +158,15 @@ export function CatalogClient({ artists }: { artists: ArtistCard[] }) {
             const isNew = isNewArrival(a.createdAt);
             return (
               <Link key={a.id} className="ticket" href={`/profil/${a.id}`}>
-                {isNew && <span className="badge badge-new">Nouveau</span>}
-                <img className="photo" src={a.photos[0] || placeholder()} alt={`Photo de ${a.name}`} />
+                <div className="photo-wrap">
+                  {isNew && <span className="badge badge-new">Nouveau</span>}
+                  {a.nextEvent && (
+                    <span className="badge badge-event mono">
+                      {new Date(a.nextEvent.date).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })} · {a.nextEvent.title}
+                    </span>
+                  )}
+                  <img className="photo" src={a.photos[0] || placeholder()} alt={`Photo de ${a.name}`} />
+                </div>
                 <div className="perf" />
                 <div className="stub">
                   <p className="name">
