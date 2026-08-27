@@ -417,7 +417,7 @@ export function DashboardClient({
               les organisateurs, producteurs ou agents.
             </span>
           </label>
-          <button className="btn btn-gold" onClick={startSubscription} disabled={subLoading || !termsAccepted}>
+          <button className="btn btn-gold" onClick={startSubscription} disabled={subLoading || !termsAccepted} data-loading={subLoading}>
             {subLoading ? "Redirection..." : "S'abonner avec carte bancaire (Stripe)"}
           </button>
 
@@ -684,7 +684,13 @@ export function DashboardClient({
                   disabled={generatingBio}
                   style={{ minHeight: 60, marginBottom: 10 }}
                 />
-                <button type="button" className="btn btn-gold" onClick={generateBio} disabled={generatingBio || !bioNotes.trim()}>
+                <button
+                  type="button"
+                  className="btn btn-gold"
+                  onClick={generateBio}
+                  disabled={generatingBio || !bioNotes.trim()}
+                  data-loading={generatingBio}
+                >
                   {generatingBio ? "Génération..." : "Générer ma bio"}
                 </button>
                 {bioError && <p className="error">{bioError}</p>}
@@ -730,7 +736,13 @@ export function DashboardClient({
               )}
               <div className="ai-generate-box">
                 <label style={{ margin: "0 0 8px" }}>✨ Suggérer des formules avec l&apos;IA</label>
-                <button type="button" className="btn btn-gold" onClick={generateServices} disabled={generatingServices || services.length >= 6}>
+                <button
+                  type="button"
+                  className="btn btn-gold"
+                  onClick={generateServices}
+                  disabled={generatingServices || services.length >= 6}
+                  data-loading={generatingServices}
+                >
                   {generatingServices ? "Génération..." : "Suggérer avec l'IA"}
                 </button>
                 {servicesError && <p className="error">{servicesError}</p>}
