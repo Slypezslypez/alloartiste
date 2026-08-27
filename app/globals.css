@@ -235,6 +235,7 @@ main { max-width: 1400px; margin: 0 auto; padding: 0 28px 80px; }
   display: inline-block; font-family: "JetBrains Mono", monospace; font-size: 10.5px; letter-spacing: 0.05em;
   color: var(--gold-deep); text-transform: uppercase; background: var(--gold-soft); padding: 3px 10px; border-radius: 999px; font-weight: 700;
 }
+.cat-specialty { margin-left: 6px; background: transparent; border: 1px solid var(--gold-dim); color: var(--muted); }
 .empty { text-align: center; padding: 76px 20px; color: var(--muted); border: 1px dashed var(--line); border-radius: var(--radius); background: var(--white); }
 .empty-title { font-family: "Playfair Display", serif; font-size: 26px; color: var(--ink); font-weight: 700; margin: 0 0 8px; }
 

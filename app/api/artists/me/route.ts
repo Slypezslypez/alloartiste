@@ -15,6 +15,7 @@ const schema = z
   .object({
     name: z.string().min(2).max(60).optional(),
     category: z.string().min(2).max(60).optional(),
+    specialty: z.string().max(60).optional().nullable(),
     country: z.enum(COUNTRIES).optional(),
     city: z.string().min(1).max(60).optional(),
     bio: z.string().max(600).optional(),

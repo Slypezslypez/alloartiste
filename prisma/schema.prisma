@@ -13,6 +13,7 @@ model Artist {
   email        String   @unique
   passwordHash String
   category     String
+  specialty    String? // sous-spécialité libre au sein de la famille (ex. "Bassiste" sous "Musicien·ne")
   city         String   @default("")
   country      String   @default("Belgique")
   bio          String   @default("")

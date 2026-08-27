@@ -4,13 +4,21 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { COUNTRIES, CITIES_BY_COUNTRY, type Country } from "@/lib/categories";
 
-export function InscriptionForm({ categories }: { categories: string[] }) {
+export function InscriptionForm({
+  categories,
+  specialtiesByCategory
+}: {
+  categories: string[];
+  specialtiesByCategory: Record<string, string[]>;
+}) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [category, setCategory] = useState<string>(categories[0] || "Autre");
   const [customCategory, setCustomCategory] = useState("");
+  const [specialty, setSpecialty] = useState("");
   const isCustom = category === "Autre";
+  const specialtySuggestions = specialtiesByCategory[category] || [];
   const [country, setCountry] = useState<Country>("Belgique");
   const [city, setCity] = useState<string>(CITIES_BY_COUNTRY["Belgique"][0]);
 
@@ -52,6 +60,21 @@ export function InscriptionForm({ categories }: { categories: string[] }) {
       }
     }
 
+    let finalSpecialty: string | null = null;
+    if (specialty.trim()) {
+      try {
+        const res = await fetch("/api/categories/normalize", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ raw: specialty.trim() })
+        });
+        const data = await res.json();
+        finalSpecialty = res.ok && data.category ? data.category : specialty.trim();
+      } catch {
+        finalSpecialty = specialty.trim();
+      }
+    }
+
     const res = await fetch("/api/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -60,6 +83,7 @@ export function InscriptionForm({ categories }: { categories: string[] }) {
         email: fd.get("email"),
         password: fd.get("password"),
         category: finalCategory,
+        specialty: finalSpecialty,
         country,
         city,
         bio: fd.get("bio"),
@@ -108,6 +132,26 @@ export function InscriptionForm({ categories }: { categories: string[] }) {
             <p className="hint">Elle sera automatiquement corrigée par l&apos;IA et deviendra une vraie catégorie, filtrable par les organisateurs.</p>
           </>
         )}
+
+        <label>Spécialité (facultatif)</label>
+        <input
+          type="text"
+          value={specialty}
+          onChange={(e) => setSpecialty(e.target.value)}
+          list="specialty-suggestions"
+          placeholder="ex. Bassiste, Trompettiste, Cracheur de feu..."
+          maxLength={60}
+        />
+        <datalist id="specialty-suggestions">
+          {specialtySuggestions.map((s) => (
+            <option key={s} value={s} />
+          ))}
+        </datalist>
+        <p className="hint">
+          Précisez votre talent au sein de votre catégorie. Il apparaîtra comme filtre pour les organisateurs et sera
+          proposé aux futurs inscrits de la même catégorie.
+        </p>
+
         <div className="field-row">
           <div>
             <label>Pays</label>
@@ -142,7 +186,7 @@ export function InscriptionForm({ categories }: { categories: string[] }) {
         <input name="promoCode" type="text" maxLength={60} placeholder="Laissez vide si vous n'en avez pas" />
         {error && <p className="error">{error}</p>}
         <div style={{ marginTop: 24 }}>
-          <button type="submit" className="btn btn-gold" disabled={loading}>
+          <button type="submit" className="btn btn-gold" disabled={loading} data-loading={loading}>
             {loading ? "Création..." : "Créer mon compte"}
           </button>
         </div>

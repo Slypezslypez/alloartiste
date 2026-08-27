@@ -73,6 +73,7 @@ export default async function ProfilePage({ params }: { params: { id: string } }
           <div className="profile-info-card">
             <div className="profile-top-row">
               <span className="cat mono">{artist.category}</span>
+              {artist.specialty && <span className="cat mono cat-specialty">{artist.specialty}</span>}
               {artist.city && (
                 <span className="mono profile-city">
                   📍 {artist.city}

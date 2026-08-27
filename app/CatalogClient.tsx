@@ -15,17 +15,26 @@ type ArtistCard = {
   reviewsCount: number;
   isVerified: boolean;
   createdAt: string; // ISO
+  specialty: string | null;
   nextEvent: { title: string; date: string } | null;
 };
 
 type SortOption = "newest" | "alpha" | "rating";
 
-export function CatalogClient({ artists }: { artists: ArtistCard[] }) {
+export function CatalogClient({
+  artists,
+  specialtiesByCategory
+}: {
+  artists: ArtistCard[];
+  specialtiesByCategory: Record<string, string[]>;
+}) {
   const [search, setSearch] = useState("");
   const [country, setCountry] = useState("Tous");
   const [city, setCity] = useState("Toutes");
   const [category, setCategory] = useState("Tous");
+  const [specialty, setSpecialty] = useState("Toutes");
   const [sort, setSort] = useState<SortOption>("newest");
+  const specialtyOptions = category === "Tous" ? [] : specialtiesByCategory[category] || [];
 
   // Synchronise avec le sélecteur de pays du menu (en haut du site) : lecture au chargement + écoute des changements en direct.
   useEffect(() => {
@@ -63,7 +72,8 @@ export function CatalogClient({ artists }: { artists: ArtistCard[] }) {
         const matchesCountry = country === "Tous" || (a.country || "Belgique") === country;
         const matchesCity = city === "Toutes" || a.city === city;
         const matchesCategory = category === "Tous" || a.category === category;
-        return matchesSearch && matchesCountry && matchesCity && matchesCategory;
+        const matchesSpecialty = specialty === "Toutes" || a.specialty === specialty;
+        return matchesSearch && matchesCountry && matchesCity && matchesCategory && matchesSpecialty;
       })
       .sort((a, b) => {
         if (sort === "alpha") return a.name.localeCompare(b.name, "fr");
@@ -71,7 +81,7 @@ export function CatalogClient({ artists }: { artists: ArtistCard[] }) {
         if (sort === "newest") return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
         return 0;
       });
-  }, [artists, search, country, city, category, sort]);
+  }, [artists, search, country, city, category, specialty, sort]);
 
   function resetFilters() {
     setSearch("");
@@ -81,6 +91,7 @@ export function CatalogClient({ artists }: { artists: ArtistCard[] }) {
     setCountry(saved === "France" || saved === "Tous" ? saved : "Belgique");
     setCity("Toutes");
     setCategory("Tous");
+    setSpecialty("Toutes");
     setSort("newest");
   }
 
@@ -89,7 +100,12 @@ export function CatalogClient({ artists }: { artists: ArtistCard[] }) {
     setCity("Toutes");
   }
 
-  const hasActiveFilters = search || country !== "Tous" || city !== "Toutes" || category !== "Tous";
+  function changeCategory(value: string) {
+    setCategory(value);
+    setSpecialty("Toutes");
+  }
+
+  const hasActiveFilters = search || country !== "Tous" || city !== "Toutes" || category !== "Tous" || specialty !== "Toutes";
 
   return (
     <div id="catalogue">
@@ -114,7 +130,7 @@ export function CatalogClient({ artists }: { artists: ArtistCard[] }) {
               </option>
             ))}
           </select>
-          <select value={category} onChange={(e) => setCategory(e.target.value)} className="search-select">
+          <select value={category} onChange={(e) => changeCategory(e.target.value)} className="search-select">
             <option value="Tous">Toutes les catégories</option>
             {allCategories.map((c) => (
               <option key={c} value={c}>
@@ -122,6 +138,16 @@ export function CatalogClient({ artists }: { artists: ArtistCard[] }) {
               </option>
             ))}
           </select>
+          {specialtyOptions.length > 0 && (
+            <select value={specialty} onChange={(e) => setSpecialty(e.target.value)} className="search-select">
+              <option value="Toutes">Toutes les spécialités</option>
+              {specialtyOptions.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </select>
+          )}
           <select value={city} onChange={(e) => setCity(e.target.value)} className="search-select">
             {cities.map((c) => (
               <option key={c} value={c}>
@@ -178,6 +204,7 @@ export function CatalogClient({ artists }: { artists: ArtistCard[] }) {
                     )}
                   </p>
                   <span className="cat mono">{a.category}</span>
+                  {a.specialty && <span className="cat mono cat-specialty">{a.specialty}</span>}
                   <div className="ticket-meta">
                     <span className="mono">
                       {a.city || "Belgique"}

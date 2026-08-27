@@ -10,6 +10,7 @@ type Artist = {
   name: string;
   email: string;
   category: string;
+  specialty: string | null;
   city: string;
   country: string;
   bio: string;
@@ -76,11 +77,13 @@ async function compressImage(file: File, maxDim = 1600, quality = 0.82): Promise
 export function DashboardClient({
   initialArtist,
   initialLeads,
-  initialUnavailableDates
+  initialUnavailableDates,
+  specialtiesByCategory
 }: {
   initialArtist: Artist;
   initialLeads: Lead[];
   initialUnavailableDates: string[];
+  specialtiesByCategory: Record<string, string[]>;
 }) {
   const [artist, setArtist] = useState(initialArtist);
   const [leads, setLeads] = useState(initialLeads);
@@ -96,6 +99,8 @@ export function DashboardClient({
   const [category, setCategory] = useState<string>(isKnownCategory ? initialArtist.category : "Autre");
   const [customCategory, setCustomCategory] = useState(isKnownCategory ? "" : initialArtist.category);
   const isCustomCategory = category === "Autre";
+  const [specialty, setSpecialty] = useState(initialArtist.specialty || "");
+  const specialtySuggestions = specialtiesByCategory[category] || [];
   const isKnownCountry = COUNTRIES.includes(initialArtist.country as any);
   const [country, setCountry] = useState<Country>(isKnownCountry ? (initialArtist.country as Country) : "Belgique");
   const [city, setCity] = useState<string>(initialArtist.city || CITIES_BY_COUNTRY[isKnownCountry ? (initialArtist.country as Country) : "Belgique"][0]);
@@ -265,12 +270,28 @@ export function DashboardClient({
       }
     }
 
+    let finalSpecialty: string | null = null;
+    if (specialty.trim()) {
+      try {
+        const res = await fetch("/api/categories/normalize", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ raw: specialty.trim() })
+        });
+        const data = await res.json();
+        finalSpecialty = res.ok && data.category ? data.category : specialty.trim();
+      } catch {
+        finalSpecialty = specialty.trim();
+      }
+    }
+
     const res = await fetch("/api/artists/me", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         name: fd.get("name"),
         category: finalCategory,
+        specialty: finalSpecialty,
         country,
         city,
         bio: bioValue,
@@ -649,6 +670,22 @@ export function DashboardClient({
                   <p className="hint">Elle sera automatiquement corrigée par l&apos;IA en enregistrant.</p>
                 </>
               )}
+
+              <label>Spécialité (facultatif)</label>
+              <input
+                type="text"
+                value={specialty}
+                onChange={(e) => setSpecialty(e.target.value)}
+                list="dashboard-specialty-suggestions"
+                placeholder="ex. Bassiste, Trompettiste, Cracheur de feu..."
+                maxLength={60}
+              />
+              <datalist id="dashboard-specialty-suggestions">
+                {specialtySuggestions.map((s) => (
+                  <option key={s} value={s} />
+                ))}
+              </datalist>
+              <p className="hint">Visible comme filtre pour les organisateurs et suggérée aux futurs inscrits de votre catégorie.</p>
 
               <label>Nom / nom de scène</label>
               <input name="name" type="text" defaultValue={artist.name} required style={{ fontSize: 22, fontFamily: "'Playfair Display', serif", fontWeight: 700 }} />

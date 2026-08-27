@@ -7,6 +7,7 @@ export const CATEGORIES = [
   "Humoriste",
   "Peintre / Plasticien·ne",
   "Photographe",
+  "Artiste de rue",
   "Autre"
 ] as const;
 
