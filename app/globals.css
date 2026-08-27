@@ -124,10 +124,14 @@ main { max-width: 1400px; margin: 0 auto; padding: 0 28px 80px; }
    de traiter la demande ou non. */
 .btn:active, button:not(:disabled):active { transform: scale(0.96); }
 
-/* Pendant le traitement (bouton désactivé + texte du type "Envoi...") : petite roue qui tourne,
-   pour bien montrer que la demande a été prise en compte. */
-.btn:disabled { cursor: progress; opacity: 0.75; transform: none; }
-.btn:disabled::after {
+/* Un bouton peut être désactivé simplement parce qu'un champ requis est vide (pas de
+   traitement en cours) : dans ce cas, juste grisé, pas de roue qui tourne. */
+.btn:disabled { cursor: not-allowed; opacity: 0.6; transform: none; }
+
+/* Pendant le traitement réel (data-loading="true", posé uniquement quand une requête est en
+   cours) : petite roue qui tourne, pour bien montrer que la demande a été prise en compte. */
+.btn:disabled[data-loading="true"] { cursor: progress; opacity: 0.75; }
+.btn:disabled[data-loading="true"]::after {
   content: ""; display: inline-block; width: 12px; height: 12px; margin-left: 9px; vertical-align: -2px;
   border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%;
   animation: btn-spin 0.6s linear infinite;
