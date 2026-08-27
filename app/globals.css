@@ -409,6 +409,21 @@ select {
 
 .blog-cover-large { aspect-ratio: 16/9; border-radius: var(--radius) var(--radius) 0 0; background: var(--cream); }
 .blog-cover-large img { object-fit: contain !important; }
+
+/* Mise en page "image et texte côte à côte" pour la page d'un article (essai demandé par
+   Silvio, en alternative à la grande image pleine largeur ci-dessus). */
+.article-layout { display: flex; gap: 32px; align-items: flex-start; margin-top: 22px; }
+.article-image-col { flex: 0 0 38%; position: sticky; top: 90px; }
+.article-cover-side {
+  width: 100%; aspect-ratio: 3/4; border-radius: var(--radius); overflow: hidden;
+  background: var(--cream); display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 3px 10px rgba(28,25,23,0.12);
+}
+.article-content-col { flex: 1; min-width: 0; }
+@media (max-width: 860px) {
+  .article-layout { flex-direction: column; gap: 20px; }
+  .article-image-col { position: static; flex: none; width: 100%; max-width: 360px; margin: 0 auto; }
+}
 .blog-icon-large { font-size: 72px; }
 .article-body { margin-top: 26px; max-width: 680px; }
 .article-body p { color: var(--ink-soft); font-size: 15px; line-height: 1.75; margin: 0 0 18px; font-weight: 300; }
