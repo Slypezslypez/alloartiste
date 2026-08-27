@@ -250,39 +250,54 @@ export function AdminArticles({ initialArticles }: { initialArticles: Article[] 
           <label>Image de couverture (optionnelle)</label>
           {form.imageUrl ? (
             <div style={{ marginBottom: 10 }}>
-              <p className="hint" style={{ marginTop: 0, marginBottom: 8 }}>
-                Cliquez sur la photo pour choisir la partie à toujours garder visible (utile si l&apos;image est recadrée sur une carte plus petite).
+              <p className="hint" style={{ marginTop: 0, marginBottom: 10 }}>
+                Utilisez les curseurs ci-dessous pour cadrer précisément (ex. faire apparaître un visage) : l&apos;aperçu de droite montre exactement le rendu sur le site.
               </p>
-              <div
-                onClick={(e) => {
-                  const rect = e.currentTarget.getBoundingClientRect();
-                  const x = Math.round(((e.clientX - rect.left) / rect.width) * 100);
-                  const y = Math.round(((e.clientY - rect.top) / rect.height) * 100);
-                  setForm((f) => ({ ...f, imagePositionX: Math.max(0, Math.min(100, x)), imagePositionY: Math.max(0, Math.min(100, y)) }));
-                }}
-                style={{ position: "relative", width: 320, maxWidth: "100%", aspectRatio: "16/9", borderRadius: 10, overflow: "hidden", cursor: "crosshair", border: "1px solid var(--line)" }}
-              >
-                <img
-                  src={form.imageUrl}
-                  alt=""
-                  style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: `${form.imagePositionX}% ${form.imagePositionY}%`, display: "block" }}
-                />
-                <div
-                  style={{
-                    position: "absolute",
-                    left: `${form.imagePositionX}%`,
-                    top: `${form.imagePositionY}%`,
-                    width: 16,
-                    height: 16,
-                    marginLeft: -8,
-                    marginTop: -8,
-                    borderRadius: "50%",
-                    border: "2px solid #fff",
-                    background: "var(--gold)",
-                    boxShadow: "0 0 0 1px rgba(0,0,0,0.3)"
-                  }}
-                />
+              <div style={{ display: "flex", gap: 18, flexWrap: "wrap", marginBottom: 12 }}>
+                <div>
+                  <p className="hint" style={{ marginTop: 0, marginBottom: 6 }}>Image complète (repère)</p>
+                  <div style={{ width: 160, aspectRatio: "1/1", borderRadius: 10, overflow: "hidden", border: "1px solid var(--line)", background: "var(--cream)" }}>
+                    <img src={form.imageUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "contain", display: "block" }} />
+                  </div>
+                </div>
+                <div>
+                  <p className="hint" style={{ marginTop: 0, marginBottom: 6 }}>Aperçu tel qu&apos;affiché sur le site</p>
+                  <div style={{ position: "relative", width: 280, maxWidth: "100%", aspectRatio: "16/9", borderRadius: 10, overflow: "hidden", border: "1px solid var(--line)" }}>
+                    <img
+                      src={form.imageUrl}
+                      alt=""
+                      style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: `${form.imagePositionX}% ${form.imagePositionY}%`, display: "block" }}
+                    />
+                  </div>
+                </div>
               </div>
+
+              <div className="field-row">
+                <div>
+                  <label>Position horizontale ({form.imagePositionX}%)</label>
+                  <input
+                    type="range"
+                    min={0}
+                    max={100}
+                    value={form.imagePositionX}
+                    onChange={(e) => setForm((f) => ({ ...f, imagePositionX: Number(e.target.value) }))}
+                  />
+                </div>
+                <div>
+                  <label>Position verticale ({form.imagePositionY}%)</label>
+                  <input
+                    type="range"
+                    min={0}
+                    max={100}
+                    value={form.imagePositionY}
+                    onChange={(e) => setForm((f) => ({ ...f, imagePositionY: Number(e.target.value) }))}
+                  />
+                </div>
+              </div>
+              <p className="hint" style={{ marginTop: 4 }}>
+                Pour un visage situé en haut de la photo, réduisez la position verticale ; s&apos;il est en bas, augmentez-la.
+              </p>
+
               <button type="button" className="btn btn-outline" style={{ padding: "6px 12px", fontSize: 12, marginTop: 8 }} onClick={() => setForm({ ...form, imageUrl: "" })}>
                 Retirer l&apos;image
               </button>
