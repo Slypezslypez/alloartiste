@@ -16,33 +16,37 @@ export default async function ArticlePage({ params }: { params: { slug: string }
         ← Retour aux actualités
       </Link>
 
-      <div className="blog-cover blog-cover-large" style={article.imageUrl ? {} : { background: article.gradient }}>
-        {article.imageUrl ? (
-          <img
-            src={article.imageUrl}
-            alt={article.title}
-            style={{ width: "100%", height: "100%", objectFit: "contain", objectPosition: `${article.imagePositionX}% ${article.imagePositionY}%` }}
-          />
-        ) : (
-          <span className="blog-icon blog-icon-large">{article.icon}</span>
-        )}
-      </div>
+      <div className="article-layout">
+        <div className="article-image-col">
+          <div className="article-cover-side" style={article.imageUrl ? {} : { background: article.gradient }}>
+            {article.imageUrl ? (
+              <img
+                src={article.imageUrl}
+                alt={article.title}
+                style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: `${article.imagePositionX}% ${article.imagePositionY}%` }}
+              />
+            ) : (
+              <span className="blog-icon blog-icon-large">{article.icon}</span>
+            )}
+          </div>
+        </div>
 
-      <div className="panel" style={{ marginTop: -60, position: "relative", zIndex: 2 }}>
-        <span className="blog-cat-badge mono" style={{ position: "static", marginBottom: 14, display: "inline-block" }}>
-          {article.category}
-        </span>
-        <h2 style={{ fontSize: 32 }}>{article.title}</h2>
-        <p className="sub" style={{ marginBottom: 6 }}>
-          L&apos;équipe AlloArtiste ·{" "}
-          {new Date(article.createdAt).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })} ·{" "}
-          {article.readTime} de lecture
-        </p>
+        <div className="article-content-col">
+          <span className="blog-cat-badge mono" style={{ position: "static", marginBottom: 14, display: "inline-block" }}>
+            {article.category}
+          </span>
+          <h2 style={{ fontSize: 32, marginTop: 0 }}>{article.title}</h2>
+          <p className="sub" style={{ marginBottom: 6 }}>
+            L&apos;équipe AlloArtiste ·{" "}
+            {new Date(article.createdAt).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })} ·{" "}
+            {article.readTime} de lecture
+          </p>
 
-        <div className="article-body">
-          {paragraphs.map((paragraph, i) => (
-            <p key={i}>{paragraph}</p>
-          ))}
+          <div className="article-body">
+            {paragraphs.map((paragraph, i) => (
+              <p key={i}>{paragraph}</p>
+            ))}
+          </div>
         </div>
       </div>
     </>
