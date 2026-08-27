@@ -18,6 +18,8 @@ const schema = z.object({
   category: z.string().min(2).max(60),
   body: z.string().min(20),
   imageUrl: z.string().url().optional().nullable(),
+  imagePositionX: z.number().min(0).max(100).optional(),
+  imagePositionY: z.number().min(0).max(100).optional(),
   icon: z.string().max(4).optional(),
   gradient: z.string().max(200).optional(),
   readTime: z.string().max(20).optional(),
