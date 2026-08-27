@@ -1,13 +1,13 @@
 export const CATEGORIES = [
-  "Musicien·ne",
+  "Artiste de rue",
   "Chanteur·se",
-  "Danseur·se",
   "Comédien·ne",
+  "Danseur·se",
   "DJ",
   "Humoriste",
+  "Musicien·ne",
   "Peintre / Plasticien·ne",
   "Photographe",
-  "Artiste de rue",
   "Autre"
 ] as const;
 
