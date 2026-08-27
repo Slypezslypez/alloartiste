@@ -199,7 +199,14 @@ export function AdminArticles({ initialArticles }: { initialArticles: Article[] 
               placeholder="Ex. Comment gérer le trac avant une prestation"
               disabled={generating}
             />
-            <button type="button" className="btn btn-gold" onClick={generateWithAI} disabled={generating || !aiTopic.trim()} style={{ whiteSpace: "nowrap" }}>
+            <button
+              type="button"
+              className="btn btn-gold"
+              onClick={generateWithAI}
+              disabled={generating || !aiTopic.trim()}
+              data-loading={generating}
+              style={{ whiteSpace: "nowrap" }}
+            >
               {generating ? "Génération..." : "Générer"}
             </button>
           </div>
@@ -308,7 +315,7 @@ export function AdminArticles({ initialArticles }: { initialArticles: Article[] 
           </label>
 
           <div style={{ marginTop: 24, display: "flex", gap: 10 }}>
-            <button type="submit" className="btn btn-gold" disabled={saving}>
+            <button type="submit" className="btn btn-gold" disabled={saving} data-loading={saving}>
               {saving ? "Enregistrement..." : "Enregistrer"}
             </button>
             <button type="button" className="btn btn-outline" onClick={() => setShowForm(false)}>
