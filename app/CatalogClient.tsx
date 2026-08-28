@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { CATEGORIES, COUNTRIES, isNewArrival } from "@/lib/categories";
+import { SPECIALTY_TREE } from "@/lib/specialtyTree";
 
 type ArtistCard = {
   id: string;
@@ -21,20 +22,14 @@ type ArtistCard = {
 
 type SortOption = "newest" | "alpha" | "rating";
 
-export function CatalogClient({
-  artists,
-  specialtiesByCategory
-}: {
-  artists: ArtistCard[];
-  specialtiesByCategory: Record<string, string[]>;
-}) {
+export function CatalogClient({ artists }: { artists: ArtistCard[] }) {
   const [search, setSearch] = useState("");
   const [country, setCountry] = useState("Tous");
   const [city, setCity] = useState("Toutes");
   const [category, setCategory] = useState("Tous");
   const [specialty, setSpecialty] = useState("Toutes");
   const [sort, setSort] = useState<SortOption>("newest");
-  const specialtyOptions = category === "Tous" ? [] : specialtiesByCategory[category] || [];
+  const specialtyOptions = category === "Tous" ? [] : SPECIALTY_TREE[category] || [];
 
   // Synchronise avec le sélecteur de pays du menu (en haut du site) : lecture au chargement + écoute des changements en direct.
   useEffect(() => {

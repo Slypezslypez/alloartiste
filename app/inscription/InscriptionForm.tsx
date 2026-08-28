@@ -3,22 +3,21 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { COUNTRIES, CITIES_BY_COUNTRY, type Country } from "@/lib/categories";
+import { SPECIALTY_TREE } from "@/lib/specialtyTree";
 
-export function InscriptionForm({
-  categories,
-  specialtiesByCategory
-}: {
-  categories: string[];
-  specialtiesByCategory: Record<string, string[]>;
-}) {
+export function InscriptionForm({ categories }: { categories: string[] }) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [category, setCategory] = useState<string>(categories[0] || "Autre");
   const [customCategory, setCustomCategory] = useState("");
-  const [specialty, setSpecialty] = useState("");
   const isCustom = category === "Autre";
-  const specialtySuggestions = specialtiesByCategory[category] || [];
+
+  const [specialty, setSpecialty] = useState("");
+  const [customSpecialty, setCustomSpecialty] = useState("");
+  const specialtyOptions = SPECIALTY_TREE[category] || [];
+  const isCustomSpecialty = specialty === "Autre";
+
   const [country, setCountry] = useState<Country>("Belgique");
   const [city, setCity] = useState<string>(CITIES_BY_COUNTRY["Belgique"][0]);
 
@@ -27,11 +26,35 @@ export function InscriptionForm({
     setCity(CITIES_BY_COUNTRY[value][0]);
   }
 
+  function changeCategory(value: string) {
+    setCategory(value);
+    setSpecialty("");
+    setCustomSpecialty("");
+  }
+
+  async function normalize(raw: string): Promise<string> {
+    try {
+      const res = await fetch("/api/categories/normalize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ raw })
+      });
+      const data = await res.json();
+      return res.ok && data.category ? data.category : raw;
+    } catch {
+      return raw;
+    }
+  }
+
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
 
     if (isCustom && !customCategory.trim()) {
+      setError("Précisez votre spécialité.");
+      return;
+    }
+    if (isCustomSpecialty && !customSpecialty.trim()) {
       setError("Précisez votre spécialité.");
       return;
     }
@@ -45,34 +68,11 @@ export function InscriptionForm({
 
     setLoading(true);
 
-    let finalCategory = category;
-    if (isCustom) {
-      try {
-        const res = await fetch("/api/categories/normalize", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ raw: customCategory.trim() })
-        });
-        const data = await res.json();
-        finalCategory = res.ok && data.category ? data.category : customCategory.trim();
-      } catch {
-        finalCategory = customCategory.trim();
-      }
-    }
+    const finalCategory = isCustom ? await normalize(customCategory.trim()) : category;
 
     let finalSpecialty: string | null = null;
-    if (specialty.trim()) {
-      try {
-        const res = await fetch("/api/categories/normalize", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ raw: specialty.trim() })
-        });
-        const data = await res.json();
-        finalSpecialty = res.ok && data.category ? data.category : specialty.trim();
-      } catch {
-        finalSpecialty = specialty.trim();
-      }
+    if (specialtyOptions.length > 0 && specialty) {
+      finalSpecialty = isCustomSpecialty ? await normalize(customSpecialty.trim()) : specialty;
     }
 
     const res = await fetch("/api/register", {
@@ -110,8 +110,8 @@ export function InscriptionForm({
       <form onSubmit={submit}>
         <label>Nom / nom de scène</label>
         <input name="name" type="text" required maxLength={60} />
-        <label>Catégorie</label>
-        <select value={category} onChange={(e) => setCategory(e.target.value)} required>
+        <label>Métier principal</label>
+        <select value={category} onChange={(e) => changeCategory(e.target.value)} required>
           {categories.map((c) => (
             <option key={c} value={c}>
               {c}
@@ -120,7 +120,7 @@ export function InscriptionForm({
         </select>
         {isCustom && (
           <>
-            <label>Précisez votre spécialité</label>
+            <label>Précisez votre métier</label>
             <input
               type="text"
               value={customCategory}
@@ -129,28 +129,38 @@ export function InscriptionForm({
               maxLength={60}
               required
             />
-            <p className="hint">Elle sera automatiquement corrigée par l&apos;IA et deviendra une vraie catégorie, filtrable par les organisateurs.</p>
+            <p className="hint">Il sera automatiquement corrigé par l&apos;IA et deviendra un vrai métier, filtrable par les organisateurs.</p>
           </>
         )}
 
-        <label>Spécialité (facultatif)</label>
-        <input
-          type="text"
-          value={specialty}
-          onChange={(e) => setSpecialty(e.target.value)}
-          list="specialty-suggestions"
-          placeholder="ex. Bassiste, Trompettiste, Cracheur de feu..."
-          maxLength={60}
-        />
-        <datalist id="specialty-suggestions">
-          {specialtySuggestions.map((s) => (
-            <option key={s} value={s} />
-          ))}
-        </datalist>
-        <p className="hint">
-          Précisez votre talent au sein de votre catégorie. Il apparaîtra comme filtre pour les organisateurs et sera
-          proposé aux futurs inscrits de la même catégorie.
-        </p>
+        {specialtyOptions.length > 0 && (
+          <>
+            <label>Spécialité (facultatif)</label>
+            <select value={specialty} onChange={(e) => setSpecialty(e.target.value)}>
+              <option value="">— Choisissez votre spécialité —</option>
+              {specialtyOptions.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </select>
+            {isCustomSpecialty && (
+              <>
+                <label>Précisez votre spécialité</label>
+                <input
+                  type="text"
+                  value={customSpecialty}
+                  onChange={(e) => setCustomSpecialty(e.target.value)}
+                  placeholder="ex. Théorbiste, Joueur de cornemuse..."
+                  maxLength={60}
+                  required
+                />
+                <p className="hint">Elle sera automatiquement corrigée par l&apos;IA.</p>
+              </>
+            )}
+            <p className="hint">Elle apparaîtra comme filtre pour les organisateurs qui cherchent ce talent précis.</p>
+          </>
+        )}
 
         <div className="field-row">
           <div>

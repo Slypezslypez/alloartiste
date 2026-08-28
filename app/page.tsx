@@ -39,15 +39,6 @@ export default async function HomePage() {
     nextEvent: nextEventByArtist.get(a.id) || null
   }));
 
-  // Spécialités en usage, groupées par famille : alimente le filtre secondaire du catalogue.
-  const specialtiesByCategory: Record<string, string[]> = {};
-  for (const a of visible) {
-    if (!a.specialty) continue;
-    if (!specialtiesByCategory[a.category]) specialtiesByCategory[a.category] = [];
-    if (!specialtiesByCategory[a.category].includes(a.specialty)) specialtiesByCategory[a.category].push(a.specialty);
-  }
-  for (const key of Object.keys(specialtiesByCategory)) specialtiesByCategory[key].sort();
-
   // Photos mises en avant : sélection manuelle depuis l'admin si définie, sinon automatique.
   const withPhotos = visible.filter((a) => a.photos.length > 0);
   const manualPicks = [settings.spotlightArtistId1, settings.spotlightArtistId2]
@@ -97,7 +88,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <CatalogClient artists={visible} specialtiesByCategory={specialtiesByCategory} />
+      <CatalogClient artists={visible} />
     </>
   );
 }

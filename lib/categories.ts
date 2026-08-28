@@ -1,18 +1,10 @@
-export const CATEGORIES = [
-  "Artiste de rue",
-  "Chanteur·se",
-  "Comédien·ne",
-  "Danseur·se",
-  "DJ",
-  "Humoriste",
-  "Magicien",
-  "Musicien·ne",
-  "Peintre / Plasticien·ne",
-  "Photographe",
-  "Autre"
-] as const;
+// Les familles de métiers viennent désormais de l'arborescence fermée métier -> spécialités
+// (voir lib/specialtyTree.ts), qui remplace l'ancienne liste courte + texte libre.
+import { FAMILIES } from "./specialtyTree";
 
-export type Category = (typeof CATEGORIES)[number];
+export const CATEGORIES = FAMILIES;
+
+export type Category = string;
 
 export const MAX_PHOTOS = 5;
 export const MAX_VIDEOS = 5;

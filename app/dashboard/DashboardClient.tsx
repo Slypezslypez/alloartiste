@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { CATEGORIES, COUNTRIES, CITIES_BY_COUNTRY, MAX_PHOTOS, MAX_VIDEOS, isSubscriptionVisible, type Country } from "@/lib/categories";
+import { SPECIALTY_TREE } from "@/lib/specialtyTree";
 import { AvailabilityCalendar } from "@/app/AvailabilityCalendar";
 
 type Artist = {
@@ -77,13 +78,11 @@ async function compressImage(file: File, maxDim = 1600, quality = 0.82): Promise
 export function DashboardClient({
   initialArtist,
   initialLeads,
-  initialUnavailableDates,
-  specialtiesByCategory
+  initialUnavailableDates
 }: {
   initialArtist: Artist;
   initialLeads: Lead[];
   initialUnavailableDates: string[];
-  specialtiesByCategory: Record<string, string[]>;
 }) {
   const [artist, setArtist] = useState(initialArtist);
   const [leads, setLeads] = useState(initialLeads);
@@ -100,7 +99,15 @@ export function DashboardClient({
   const [customCategory, setCustomCategory] = useState(isKnownCategory ? "" : initialArtist.category);
   const isCustomCategory = category === "Autre";
   const [specialty, setSpecialty] = useState(initialArtist.specialty || "");
-  const specialtySuggestions = specialtiesByCategory[category] || [];
+  const [customSpecialty, setCustomSpecialty] = useState("");
+  const specialtyOptions = SPECIALTY_TREE[category] || [];
+  const isCustomSpecialty = specialty === "Autre";
+
+  function changeCategory(value: string) {
+    setCategory(value);
+    setSpecialty("");
+    setCustomSpecialty("");
+  }
   const isKnownCountry = COUNTRIES.includes(initialArtist.country as any);
   const [country, setCountry] = useState<Country>(isKnownCountry ? (initialArtist.country as Country) : "Belgique");
   const [city, setCity] = useState<string>(initialArtist.city || CITIES_BY_COUNTRY[isKnownCountry ? (initialArtist.country as Country) : "Belgique"][0]);
@@ -271,17 +278,21 @@ export function DashboardClient({
     }
 
     let finalSpecialty: string | null = null;
-    if (specialty.trim()) {
-      try {
-        const res = await fetch("/api/categories/normalize", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ raw: specialty.trim() })
-        });
-        const data = await res.json();
-        finalSpecialty = res.ok && data.category ? data.category : specialty.trim();
-      } catch {
-        finalSpecialty = specialty.trim();
+    if (specialtyOptions.length > 0 && specialty) {
+      if (isCustomSpecialty && customSpecialty.trim()) {
+        try {
+          const res = await fetch("/api/categories/normalize", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ raw: customSpecialty.trim() })
+          });
+          const data = await res.json();
+          finalSpecialty = res.ok && data.category ? data.category : customSpecialty.trim();
+        } catch {
+          finalSpecialty = customSpecialty.trim();
+        }
+      } else if (!isCustomSpecialty) {
+        finalSpecialty = specialty;
       }
     }
 
@@ -626,8 +637,8 @@ export function DashboardClient({
             <form onSubmit={saveProfile}>
               <div className="field-row" style={{ marginBottom: 4 }}>
                 <div>
-                  <label>Catégorie</label>
-                  <select value={category} onChange={(e) => setCategory(e.target.value)}>
+                  <label>Métier principal</label>
+                  <select value={category} onChange={(e) => changeCategory(e.target.value)}>
                     {CATEGORIES.map((c) => (
                       <option key={c} value={c}>
                         {c}
@@ -671,21 +682,34 @@ export function DashboardClient({
                 </>
               )}
 
-              <label>Spécialité (facultatif)</label>
-              <input
-                type="text"
-                value={specialty}
-                onChange={(e) => setSpecialty(e.target.value)}
-                list="dashboard-specialty-suggestions"
-                placeholder="ex. Bassiste, Trompettiste, Cracheur de feu..."
-                maxLength={60}
-              />
-              <datalist id="dashboard-specialty-suggestions">
-                {specialtySuggestions.map((s) => (
-                  <option key={s} value={s} />
-                ))}
-              </datalist>
-              <p className="hint">Visible comme filtre pour les organisateurs et suggérée aux futurs inscrits de votre catégorie.</p>
+              {specialtyOptions.length > 0 && (
+                <>
+                  <label>Spécialité (facultatif)</label>
+                  <select value={specialty} onChange={(e) => setSpecialty(e.target.value)}>
+                    <option value="">— Choisissez votre spécialité —</option>
+                    {specialtyOptions.map((s) => (
+                      <option key={s} value={s}>
+                        {s}
+                      </option>
+                    ))}
+                  </select>
+                  {isCustomSpecialty && (
+                    <>
+                      <label>Précisez votre spécialité</label>
+                      <input
+                        type="text"
+                        value={customSpecialty}
+                        onChange={(e) => setCustomSpecialty(e.target.value)}
+                        placeholder="ex. Théorbiste, Joueur de cornemuse..."
+                        maxLength={60}
+                        required
+                      />
+                      <p className="hint">Elle sera automatiquement corrigée par l&apos;IA.</p>
+                    </>
+                  )}
+                  <p className="hint">Visible comme filtre pour les organisateurs et suggérée aux futurs inscrits de votre catégorie.</p>
+                </>
+              )}
 
               <label>Nom / nom de scène</label>
               <input name="name" type="text" defaultValue={artist.name} required style={{ fontSize: 22, fontFamily: "'Playfair Display', serif", fontWeight: 700 }} />
