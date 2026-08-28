@@ -16,7 +16,7 @@ type ArtistCard = {
   reviewsCount: number;
   isVerified: boolean;
   createdAt: string; // ISO
-  specialty: string | null;
+  specialties: string[];
   nextEvent: { title: string; date: string } | null;
 };
 
@@ -67,7 +67,7 @@ export function CatalogClient({ artists }: { artists: ArtistCard[] }) {
         const matchesCountry = country === "Tous" || (a.country || "Belgique") === country;
         const matchesCity = city === "Toutes" || a.city === city;
         const matchesCategory = category === "Tous" || a.category === category;
-        const matchesSpecialty = specialty === "Toutes" || a.specialty === specialty;
+        const matchesSpecialty = specialty === "Toutes" || a.specialties.includes(specialty);
         return matchesSearch && matchesCountry && matchesCity && matchesCategory && matchesSpecialty;
       })
       .sort((a, b) => {
@@ -199,7 +199,11 @@ export function CatalogClient({ artists }: { artists: ArtistCard[] }) {
                     )}
                   </p>
                   <span className="cat mono">{a.category}</span>
-                  {a.specialty && <span className="cat mono cat-specialty">{a.specialty}</span>}
+                  {a.specialties.map((s) => (
+                    <span key={s} className="cat mono cat-specialty">
+                      {s}
+                    </span>
+                  ))}
                   <div className="ticket-meta">
                     <span className="mono">
                       {a.city || "Belgique"}

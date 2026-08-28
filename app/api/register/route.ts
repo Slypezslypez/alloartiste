@@ -12,7 +12,7 @@ const schema = z
     email: z.string().email(),
     password: z.string().min(8),
     category: z.string().min(2).max(60),
-    specialty: z.string().max(60).optional().nullable(),
+    specialties: z.array(z.string().max(60)).max(3).optional(),
     country: z.enum(COUNTRIES).optional().default("Belgique"),
     city: z.string().min(1).max(60).optional().default("Autre"),
     bio: z.string().max(600).optional().default(""),
@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
   if (!parsed.success) {
     return NextResponse.json({ error: "Champs invalides." }, { status: 400 });
   }
-  const { name, email, password, category, specialty, country, city, bio, promoCode } = parsed.data;
+  const { name, email, password, category, specialties, country, city, bio, promoCode } = parsed.data;
 
   const existing = await prisma.artist.findUnique({ where: { email: email.toLowerCase() } });
   if (existing) {
@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
       email: email.toLowerCase(),
       passwordHash: await hashPassword(password),
       category,
-      specialty: specialty || null,
+      specialties: specialties || [],
       country,
       city,
       bio,

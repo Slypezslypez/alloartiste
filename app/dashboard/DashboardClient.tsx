@@ -11,7 +11,7 @@ type Artist = {
   name: string;
   email: string;
   category: string;
-  specialty: string | null;
+  specialties: string[];
   city: string;
   country: string;
   bio: string;
@@ -98,15 +98,23 @@ export function DashboardClient({
   const [category, setCategory] = useState<string>(isKnownCategory ? initialArtist.category : "Autre");
   const [customCategory, setCustomCategory] = useState(isKnownCategory ? "" : initialArtist.category);
   const isCustomCategory = category === "Autre";
-  const [specialty, setSpecialty] = useState(initialArtist.specialty || "");
+  const [specialties, setSpecialties] = useState<string[]>(initialArtist.specialties || []);
   const [customSpecialty, setCustomSpecialty] = useState("");
   const specialtyOptions = SPECIALTY_TREE[category] || [];
-  const isCustomSpecialty = specialty === "Autre";
+  const isCustomSpecialty = specialties.includes("Autre");
 
   function changeCategory(value: string) {
     setCategory(value);
-    setSpecialty("");
+    setSpecialties([]);
     setCustomSpecialty("");
+  }
+
+  function toggleSpecialty(value: string) {
+    setSpecialties((prev) => {
+      if (prev.includes(value)) return prev.filter((s) => s !== value);
+      if (prev.length >= 3) return prev; // max 3 spécialités
+      return [...prev, value];
+    });
   }
   const isKnownCountry = COUNTRIES.includes(initialArtist.country as any);
   const [country, setCountry] = useState<Country>(isKnownCountry ? (initialArtist.country as Country) : "Belgique");
@@ -277,23 +285,26 @@ export function DashboardClient({
       }
     }
 
-    let finalSpecialty: string | null = null;
-    if (specialtyOptions.length > 0 && specialty) {
-      if (isCustomSpecialty && customSpecialty.trim()) {
-        try {
-          const res = await fetch("/api/categories/normalize", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ raw: customSpecialty.trim() })
-          });
-          const data = await res.json();
-          finalSpecialty = res.ok && data.category ? data.category : customSpecialty.trim();
-        } catch {
-          finalSpecialty = customSpecialty.trim();
-        }
-      } else if (!isCustomSpecialty) {
-        finalSpecialty = specialty;
-      }
+    let finalSpecialties: string[] = [];
+    if (specialtyOptions.length > 0 && specialties.length > 0) {
+      const normalized = await Promise.all(
+        specialties.map(async (s) => {
+          if (s !== "Autre") return s;
+          if (!customSpecialty.trim()) return null;
+          try {
+            const res = await fetch("/api/categories/normalize", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ raw: customSpecialty.trim() })
+            });
+            const data = await res.json();
+            return res.ok && data.category ? data.category : customSpecialty.trim();
+          } catch {
+            return customSpecialty.trim();
+          }
+        })
+      );
+      finalSpecialties = Array.from(new Set(normalized.filter((s): s is string => !!s)));
     }
 
     const res = await fetch("/api/artists/me", {
@@ -302,7 +313,7 @@ export function DashboardClient({
       body: JSON.stringify({
         name: fd.get("name"),
         category: finalCategory,
-        specialty: finalSpecialty,
+        specialties: finalSpecialties,
         country,
         city,
         bio: bioValue,
@@ -684,18 +695,26 @@ export function DashboardClient({
 
               {specialtyOptions.length > 0 && (
                 <>
-                  <label>Spécialité (facultatif)</label>
-                  <select value={specialty} onChange={(e) => setSpecialty(e.target.value)}>
-                    <option value="">— Choisissez votre spécialité —</option>
-                    {specialtyOptions.map((s) => (
-                      <option key={s} value={s}>
-                        {s}
-                      </option>
-                    ))}
-                  </select>
+                  <label>Spécialités (facultatif, jusqu&apos;à 3)</label>
+                  <div className="specialty-grid">
+                    {specialtyOptions.map((s) => {
+                      const checked = specialties.includes(s);
+                      return (
+                        <label key={s} className="specialty-pill">
+                          <input
+                            type="checkbox"
+                            checked={checked}
+                            onChange={() => toggleSpecialty(s)}
+                            disabled={!checked && specialties.length >= 3}
+                          />
+                          {s}
+                        </label>
+                      );
+                    })}
+                  </div>
                   {isCustomSpecialty && (
                     <>
-                      <label>Précisez votre spécialité</label>
+                      <label>Précisez votre spécialité &quot;Autre&quot;</label>
                       <input
                         type="text"
                         value={customSpecialty}
@@ -707,7 +726,7 @@ export function DashboardClient({
                       <p className="hint">Elle sera automatiquement corrigée par l&apos;IA.</p>
                     </>
                   )}
-                  <p className="hint">Visible comme filtre pour les organisateurs et suggérée aux futurs inscrits de votre catégorie.</p>
+                  <p className="hint">Visibles comme filtres pour les organisateurs et suggérées aux futurs inscrits de votre catégorie.</p>
                 </>
               )}
 

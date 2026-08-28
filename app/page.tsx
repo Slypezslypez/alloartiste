@@ -35,7 +35,7 @@ export default async function HomePage() {
     reviewsCount: a.reviewsCount,
     isVerified: a.isVerified,
     createdAt: a.createdAt.toISOString(),
-    specialty: a.specialty,
+    specialties: a.specialties,
     nextEvent: nextEventByArtist.get(a.id) || null
   }));
 

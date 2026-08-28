@@ -13,10 +13,10 @@ export function InscriptionForm({ categories }: { categories: string[] }) {
   const [customCategory, setCustomCategory] = useState("");
   const isCustom = category === "Autre";
 
-  const [specialty, setSpecialty] = useState("");
+  const [specialties, setSpecialties] = useState<string[]>([]);
   const [customSpecialty, setCustomSpecialty] = useState("");
   const specialtyOptions = SPECIALTY_TREE[category] || [];
-  const isCustomSpecialty = specialty === "Autre";
+  const isCustomSpecialty = specialties.includes("Autre");
 
   const [country, setCountry] = useState<Country>("Belgique");
   const [city, setCity] = useState<string>(CITIES_BY_COUNTRY["Belgique"][0]);
@@ -28,8 +28,16 @@ export function InscriptionForm({ categories }: { categories: string[] }) {
 
   function changeCategory(value: string) {
     setCategory(value);
-    setSpecialty("");
+    setSpecialties([]);
     setCustomSpecialty("");
+  }
+
+  function toggleSpecialty(value: string) {
+    setSpecialties((prev) => {
+      if (prev.includes(value)) return prev.filter((s) => s !== value);
+      if (prev.length >= 3) return prev; // max 3 spécialités
+      return [...prev, value];
+    });
   }
 
   async function normalize(raw: string): Promise<string> {
@@ -70,9 +78,12 @@ export function InscriptionForm({ categories }: { categories: string[] }) {
 
     const finalCategory = isCustom ? await normalize(customCategory.trim()) : category;
 
-    let finalSpecialty: string | null = null;
-    if (specialtyOptions.length > 0 && specialty) {
-      finalSpecialty = isCustomSpecialty ? await normalize(customSpecialty.trim()) : specialty;
+    let finalSpecialties: string[] = [];
+    if (specialtyOptions.length > 0 && specialties.length > 0) {
+      const normalized = await Promise.all(
+        specialties.map((s) => (s === "Autre" ? normalize(customSpecialty.trim()) : Promise.resolve(s)))
+      );
+      finalSpecialties = Array.from(new Set(normalized));
     }
 
     const res = await fetch("/api/register", {
@@ -83,7 +94,7 @@ export function InscriptionForm({ categories }: { categories: string[] }) {
         email: fd.get("email"),
         password: fd.get("password"),
         category: finalCategory,
-        specialty: finalSpecialty,
+        specialties: finalSpecialties,
         country,
         city,
         bio: fd.get("bio"),
@@ -135,18 +146,26 @@ export function InscriptionForm({ categories }: { categories: string[] }) {
 
         {specialtyOptions.length > 0 && (
           <>
-            <label>Spécialité (facultatif)</label>
-            <select value={specialty} onChange={(e) => setSpecialty(e.target.value)}>
-              <option value="">— Choisissez votre spécialité —</option>
-              {specialtyOptions.map((s) => (
-                <option key={s} value={s}>
-                  {s}
-                </option>
-              ))}
-            </select>
+            <label>Spécialités (facultatif, jusqu&apos;à 3)</label>
+            <div className="specialty-grid">
+              {specialtyOptions.map((s) => {
+                const checked = specialties.includes(s);
+                return (
+                  <label key={s} className="specialty-pill">
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      onChange={() => toggleSpecialty(s)}
+                      disabled={!checked && specialties.length >= 3}
+                    />
+                    {s}
+                  </label>
+                );
+              })}
+            </div>
             {isCustomSpecialty && (
               <>
-                <label>Précisez votre spécialité</label>
+                <label>Précisez votre spécialité &quot;Autre&quot;</label>
                 <input
                   type="text"
                   value={customSpecialty}
@@ -158,7 +177,7 @@ export function InscriptionForm({ categories }: { categories: string[] }) {
                 <p className="hint">Elle sera automatiquement corrigée par l&apos;IA.</p>
               </>
             )}
-            <p className="hint">Elle apparaîtra comme filtre pour les organisateurs qui cherchent ce talent précis.</p>
+            <p className="hint">Elles apparaîtront comme filtres pour les organisateurs qui cherchent ce talent précis.</p>
           </>
         )}
 
