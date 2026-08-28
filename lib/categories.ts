@@ -5,6 +5,7 @@ export const CATEGORIES = [
   "Danseur·se",
   "DJ",
   "Humoriste",
+  "Magicien",
   "Musicien·ne",
   "Peintre / Plasticien·ne",
   "Photographe",
