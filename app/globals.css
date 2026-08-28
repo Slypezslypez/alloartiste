@@ -237,9 +237,20 @@ main { max-width: 1400px; margin: 0 auto; padding: 0 28px 80px; }
 }
 .cat-specialty { margin-left: 6px; background: transparent; border: 1px solid var(--gold-dim); color: var(--muted); }
 
-/* Sur la vignette du catalogue : seule la première spécialité reste visible en permanence.
-   Le métier et les éventuelles autres spécialités ne s'affichent qu'au survol de cette première
-   spécialité (l'arborescence "s'ouvre"), pour laisser de la place à l'information sur l'événement. */
+/* Sur la vignette du catalogue : seule la première spécialité reste visible en permanence, en texte
+   simple (pas de pastille dorée). Le métier et les éventuelles autres spécialités ne s'affichent qu'au
+   survol de cette première spécialité (l'arborescence "s'ouvre"), à la suite, dans le même style. */
+.ticket .stub .cat,
+.ticket .stub .cat-specialty {
+  display: inline;
+  background: none;
+  border: none;
+  padding: 0;
+  border-radius: 0;
+  font-weight: 400;
+  color: var(--muted);
+  margin: 0;
+}
 .ticket .stub .cat-hidden {
   opacity: 0;
   visibility: hidden;
@@ -247,6 +258,7 @@ main { max-width: 1400px; margin: 0 auto; padding: 0 28px 80px; }
   pointer-events: none;
   transition: opacity 0.15s;
 }
+.ticket .stub .cat-hidden::before { content: " · "; }
 .ticket .stub .cat-specialty-first:hover ~ .cat-hidden,
 .ticket .stub .cat-specialty-first:focus ~ .cat-hidden {
   opacity: 1;
