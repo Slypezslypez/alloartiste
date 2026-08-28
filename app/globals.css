@@ -237,20 +237,18 @@ main { max-width: 1400px; margin: 0 auto; padding: 0 28px 80px; }
 }
 .cat-specialty { margin-left: 6px; background: transparent; border: 1px solid var(--gold-dim); color: var(--muted); }
 
-/* Sur la vignette du catalogue uniquement : le métier/spécialité ne se montre qu'au survol,
-   pour laisser toute la place à l'information sur l'événement à venir. */
-.ticket .stub .cat,
-.ticket .stub .cat-specialty {
+/* Sur la vignette du catalogue : seule la première spécialité reste visible en permanence.
+   Le métier et les éventuelles autres spécialités ne s'affichent qu'au survol de cette première
+   spécialité (l'arborescence "s'ouvre"), pour laisser de la place à l'information sur l'événement. */
+.ticket .stub .cat-hidden {
   opacity: 0;
   visibility: hidden;
   position: absolute;
   pointer-events: none;
   transition: opacity 0.15s;
 }
-.ticket:hover .stub .cat,
-.ticket:hover .stub .cat-specialty,
-.ticket:focus-within .stub .cat,
-.ticket:focus-within .stub .cat-specialty {
+.ticket .stub .cat-specialty-first:hover ~ .cat-hidden,
+.ticket .stub .cat-specialty-first:focus ~ .cat-hidden {
   opacity: 1;
   visibility: visible;
   position: static;
