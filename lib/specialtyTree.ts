@@ -116,4 +116,4 @@ for (const key of Object.keys(SPECIALTY_TREE)) {
   SPECIALTY_TREE[key] = [...SPECIALTY_TREE[key], "Autre"];
 }
 
-export const FAMILIES = [...Object.keys(SPECIALTY_TREE), "Autre"];
+export const FAMILIES = [...Object.keys(SPECIALTY_TREE)].sort((a, b) => a.localeCompare(b, "fr")).concat("Autre");
