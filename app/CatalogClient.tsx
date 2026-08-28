@@ -17,7 +17,7 @@ type ArtistCard = {
   isVerified: boolean;
   createdAt: string; // ISO
   specialties: string[];
-  nextEvent: { title: string; date: string } | null;
+  nextEvent: { title: string; date: string; description: string | null } | null;
 };
 
 type SortOption = "newest" | "alpha" | "rating";
@@ -186,8 +186,11 @@ export function CatalogClient({ artists }: { artists: ArtistCard[] }) {
                 <div className="photo-wrap">
                   {isNew && <span className="badge badge-new">Nouveau</span>}
                   {a.nextEvent && (
-                    <span className="badge badge-event mono">
-                      {new Date(a.nextEvent.date).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })} · {a.nextEvent.title}
+                    <span className="badge badge-event">
+                      <span className="badge-event-title mono">
+                        {new Date(a.nextEvent.date).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })} · {a.nextEvent.title}
+                      </span>
+                      {a.nextEvent.description && <span className="badge-event-desc">{a.nextEvent.description}</span>}
                     </span>
                   )}
                   <img className="photo" src={a.photos[0] || placeholder()} alt={`Photo de ${a.name}`} />

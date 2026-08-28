@@ -16,10 +16,10 @@ export default async function HomePage() {
     prisma.event.findMany({ where: { date: { gte: new Date() } }, orderBy: { date: "asc" } })
   ]);
 
-  const nextEventByArtist = new Map<string, { title: string; date: string }>();
+  const nextEventByArtist = new Map<string, { title: string; date: string; description: string | null }>();
   for (const ev of upcomingEvents) {
     if (!nextEventByArtist.has(ev.artistId)) {
-      nextEventByArtist.set(ev.artistId, { title: ev.title, date: ev.date.toISOString() });
+      nextEventByArtist.set(ev.artistId, { title: ev.title, date: ev.date.toISOString(), description: ev.description });
     }
   }
 
