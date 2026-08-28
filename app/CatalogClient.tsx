@@ -50,8 +50,12 @@ export function CatalogClient({ artists }: { artists: ArtistCard[] }) {
   }, []);
 
   const allCategories = useMemo(() => {
-    const custom = new Set(artists.map((a) => a.category).filter((c) => !CATEGORIES.includes(c as any)));
-    return [...CATEGORIES, ...Array.from(custom).sort()];
+    // "Autre" reste toujours la toute dernière option ; tout le reste (métiers de la liste fermée +
+    // éventuels anciens libellés encore en base) est trié alphabétiquement ensemble, dans une seule liste.
+    const knownWithoutAutre = CATEGORIES.filter((c) => c !== "Autre");
+    const custom = artists.map((a) => a.category).filter((c) => !CATEGORIES.includes(c as any));
+    const merged = Array.from(new Set([...knownWithoutAutre, ...custom])).sort((a, b) => a.localeCompare(b, "fr"));
+    return [...merged, "Autre"];
   }, [artists]);
 
   const cities = useMemo(() => {
