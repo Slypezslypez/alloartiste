@@ -298,6 +298,39 @@ L'équipe AlloArtiste`,
   });
 }
 
+export async function sendPromoExpiredEmail(artistName: string, artistEmail: string) {
+  const html = renderEmail({
+    title: "Votre accès gratuit AlloArtiste est terminé",
+    bodyHtml: `
+      <p style="margin:0 0 14px;">Bonjour ${escapeHtml(artistName)},</p>
+      <p style="margin:0 0 14px;">
+        L'accès gratuit obtenu via votre code promo AlloArtiste est arrivé à son terme. Votre profil n'est donc plus
+        visible dans le catalogue pour le moment.
+      </p>
+      <p style="margin:0;font-size:13px;color:#8c8578;">
+        Vous pouvez réactiver votre visibilité à tout moment en souscrivant un abonnement (33€/an) depuis votre espace.
+      </p>
+    `,
+    ctaLabel: "Réactiver mon profil",
+    ctaUrl: `${process.env.NEXT_PUBLIC_SITE_URL || "https://alloartiste.be"}/dashboard`
+  });
+
+  return resend.emails.send({
+    from: process.env.EMAIL_FROM as string,
+    to: artistEmail,
+    subject: "Votre accès gratuit AlloArtiste est terminé",
+    text: `Bonjour ${artistName},
+
+L'accès gratuit obtenu via votre code promo AlloArtiste est arrivé à son terme. Votre profil n'est donc plus visible dans le catalogue pour le moment.
+
+Vous pouvez réactiver votre visibilité à tout moment en souscrivant un abonnement (33€/an) depuis votre espace :
+${process.env.NEXT_PUBLIC_SITE_URL || "https://alloartiste.be"}/dashboard
+
+L'équipe AlloArtiste`,
+    html
+  });
+}
+
 export async function sendPromoExpiryReminderEmail(artistName: string, artistEmail: string, expiryDate: Date) {
   const formattedDate = expiryDate.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
   const html = renderEmail({
