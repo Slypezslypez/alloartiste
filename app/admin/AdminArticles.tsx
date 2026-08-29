@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { compressImage } from "@/lib/imageCompress";
 
 type Article = {
   id: string;
@@ -104,9 +105,10 @@ export function AdminArticles({ initialArticles }: { initialArticles: Article[] 
     }
   }
 
-  async function uploadImage(file: File) {
+  async function uploadImage(rawFile: File) {
     setUploading(true);
     try {
+      const file = await compressImage(rawFile);
       const ext = file.name.split(".").pop() || "jpg";
       const presign = await fetch("/api/admin/articles/upload-image", {
         method: "POST",
