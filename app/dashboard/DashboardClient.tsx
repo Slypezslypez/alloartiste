@@ -33,6 +33,7 @@ type Artist = {
   paymentProvider: string | null;
   subscriptionStatus: string | null;
   currentPeriodEnd: string | null;
+  cancelAtPeriodEnd: boolean;
   calendarVisible: boolean;
 };
 
@@ -517,9 +518,15 @@ export function DashboardClient({
 
         {openTab === "abonnement" && active && (
           <div className="account-tab-panel">
-            <p className="sub" style={{ marginTop: 0 }}>
-              Renouvellement automatique le {new Date(artist.currentPeriodEnd as string).toLocaleDateString("fr-FR")}.
-            </p>
+            {artist.cancelAtPeriodEnd ? (
+              <p className="sub" style={{ marginTop: 0, color: "var(--red)" }}>
+                Abonnement annulé — reste actif jusqu&apos;au {new Date(artist.currentPeriodEnd as string).toLocaleDateString("fr-FR")}, ne sera pas renouvelé.
+              </p>
+            ) : (
+              <p className="sub" style={{ marginTop: 0 }}>
+                Renouvellement automatique le {new Date(artist.currentPeriodEnd as string).toLocaleDateString("fr-FR")}.
+              </p>
+            )}
             {artist.stripeCustomerId ? (
               <button className="btn btn-outline" onClick={openPortal}>
                 Gérer / annuler mon abonnement
