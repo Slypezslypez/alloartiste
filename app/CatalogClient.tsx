@@ -205,19 +205,12 @@ export function CatalogClient({ artists }: { artists: ArtistCard[] }) {
                       </span>
                     )}
                   </p>
-                  {a.specialties.length > 0 ? (
-                    <>
-                      <span className="cat mono cat-specialty cat-specialty-first">{a.specialties[0]}</span>
-                      <span className="cat mono cat-hidden">{a.category}</span>
-                      {a.specialties.slice(1).map((s) => (
-                        <span key={s} className="cat mono cat-specialty cat-hidden">
-                          {s}
-                        </span>
-                      ))}
-                    </>
-                  ) : (
-                    <span className="cat mono">{a.category}</span>
-                  )}
+                  <span className="cat mono cat-trigger">{a.category}</span>
+                  {a.specialties.map((s) => (
+                    <span key={s} className="cat mono cat-specialty cat-hidden">
+                      {s}
+                    </span>
+                  ))}
                   <div className="ticket-meta">
                     <span className="mono">
                       {a.city || "Belgique"}

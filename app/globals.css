@@ -237,9 +237,9 @@ main { max-width: 1400px; margin: 0 auto; padding: 0 28px 80px; }
 }
 .cat-specialty { margin-left: 6px; background: transparent; border: 1px solid var(--gold-dim); color: var(--muted); }
 
-/* Sur la vignette du catalogue : seule la première spécialité reste visible en permanence, en texte
-   simple (pas de pastille dorée). Le métier et les éventuelles autres spécialités ne s'affichent qu'au
-   survol de cette première spécialité (l'arborescence "s'ouvre"), à la suite, dans le même style. */
+/* Sur la vignette du catalogue : seul le métier reste visible en permanence, en texte simple (pas de
+   pastille dorée). Les éventuelles spécialités ne s'affichent qu'au survol du métier (l'arborescence
+   "s'ouvre"), à la suite, dans le même style. */
 .ticket .stub .cat,
 .ticket .stub .cat-specialty {
   display: inline;
@@ -259,8 +259,8 @@ main { max-width: 1400px; margin: 0 auto; padding: 0 28px 80px; }
   transition: opacity 0.15s;
 }
 .ticket .stub .cat-hidden::before { content: " · "; }
-.ticket .stub .cat-specialty-first:hover ~ .cat-hidden,
-.ticket .stub .cat-specialty-first:focus ~ .cat-hidden {
+.ticket .stub .cat-trigger:hover ~ .cat-hidden,
+.ticket .stub .cat-trigger:focus ~ .cat-hidden {
   opacity: 1;
   visibility: visible;
   position: static;
