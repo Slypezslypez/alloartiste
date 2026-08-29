@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { CATEGORIES, COUNTRIES, isNewArrival } from "@/lib/categories";
 import { SPECIALTY_TREE } from "@/lib/specialtyTree";
 
@@ -20,7 +21,7 @@ type ArtistCard = {
   isVerified: boolean;
   createdAt: string; // ISO
   specialties: string[];
-  nextEvent: { title: string; date: string; description: string | null } | null;
+  hasUpcomingEvent: boolean;
 };
 
 type SortOption = "newest" | "alpha" | "rating";
@@ -58,6 +59,7 @@ function formatPriceRange(min: number | null, max: number | null): string | null
 }
 
 export function CatalogClient({ artists }: { artists: ArtistCard[] }) {
+  const router = useRouter();
   const [search, setSearch] = useState("");
   const [country, setCountry] = useState("Tous");
   const [city, setCity] = useState("Toutes");
@@ -224,13 +226,18 @@ export function CatalogClient({ artists }: { artists: ArtistCard[] }) {
               <Link key={a.id} className="ticket" href={`/profil/${a.id}`}>
                 <div className="photo-wrap">
                   {isNew && <span className="badge badge-new">Nouveau</span>}
-                  {a.nextEvent && (
-                    <span className="badge badge-event">
-                      <span className="badge-event-title mono">
-                        {new Date(a.nextEvent.date).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })} · {a.nextEvent.title}
-                      </span>
-                      {a.nextEvent.description && <span className="badge-event-desc">{a.nextEvent.description}</span>}
-                    </span>
+                  {a.hasUpcomingEvent && (
+                    <button
+                      type="button"
+                      className="badge-event-btn"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        router.push(`/profil/${a.id}#evenements`);
+                      }}
+                    >
+                      📅 Mes événements
+                    </button>
                   )}
                   {isPlaying ? (
                     <iframe
