@@ -158,7 +158,7 @@ model SiteSettings {
   heroLine1     String @default("TROUVEZ")
   heroEmphasis  String @default("L'ARTISTE")
   heroLine2     String @default("QU'IL VOUS FAUT")
-  heroSubtitle  String @default("Musiciens, danseurs, comédiens, DJs, plasticiens... chaque profil présente jusqu'à 5 photos et 5 vidéos pour se montrer sous son meilleur jour. Contactez directement l'artiste pour un devis.")
+  heroSubtitle  String @default("Musiciens, danseurs, comédiens, DJs... chaque profil présente jusqu'à 5 photos et 5 vidéos pour se montrer sous son meilleur jour. Contactez directement l'artiste pour un devis.")
 
   // Statistiques affichées (le nombre d'artistes est calculé automatiquement)
   statCommissionValue String @default("0%")
