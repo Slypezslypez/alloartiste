@@ -292,6 +292,17 @@ main { max-width: 1400px; margin: 0 auto; padding: 0 28px 80px; }
   font-size: 11px; opacity: 0.85; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .verified-check { color: var(--gold-deep); font-size: 15px; margin-left: 6px; }
+
+/* Bouton lecture vidéo sur la vignette du catalogue : centré sur la photo, ne déclenche pas la
+   navigation vers la fiche (voir onClick avec stopPropagation dans CatalogClient.tsx). */
+.play-btn {
+  position: absolute; inset: 0; margin: auto; width: 48px; height: 48px; border-radius: 50%;
+  background: rgba(28,25,23,0.72); color: #fff; border: 2px solid rgba(255,255,255,0.85);
+  display: flex; align-items: center; justify-content: center; font-size: 16px; padding-left: 3px;
+  cursor: pointer; z-index: 3; transition: transform 0.15s, background 0.15s;
+}
+.play-btn:hover { background: var(--gold-deep); border-color: var(--gold-deep); transform: scale(1.08); }
+.video-preview { width: 100%; aspect-ratio: 4 / 3; border: none; display: block; background: #000; }
 .ticket-meta { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; font-size: 11px; color: var(--muted); }
 .rating { color: var(--gold-deep); font-weight: 700; }
 .rating .dim { color: var(--muted); font-weight: 400; }

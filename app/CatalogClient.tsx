@@ -12,6 +12,7 @@ type ArtistCard = {
   city: string;
   country: string;
   photos: string[];
+  videos: string[];
   rating: number;
   reviewsCount: number;
   isVerified: boolean;
@@ -22,6 +23,30 @@ type ArtistCard = {
 
 type SortOption = "newest" | "alpha" | "rating";
 
+// Convertit un lien YouTube/Vimeo en URL d'intégration (iframe) pour la lecture directe sur la vignette.
+// Les liens vers un autre type d'hébergeur (ou un fichier vidéo direct) ne montrent pas d'aperçu ici ;
+// la vidéo reste consultable sur la fiche complète de l'artiste.
+function getEmbedUrl(url: string): string | null {
+  try {
+    const u = new URL(url);
+    if (u.hostname.includes("youtu.be")) {
+      const id = u.pathname.slice(1);
+      return id ? `https://www.youtube-nocookie.com/embed/${id}?autoplay=1` : null;
+    }
+    if (u.hostname.includes("youtube.com")) {
+      const id = u.searchParams.get("v");
+      return id ? `https://www.youtube-nocookie.com/embed/${id}?autoplay=1` : null;
+    }
+    if (u.hostname.includes("vimeo.com")) {
+      const id = u.pathname.split("/").filter(Boolean)[0];
+      return id ? `https://player.vimeo.com/video/${id}?autoplay=1` : null;
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}
+
 export function CatalogClient({ artists }: { artists: ArtistCard[] }) {
   const [search, setSearch] = useState("");
   const [country, setCountry] = useState("Tous");
@@ -29,6 +54,7 @@ export function CatalogClient({ artists }: { artists: ArtistCard[] }) {
   const [category, setCategory] = useState("Tous");
   const [specialty, setSpecialty] = useState("Toutes");
   const [sort, setSort] = useState<SortOption>("newest");
+  const [playingId, setPlayingId] = useState<string | null>(null);
   const specialtyOptions = category === "Tous" ? [] : SPECIALTY_TREE[category] || [];
 
   // Synchronise avec le sélecteur de pays du menu (en haut du site) : lecture au chargement + écoute des changements en direct.
@@ -181,6 +207,8 @@ export function CatalogClient({ artists }: { artists: ArtistCard[] }) {
         <div className="grid">
           {filtered.map((a) => {
             const isNew = isNewArrival(a.createdAt);
+            const embedUrl = a.videos[0] ? getEmbedUrl(a.videos[0]) : null;
+            const isPlaying = playingId === a.id && embedUrl;
             return (
               <Link key={a.id} className="ticket" href={`/profil/${a.id}`}>
                 <div className="photo-wrap">
@@ -193,7 +221,33 @@ export function CatalogClient({ artists }: { artists: ArtistCard[] }) {
                       {a.nextEvent.description && <span className="badge-event-desc">{a.nextEvent.description}</span>}
                     </span>
                   )}
-                  <img className="photo" src={a.photos[0] || placeholder()} alt={`Photo de ${a.name}`} />
+                  {isPlaying ? (
+                    <iframe
+                      className="photo video-preview"
+                      src={embedUrl as string}
+                      allow="autoplay; encrypted-media; picture-in-picture"
+                      allowFullScreen
+                      onClick={(e) => e.preventDefault()}
+                    />
+                  ) : (
+                    <>
+                      <img className="photo" src={a.photos[0] || placeholder()} alt={`Photo de ${a.name}`} />
+                      {embedUrl && (
+                        <button
+                          type="button"
+                          className="play-btn"
+                          aria-label={`Voir la vidéo de ${a.name}`}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setPlayingId(a.id);
+                          }}
+                        >
+                          ▶
+                        </button>
+                      )}
+                    </>
+                  )}
                 </div>
                 <div className="perf" />
                 <div className="stub">
