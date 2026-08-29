@@ -104,6 +104,7 @@ export function AdminClient({
   const [leads, setLeads] = useState(initialLeads);
   const [messages, setMessages] = useState(initialMessages);
   const [search, setSearch] = useState("");
+  const [extendingId, setExtendingId] = useState<string | null>(null);
 
   async function logout() {
     await fetch("/api/admin/logout", { method: "POST" });
@@ -126,6 +127,22 @@ export function AdminClient({
     if (!confirm(`Supprimer définitivement le profil de ${name} ? Cette action est irréversible.`)) return;
     const res = await fetch(`/api/admin/artists/${id}`, { method: "DELETE" });
     if (res.ok) setArtists((list) => list.filter((a) => a.id !== id));
+  }
+
+  async function extendOneYear(id: string) {
+    setExtendingId(id);
+    const res = await fetch(`/api/admin/artists/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ extendOneYear: true })
+    });
+    const data = await res.json().catch(() => ({}));
+    setExtendingId(null);
+    if (res.ok) {
+      setArtists((list) =>
+        list.map((a) => (a.id === id ? { ...a, subscriptionStatus: "active", currentPeriodEnd: data.currentPeriodEnd } : a))
+      );
+    }
   }
 
   async function updateLeadStatus(id: string, status: Lead["status"]) {
@@ -219,12 +236,26 @@ export function AdminClient({
                       <span className="mono" style={{ fontSize: 12, color: "var(--muted)" }}>
                         {a.category} · {a.city || "—"}
                       </span>
-                      <div style={{ fontSize: 12, color: "var(--muted)", marginTop: 2 }}>{a.email}</div>
+                      <div style={{ fontSize: 12, color: "var(--muted)", marginTop: 2 }}>
+                        {a.email}
+                        {a.currentPeriodEnd && (
+                          <span> · Expire le {new Date(a.currentPeriodEnd).toLocaleDateString("fr-FR")}</span>
+                        )}
+                      </div>
                     </div>
                     <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
                       <span className={`admin-tag ${visible ? "tag-active" : "tag-inactive"}`}>
                         {visible ? "Abonné" : "Non abonné"}
                       </span>
+                      <button
+                        className="btn btn-outline"
+                        style={{ padding: "6px 12px", fontSize: 12 }}
+                        onClick={() => extendOneYear(a.id)}
+                        disabled={extendingId === a.id}
+                        data-loading={extendingId === a.id}
+                      >
+                        {extendingId === a.id ? "..." : "+1 an"}
+                      </button>
                       <button className="btn btn-outline" style={{ padding: "6px 12px", fontSize: 12 }} onClick={() => toggleVerified(a.id, a.isVerified)}>
                         {a.isVerified ? "✓ Vérifié" : "Marquer vérifié"}
                       </button>
