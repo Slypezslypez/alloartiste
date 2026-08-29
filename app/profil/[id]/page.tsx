@@ -118,15 +118,30 @@ export default async function ProfilePage({ params }: { params: { id: string } }
 
             {events.length > 0 && (
               <>
-                <p className="profile-section-label mono">Prochains événements</p>
+                <p className="profile-section-label mono" id="evenements">
+                  Prochains événements
+                </p>
                 <div className="profile-events-list">
                   {events.map((ev) => (
                     <div key={ev.id} className="profile-event-item">
-                      <span className="profile-event-date mono">
-                        {new Date(ev.date).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
-                      </span>
-                      <strong>{ev.title}</strong>
-                      {ev.description && <p>{ev.description}</p>}
+                      {ev.imageUrl && (
+                        <img src={ev.imageUrl} alt={ev.title} className="profile-event-image" />
+                      )}
+                      <div className="profile-event-body">
+                        <span className="profile-event-date mono">
+                          {new Date(ev.date).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
+                          {" · "}
+                          {new Date(ev.date).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
+                        </span>
+                        <strong>{ev.title}</strong>
+                        {ev.location && <p className="profile-event-location">📍 {ev.location}</p>}
+                        {ev.description && <p>{ev.description}</p>}
+                        {ev.bookingLink && (
+                          <a href={ev.bookingLink} target="_blank" rel="noopener noreferrer" className="btn btn-outline profile-event-book-btn">
+                            Réserver / infos
+                          </a>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>
