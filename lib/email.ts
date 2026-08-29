@@ -259,3 +259,75 @@ L'équipe AlloArtiste`,
     html
   });
 }
+
+export async function sendPromoCodeEmail(recipientEmail: string, code: string) {
+  const registerUrl = `${process.env.NEXT_PUBLIC_SITE_URL || "https://alloartiste.be"}/inscription`;
+  const html = renderEmail({
+    title: "Votre accès gratuit AlloArtiste",
+    bodyHtml: `
+      <p style="margin:0 0 14px;">Bonjour,</p>
+      <p style="margin:0 0 14px;">
+        Vous disposez d'un code vous donnant un accès gratuit d'un an à AlloArtiste, l'annuaire d'artistes pour
+        producteurs et organisateurs. Il ne vous reste plus qu'à créer votre profil et l'entrer à l'inscription.
+      </p>
+      <p style="margin:0 0 14px;">
+        Votre code : <strong style="font-family:monospace;font-size:16px;letter-spacing:0.05em;">${escapeHtml(code)}</strong>
+      </p>
+      <p style="margin:0;font-size:13px;color:#8c8578;">Ce code est à usage unique et ne fonctionnera qu'une seule fois.</p>
+    `,
+    ctaLabel: "Créer mon profil",
+    ctaUrl: registerUrl
+  });
+
+  return resend.emails.send({
+    from: process.env.EMAIL_FROM as string,
+    to: recipientEmail,
+    subject: "Votre accès gratuit AlloArtiste",
+    text: `Bonjour,
+
+Vous disposez d'un code vous donnant un accès gratuit d'un an à AlloArtiste, l'annuaire d'artistes pour producteurs et organisateurs. Il ne vous reste plus qu'à créer votre profil et l'entrer à l'inscription.
+
+Votre code : ${code}
+
+Inscrivez-vous ici : ${registerUrl}
+
+Ce code est à usage unique et ne fonctionnera qu'une seule fois.
+
+L'équipe AlloArtiste`,
+    html
+  });
+}
+
+export async function sendPromoExpiryReminderEmail(artistName: string, artistEmail: string, expiryDate: Date) {
+  const formattedDate = expiryDate.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+  const html = renderEmail({
+    title: "Votre accès gratuit se termine bientôt",
+    bodyHtml: `
+      <p style="margin:0 0 14px;">Bonjour ${escapeHtml(artistName)},</p>
+      <p style="margin:0 0 14px;">
+        L'accès gratuit obtenu via votre code promo AlloArtiste se termine le <strong>${escapeHtml(formattedDate)}</strong>.
+        Passé cette date, votre profil ne sera plus visible dans le catalogue tant qu'un abonnement (33€/an) n'est pas activé.
+      </p>
+      <p style="margin:0;font-size:13px;color:#8c8578;">
+        Vous pouvez activer votre abonnement à tout moment depuis votre espace, avant ou après cette date.
+      </p>
+    `,
+    ctaLabel: "Accéder à mon espace",
+    ctaUrl: `${process.env.NEXT_PUBLIC_SITE_URL || "https://alloartiste.be"}/dashboard`
+  });
+
+  return resend.emails.send({
+    from: process.env.EMAIL_FROM as string,
+    to: artistEmail,
+    subject: "Votre accès gratuit AlloArtiste se termine bientôt",
+    text: `Bonjour ${artistName},
+
+L'accès gratuit obtenu via votre code promo AlloArtiste se termine le ${formattedDate}. Passé cette date, votre profil ne sera plus visible dans le catalogue tant qu'un abonnement (33€/an) n'est pas activé.
+
+Vous pouvez activer votre abonnement à tout moment depuis votre espace, avant ou après cette date :
+${process.env.NEXT_PUBLIC_SITE_URL || "https://alloartiste.be"}/dashboard
+
+L'équipe AlloArtiste`,
+    html
+  });
+}
