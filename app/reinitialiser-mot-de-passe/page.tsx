@@ -86,7 +86,7 @@ function ReinitialiserMotDePasseForm() {
           <input name="confirm" type="password" required minLength={8} />
           {error && <p className="error">{error}</p>}
           <div style={{ marginTop: 24 }}>
-            <button type="submit" className="btn btn-gold" disabled={loading}>
+            <button type="submit" className="btn btn-gold" disabled={loading} data-loading={loading}>
               {loading ? "Enregistrement..." : "Réinitialiser mon mot de passe"}
             </button>
           </div>

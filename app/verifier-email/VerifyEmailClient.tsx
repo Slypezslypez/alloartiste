@@ -25,7 +25,7 @@ export function VerifyEmailClient({ email, error }: { email: string; error?: str
       {error === "lien_expire" && <p className="error">Ce lien a expiré. Demandez-en un nouveau ci-dessous.</p>}
       {error === "lien_invalide" && <p className="error">Ce lien n&apos;est pas valide. Demandez-en un nouveau ci-dessous.</p>}
 
-      <button className="btn btn-gold" onClick={resend} disabled={sending}>
+      <button className="btn btn-gold" onClick={resend} disabled={sending} data-loading={sending}>
         {sending ? "Envoi..." : "Renvoyer l'email de confirmation"}
       </button>
 

@@ -44,7 +44,7 @@ export default function ConnexionPage() {
         </p>
         {error && <p className="error">{error}</p>}
         <div style={{ marginTop: 24 }}>
-          <button type="submit" className="btn btn-gold" disabled={loading}>
+          <button type="submit" className="btn btn-gold" disabled={loading} data-loading={loading}>
             {loading ? "Connexion..." : "Se connecter"}
           </button>
         </div>

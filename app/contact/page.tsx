@@ -56,7 +56,7 @@ export default function ContactPage() {
           <textarea name="message" required minLength={10} maxLength={3000} placeholder="Décrivez votre demande..." />
           {status === "error" && <p className="error">L&apos;envoi a échoué, réessayez.</p>}
           <div style={{ marginTop: 20 }}>
-            <button type="submit" className="btn btn-gold" disabled={status === "sending"}>
+            <button type="submit" className="btn btn-gold" disabled={status === "sending"} data-loading={status === "sending"}>
               {status === "sending" ? "Envoi..." : "Envoyer"}
             </button>
           </div>

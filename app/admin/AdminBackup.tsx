@@ -75,7 +75,7 @@ export function AdminBackup() {
         Télécharge un seul fichier contenant tous les profils d&apos;artistes, demandes de contact, dates
         bloquées, messages de contact, articles, codes d&apos;invitation et réglages du site.
       </p>
-      <button className="btn btn-gold" onClick={exportBackup} disabled={exporting}>
+      <button className="btn btn-gold" onClick={exportBackup} disabled={exporting} data-loading={exporting}>
         {exporting ? "Export en cours..." : "Télécharger la sauvegarde"}
       </button>
 

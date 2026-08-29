@@ -391,7 +391,7 @@ export function AdminSettings({ initialSettings, artistOptions }: { initialSetti
       {message && <p className={message.includes("Échec") ? "error" : "success"} style={{ marginLeft: 0 }}>{message}</p>}
 
       <div style={{ marginTop: 4 }}>
-        <button type="submit" className="btn btn-gold" disabled={saving}>
+        <button type="submit" className="btn btn-gold" disabled={saving} data-loading={saving}>
           {saving ? "Enregistrement..." : "Enregistrer les réglages"}
         </button>
       </div>

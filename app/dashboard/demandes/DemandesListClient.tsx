@@ -65,6 +65,7 @@ export function DemandesListClient({ initialLeads }: { initialLeads: Lead[] }) {
                 className="btn btn-outline"
                 onClick={() => deleteLead(lead.id)}
                 disabled={deletingId === lead.id}
+                data-loading={deletingId === lead.id}
                 style={{ padding: "6px 12px", fontSize: 12, color: "var(--red)", borderColor: "var(--red)" }}
               >
                 {deletingId === lead.id ? "..." : "Supprimer"}

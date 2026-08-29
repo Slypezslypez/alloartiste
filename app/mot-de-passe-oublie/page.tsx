@@ -32,7 +32,7 @@ export default function MotDePasseOubliePage() {
           <label>Email</label>
           <input name="email" type="email" required />
           <div style={{ marginTop: 24 }}>
-            <button type="submit" className="btn btn-gold" disabled={status === "sending"}>
+            <button type="submit" className="btn btn-gold" disabled={status === "sending"} data-loading={status === "sending"}>
               {status === "sending" ? "Envoi..." : "Envoyer le lien"}
             </button>
           </div>
