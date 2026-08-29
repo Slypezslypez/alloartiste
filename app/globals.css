@@ -230,7 +230,16 @@ main { max-width: 1400px; margin: 0 auto; padding: 0 28px 80px; }
 }
 .ticket:hover { transform: translateY(-4px); border-color: var(--gold); box-shadow: 0 12px 28px rgba(201,146,44,0.14); }
 .photo-wrap { position: relative; }
-.ticket .photo { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; object-position: center top; display: block; background: var(--line); }
+.ticket .photo {
+  width: 100%;
+  /* Cadre plus haut (moins large) que l'ancien 4/3 : les photos, souvent en portrait,
+     étaient trop recadrées et coupaient une grande partie de l'image. */
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  object-position: center 20%;
+  display: block;
+  background: var(--line);
+}
 .stub { padding: 18px 18px 20px; position: relative; }
 .perf { display: none; }
 .ticket .name { font-family: "Playfair Display", serif; font-weight: 700; font-size: 19px; margin: 0 0 4px; color: var(--ink); display: flex; align-items: center; }
