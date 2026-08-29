@@ -6,7 +6,10 @@ import { getCurrentArtist } from "@/lib/auth";
 const schema = z.object({
   title: z.string().min(2).max(140),
   date: z.coerce.date(),
-  description: z.string().max(400).optional().nullable()
+  description: z.string().max(400).optional().nullable(),
+  location: z.string().max(200).optional().nullable(),
+  imageUrl: z.string().url().or(z.literal("")).optional().nullable(),
+  bookingLink: z.string().url().or(z.literal("")).optional().nullable()
 });
 
 export async function GET() {
@@ -29,7 +32,15 @@ export async function POST(req: NextRequest) {
   if (!parsed.success) return NextResponse.json({ error: "Champs invalides." }, { status: 400 });
 
   const event = await prisma.event.create({
-    data: { artistId: artist.id, title: parsed.data.title, date: parsed.data.date, description: parsed.data.description || null }
+    data: {
+      artistId: artist.id,
+      title: parsed.data.title,
+      date: parsed.data.date,
+      description: parsed.data.description || null,
+      location: parsed.data.location || null,
+      imageUrl: parsed.data.imageUrl || null,
+      bookingLink: parsed.data.bookingLink || null
+    }
   });
   return NextResponse.json(event);
 }
