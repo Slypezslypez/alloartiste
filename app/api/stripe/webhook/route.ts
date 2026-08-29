@@ -26,7 +26,8 @@ export async function POST(req: NextRequest) {
           data: {
             stripeSubscriptionId: sub.id,
             subscriptionStatus: sub.status,
-            currentPeriodEnd: new Date(sub.current_period_end * 1000)
+            currentPeriodEnd: new Date(sub.current_period_end * 1000),
+            cancelAtPeriodEnd: sub.cancel_at_period_end
           }
         });
       }
@@ -71,7 +72,8 @@ async function updateByCustomer(sub: Stripe.Subscription) {
     where: { stripeSubscriptionId: sub.id },
     data: {
       subscriptionStatus: sub.status,
-      currentPeriodEnd: new Date(sub.current_period_end * 1000)
+      currentPeriodEnd: new Date(sub.current_period_end * 1000),
+      cancelAtPeriodEnd: sub.cancel_at_period_end
     }
   });
 }
