@@ -12,7 +12,7 @@ const schema = z
     email: z.string().email(),
     password: z.string().min(8),
     category: z.string().min(2).max(60),
-    specialties: z.array(z.string().max(60)).max(3).optional(),
+    specialties: z.array(z.string().max(60)).max(5).optional(),
     country: z.enum(COUNTRIES).optional().default("Belgique"),
     city: z.string().min(1).max(60).optional().default("Autre"),
     bio: z.string().max(600).optional().default(""),
