@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { isSubscriptionVisible } from "@/lib/categories";
 import { ContactForm } from "./ContactForm";
 import { ProfileGallery } from "./ProfileGallery";
+import { ScrollToHash } from "./ScrollToHash";
 
 export const dynamic = "force-dynamic";
 
@@ -62,6 +63,7 @@ export default async function ProfilePage({ params }: { params: { id: string } }
 
   return (
     <>
+      <ScrollToHash />
       <Link className="backlink" href="/">
         ← Retour au catalogue
       </Link>
@@ -189,12 +191,14 @@ export default async function ProfilePage({ params }: { params: { id: string } }
             )}
           </div>
 
-          <ContactForm
-            artistId={artist.id}
-            artistName={artist.name}
-            unavailableDates={unavailableDateStrings}
-            calendarVisible={artist.calendarVisible}
-          />
+          <div id="contact">
+            <ContactForm
+              artistId={artist.id}
+              artistName={artist.name}
+              unavailableDates={unavailableDateStrings}
+              calendarVisible={artist.calendarVisible}
+            />
+          </div>
         </div>
       </div>
     </>
