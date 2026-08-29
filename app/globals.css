@@ -50,7 +50,7 @@ header {
 }
 .logo { font-family: "Playfair Display", serif; font-weight: 700; font-size: 24px; letter-spacing: -0.01em; color: var(--ink); white-space: nowrap; display: flex; align-items: center; }
 .logo span { background: linear-gradient(90deg, var(--gold-deep), var(--gold)); -webkit-background-clip: text; background-clip: text; color: transparent; }
-.logo-img { height: 122px; width: auto; display: block; }
+.logo-img { height: 38px; width: auto; display: block; }
 
 .nav-actions-group { display: flex; align-items: center; gap: 36px; margin-left: auto; }
 .desktop-nav { display: flex; align-items: center; gap: 30px; }
