@@ -4,13 +4,15 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/requireAdmin";
 import { getSiteSettings } from "@/lib/settings";
+import { parseSponsorLogos, stringifySponsorLogos, type SponsorLogo } from "@/lib/sponsors";
 
 export async function GET() {
   const denied = await requireAdmin();
   if (denied) return denied;
 
   const settings = await getSiteSettings();
-  return NextResponse.json(settings);
+  // Le formulaire admin manipule un vrai tableau d'objets, pas la chaîne JSON stockée en base.
+  return NextResponse.json({ ...settings, sponsorLogos: parseSponsorLogos(settings.sponsorLogos) });
 }
 
 const schema = z.object({
@@ -32,6 +34,16 @@ const schema = z.object({
   spotlightArtistId1: z.string().optional().nullable(),
   spotlightArtistId2: z.string().optional().nullable(),
   promoImages: z.array(z.string().url()).max(10).optional(),
+  sponsorLogos: z
+    .array(
+      z.object({
+        imageUrl: z.string().url(),
+        name: z.string().max(80).optional().nullable(),
+        linkUrl: z.string().url().optional().nullable().or(z.literal(""))
+      })
+    )
+    .max(20)
+    .optional(),
   howArtistsImageUrl: z.string().url().optional().nullable(),
   howArtistsImagePositionX: z.number().min(0).max(100).optional(),
   howArtistsImagePositionY: z.number().min(0).max(100).optional(),
@@ -50,10 +62,19 @@ export async function PATCH(req: NextRequest) {
 
   await getSiteSettings(); // garantit que la ligne existe déjà
 
-  const data = { ...parsed.data };
+  const { sponsorLogos, ...rest } = parsed.data;
+  const data: typeof rest & { sponsorLogos?: string } = { ...rest };
   if (data.contactReceiverEmail === "") data.contactReceiverEmail = null;
   if (data.spotlightArtistId1 === "") data.spotlightArtistId1 = null;
   if (data.spotlightArtistId2 === "") data.spotlightArtistId2 = null;
+  if (sponsorLogos) {
+    const cleaned: SponsorLogo[] = sponsorLogos.map((s) => ({
+      imageUrl: s.imageUrl,
+      name: s.name || null,
+      linkUrl: s.linkUrl || null
+    }));
+    data.sponsorLogos = stringifySponsorLogos(cleaned);
+  }
 
   const updated = await prisma.siteSettings.update({ where: { id: "singleton" }, data });
   revalidateTag("site-settings"); // le nouveau contenu s'affiche immédiatement, sans attendre le cache de 60s
