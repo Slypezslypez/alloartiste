@@ -286,7 +286,9 @@ main { max-width: 1400px; margin: 0 auto; padding: 0 28px 80px; }
 .badge-new { background: linear-gradient(90deg, var(--gold), var(--gold-deep)); color: #fff; }
 .ticket-event-btn {
   display: block; width: 100%; margin-top: 12px; border-radius: 8px;
-  background: var(--ink); color: #fff; text-align: center; padding: 9px 10px; border: none;
+  /* Couleur fixe (pas var(--ink)) : --ink s'inverse en mode sombre et rendait ce bouton
+     illisible (fond clair, texte clair). */
+  background: #1c1917; color: #fff; text-align: center; padding: 9px 10px; border: none;
   font-family: "JetBrains Mono", monospace; font-size: 11.5px; font-weight: 700; letter-spacing: 0.03em;
   cursor: pointer; transition: background 0.15s;
 }
