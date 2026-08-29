@@ -11,17 +11,12 @@ export default async function HomePage() {
   const [all, settings, upcomingEvents] = await Promise.all([
     prisma.artist.findMany({ orderBy: { createdAt: "desc" } }),
     getSiteSettings(),
-    // Un seul événement (le plus proche) par artiste : la liste est triée par date croissante,
-    // donc la première occurrence rencontrée pour un artiste donné est la bonne.
-    prisma.event.findMany({ where: { date: { gte: new Date() } }, orderBy: { date: "asc" } })
+    // On ne récupère que l'artistId : la vignette ne montre plus qu'un bouton "Mes événements",
+    // le détail (image, lieu, heure, réservation) est affiché sur la fiche publique.
+    prisma.event.findMany({ where: { date: { gte: new Date() } }, select: { artistId: true }, distinct: ["artistId"] })
   ]);
 
-  const nextEventByArtist = new Map<string, { title: string; date: string; description: string | null }>();
-  for (const ev of upcomingEvents) {
-    if (!nextEventByArtist.has(ev.artistId)) {
-      nextEventByArtist.set(ev.artistId, { title: ev.title, date: ev.date.toISOString(), description: ev.description });
-    }
-  }
+  const artistsWithUpcomingEvent = new Set(upcomingEvents.map((ev) => ev.artistId));
 
   const visibleRaw = all.filter(isSubscriptionVisible);
   const visible = visibleRaw.map((a) => ({
@@ -39,7 +34,7 @@ export default async function HomePage() {
     isVerified: a.isVerified,
     createdAt: a.createdAt.toISOString(),
     specialties: a.specialties,
-    nextEvent: nextEventByArtist.get(a.id) || null
+    hasUpcomingEvent: artistsWithUpcomingEvent.has(a.id)
   }));
 
   // Photos mises en avant : sélection manuelle depuis l'admin si définie, sinon automatique.
