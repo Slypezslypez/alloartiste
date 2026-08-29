@@ -1,4 +1,3 @@
-
 export default function ConfidentialitePage() {
   return (
     <div className="panel">
@@ -82,10 +81,6 @@ export default function ConfidentialitePage() {
           protection des données belge.
         </p>
 
-        <p style={{ marginTop: 30, fontSize: 13, color: "var(--muted)" }}>
-          Ce document est fourni à titre indicatif et ne constitue pas un avis juridique. AlloArtiste recommande de le
-          faire valider par un professionnel du droit avant toute publication définitive.
-        </p>
       </div>
     </div>
   );
