@@ -19,6 +19,8 @@ const schema = z
     country: z.enum(COUNTRIES).optional(),
     city: z.string().min(1).max(60).optional(),
     bio: z.string().max(600).optional(),
+    priceMin: z.number().int().min(0).max(100000).optional().nullable(),
+    priceMax: z.number().int().min(0).max(100000).optional().nullable(),
     tagline: z.string().max(180).optional().nullable(),
     services: z.array(z.string().max(40)).max(6).optional(),
     phone: z.string().max(30).optional().nullable(),
@@ -33,7 +35,11 @@ const schema = z
       return CITIES_BY_COUNTRY[data.country].includes(data.city as any);
     },
     { message: "Ville invalide pour ce pays.", path: ["city"] }
-  );
+  )
+  .refine((data) => data.priceMin == null || data.priceMax == null || data.priceMax >= data.priceMin, {
+    message: "Le prix maximum doit être supérieur ou égal au prix minimum.",
+    path: ["priceMax"]
+  });
 
 export async function PATCH(req: NextRequest) {
   const artist = await getCurrentArtist();

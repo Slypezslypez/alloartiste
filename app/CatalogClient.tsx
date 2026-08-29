@@ -13,6 +13,8 @@ type ArtistCard = {
   country: string;
   photos: string[];
   videos: string[];
+  priceMin: number | null;
+  priceMax: number | null;
   rating: number;
   reviewsCount: number;
   isVerified: boolean;
@@ -44,6 +46,14 @@ function getEmbedUrl(url: string): string | null {
   } catch {
     return null;
   }
+  return null;
+}
+
+// Formate la fourchette de prix indicative d'un artiste pour l'affichage (vignette et fiche).
+function formatPriceRange(min: number | null, max: number | null): string | null {
+  if (min != null && max != null) return min === max ? `${min} €` : `${min} € - ${max} €`;
+  if (min != null) return `à partir de ${min} €`;
+  if (max != null) return `jusqu'à ${max} €`;
   return null;
 }
 
@@ -209,6 +219,7 @@ export function CatalogClient({ artists }: { artists: ArtistCard[] }) {
             const isNew = isNewArrival(a.createdAt);
             const embedUrl = a.videos[0] ? getEmbedUrl(a.videos[0]) : null;
             const isPlaying = playingId === a.id && embedUrl;
+            const priceLabel = formatPriceRange(a.priceMin, a.priceMax);
             return (
               <Link key={a.id} className="ticket" href={`/profil/${a.id}`}>
                 <div className="photo-wrap">
@@ -276,6 +287,7 @@ export function CatalogClient({ artists }: { artists: ArtistCard[] }) {
                       </span>
                     )}
                   </div>
+                  {priceLabel && <p className="price-range mono">{priceLabel}</p>}
                 </div>
               </Link>
             );

@@ -20,6 +20,8 @@ export function InscriptionForm({ categories }: { categories: string[] }) {
 
   const [country, setCountry] = useState<Country>("Belgique");
   const [city, setCity] = useState<string>(CITIES_BY_COUNTRY["Belgique"][0]);
+  const [priceMin, setPriceMin] = useState("");
+  const [priceMax, setPriceMax] = useState("");
 
   function changeCountry(value: Country) {
     setCountry(value);
@@ -66,6 +68,12 @@ export function InscriptionForm({ categories }: { categories: string[] }) {
       setError("Précisez votre spécialité.");
       return;
     }
+    const finalPriceMin = priceMin.trim() ? parseInt(priceMin, 10) : null;
+    const finalPriceMax = priceMax.trim() ? parseInt(priceMax, 10) : null;
+    if (finalPriceMin != null && finalPriceMax != null && finalPriceMax < finalPriceMin) {
+      setError("Le prix maximum doit être supérieur ou égal au prix minimum.");
+      return;
+    }
 
     const fd = new FormData(e.currentTarget); // capturé tout de suite, avant tout "await" (sinon React invalide la référence)
 
@@ -98,6 +106,8 @@ export function InscriptionForm({ categories }: { categories: string[] }) {
         country,
         city,
         bio: fd.get("bio"),
+        priceMin: finalPriceMin,
+        priceMax: finalPriceMax,
         promoCode: fd.get("promoCode") || undefined
       })
     });
@@ -203,6 +213,31 @@ export function InscriptionForm({ categories }: { categories: string[] }) {
             </select>
           </div>
         </div>
+        <label>Fourchette de prix indicative (facultatif)</label>
+        <div className="field-row">
+          <div>
+            <input
+              type="number"
+              min={0}
+              step={10}
+              value={priceMin}
+              onChange={(e) => setPriceMin(e.target.value)}
+              placeholder="Prix minimum en €"
+            />
+          </div>
+          <div>
+            <input
+              type="number"
+              min={0}
+              step={10}
+              value={priceMax}
+              onChange={(e) => setPriceMax(e.target.value)}
+              placeholder="Prix maximum en €"
+            />
+          </div>
+        </div>
+        <p className="hint">Donne une idée de budget aux organisateurs directement sur votre fiche et votre vignette. Modifiable à tout moment.</p>
+
         <label>Email de contact</label>
         <input name="email" type="email" required />
         <label>Mot de passe</label>

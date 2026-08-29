@@ -21,6 +21,8 @@ model Artist {
   services     String[] @default([]) // formules & prestations (max 6, suggérées par IA)
   photos       String[] @default([]) // max 5, contrôlé côté application
   videos       String[] @default([]) // max 5, contrôlé côté application
+  priceMin     Int? // fourchette de prix indicative, en euros (facultative)
+  priceMax     Int?
 
   phone     String?
   website   String?

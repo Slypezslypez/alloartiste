@@ -16,11 +16,17 @@ const schema = z
     country: z.enum(COUNTRIES).optional().default("Belgique"),
     city: z.string().min(1).max(60).optional().default("Autre"),
     bio: z.string().max(600).optional().default(""),
+    priceMin: z.number().int().min(0).max(100000).optional().nullable(),
+    priceMax: z.number().int().min(0).max(100000).optional().nullable(),
     promoCode: z.string().max(60).optional()
   })
   .refine((data) => CITIES_BY_COUNTRY[data.country].includes(data.city as any), {
     message: "Ville invalide pour ce pays.",
     path: ["city"]
+  })
+  .refine((data) => data.priceMin == null || data.priceMax == null || data.priceMax >= data.priceMin, {
+    message: "Le prix maximum doit être supérieur ou égal au prix minimum.",
+    path: ["priceMax"]
   });
 
 export async function POST(req: NextRequest) {
@@ -29,7 +35,7 @@ export async function POST(req: NextRequest) {
   if (!parsed.success) {
     return NextResponse.json({ error: "Champs invalides." }, { status: 400 });
   }
-  const { name, email, password, category, specialties, country, city, bio, promoCode } = parsed.data;
+  const { name, email, password, category, specialties, country, city, bio, priceMin, priceMax, promoCode } = parsed.data;
 
   const existing = await prisma.artist.findUnique({ where: { email: email.toLowerCase() } });
   if (existing) {
@@ -63,6 +69,8 @@ export async function POST(req: NextRequest) {
       country,
       city,
       bio,
+      priceMin: priceMin ?? null,
+      priceMax: priceMax ?? null,
       emailVerificationTokenHash: tokenHash,
       emailVerificationExpiresAt: tokenExpiresAt,
       ...(grantsFreeAccess

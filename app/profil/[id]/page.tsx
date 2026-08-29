@@ -102,6 +102,18 @@ export default async function ProfilePage({ params }: { params: { id: string } }
               </div>
             )}
 
+            {(artist.priceMin != null || artist.priceMax != null) && (
+              <p className="profile-price mono">
+                {artist.priceMin != null && artist.priceMax != null
+                  ? artist.priceMin === artist.priceMax
+                    ? `${artist.priceMin} €`
+                    : `${artist.priceMin} € - ${artist.priceMax} €`
+                  : artist.priceMin != null
+                  ? `à partir de ${artist.priceMin} €`
+                  : `jusqu'à ${artist.priceMax} €`}
+              </p>
+            )}
+
             {artist.tagline && <p className="profile-tagline">&ldquo;{artist.tagline}&rdquo;</p>}
 
             {events.length > 0 && (

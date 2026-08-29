@@ -23,6 +23,8 @@ type Artist = {
   instagram: string | null;
   photos: string[];
   videos: string[];
+  priceMin: number | null;
+  priceMax: number | null;
   views: number;
   rating: number;
   reviewsCount: number;
@@ -270,6 +272,15 @@ export function DashboardClient({
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
 
+    const rawPriceMin = (fd.get("priceMin") as string) || "";
+    const rawPriceMax = (fd.get("priceMax") as string) || "";
+    const finalPriceMin = rawPriceMin.trim() ? parseInt(rawPriceMin, 10) : null;
+    const finalPriceMax = rawPriceMax.trim() ? parseInt(rawPriceMax, 10) : null;
+    if (finalPriceMin != null && finalPriceMax != null && finalPriceMax < finalPriceMin) {
+      setProfileMsg("Le prix maximum doit être supérieur ou égal au prix minimum.");
+      return;
+    }
+
     let finalCategory = category;
     if (isCustomCategory && customCategory.trim()) {
       try {
@@ -317,6 +328,8 @@ export function DashboardClient({
         country,
         city,
         bio: bioValue,
+        priceMin: finalPriceMin,
+        priceMax: finalPriceMax,
         tagline: taglineValue.trim() || null,
         services,
         phone: fd.get("phone") || null,
@@ -732,6 +745,17 @@ export function DashboardClient({
 
               <label>Nom / nom de scène</label>
               <input name="name" type="text" defaultValue={artist.name} required style={{ fontSize: 22, fontFamily: "'Playfair Display', serif", fontWeight: 700 }} />
+
+              <label>Fourchette de prix indicative (facultatif)</label>
+              <div className="field-row">
+                <div>
+                  <input name="priceMin" type="number" min={0} step={10} defaultValue={artist.priceMin ?? ""} placeholder="Prix minimum en €" />
+                </div>
+                <div>
+                  <input name="priceMax" type="number" min={0} step={10} defaultValue={artist.priceMax ?? ""} placeholder="Prix maximum en €" />
+                </div>
+              </div>
+              <p className="hint">Visible sur votre fiche et votre vignette dans le catalogue.</p>
 
               {artist.reviewsCount > 0 && (
                 <div className="profile-rating-badge">

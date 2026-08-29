@@ -32,6 +32,8 @@ export default async function HomePage() {
     country: a.country,
     photos: a.photos,
     videos: a.videos,
+    priceMin: a.priceMin,
+    priceMax: a.priceMax,
     rating: a.rating,
     reviewsCount: a.reviewsCount,
     isVerified: a.isVerified,
