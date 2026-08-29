@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { compressImage } from "@/lib/imageCompress";
 
 type Settings = {
   siteName: string;
@@ -129,9 +130,10 @@ export function AdminSettings({ initialSettings, artistOptions }: { initialSetti
     setForm((f) => ({ ...f, [key]: value }));
   }
 
-  async function uploadSiteImage(file: File, onDone: (url: string) => void, setUploading: (v: boolean) => void) {
+  async function uploadSiteImage(rawFile: File, onDone: (url: string) => void, setUploading: (v: boolean) => void) {
     setUploading(true);
     try {
+      const file = await compressImage(rawFile);
       const ext = file.name.split(".").pop() || "jpg";
       const presign = await fetch("/api/admin/settings/upload-image", {
         method: "POST",
