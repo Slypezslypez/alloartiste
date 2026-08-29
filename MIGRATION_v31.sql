@@ -1,0 +1,3 @@
+ALTER TABLE "Event" ADD COLUMN "location" TEXT;
+ALTER TABLE "Event" ADD COLUMN "imageUrl" TEXT;
+ALTER TABLE "Event" ADD COLUMN "bookingLink" TEXT;
