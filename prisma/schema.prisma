@@ -96,6 +96,9 @@ model Event {
   title       String
   date        DateTime
   description String?
+  location    String?
+  imageUrl    String?
+  bookingLink String?
   createdAt   DateTime @default(now())
 
   @@index([artistId])
