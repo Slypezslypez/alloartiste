@@ -1,7 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AvailabilityCalendar } from "@/app/AvailabilityCalendar";
+
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+
+// Charge le script Cloudflare Turnstile une seule fois, où qu'il soit utilisé sur le site.
+function useTurnstileScript() {
+  useEffect(() => {
+    if (!TURNSTILE_SITE_KEY) return;
+    const scriptId = "cf-turnstile-sdk";
+    if (document.getElementById(scriptId)) return;
+    const script = document.createElement("script");
+    script.id = scriptId;
+    script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
+    script.async = true;
+    script.defer = true;
+    document.body.appendChild(script);
+  }, []);
+}
 
 export function ContactForm({
   artistId,
@@ -16,6 +33,7 @@ export function ContactForm({
 }) {
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [eventDate, setEventDate] = useState<string | null>(null);
+  useTurnstileScript();
 
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -29,7 +47,8 @@ export function ContactForm({
         senderEmail: fd.get("senderEmail"),
         senderPhone: fd.get("senderPhone") || undefined,
         eventDate: (calendarVisible ? eventDate : fd.get("eventDate")) || undefined,
-        message: fd.get("message")
+        message: fd.get("message"),
+        turnstileToken: fd.get("cf-turnstile-response") || undefined
       })
     });
     setStatus(res.ok ? "sent" : "error");
@@ -90,9 +109,12 @@ export function ContactForm({
 
           <label>Votre message</label>
           <textarea name="message" required minLength={10} maxLength={3000} placeholder="Décrivez votre événement, le lieu, le budget..." />
+
+          {TURNSTILE_SITE_KEY && <div className="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} style={{ marginTop: 12 }} />}
+
           {status === "error" && <p className="error">L&apos;envoi a échoué, réessayez.</p>}
           <div style={{ marginTop: 16 }}>
-            <button className="btn btn-gold" type="submit" disabled={status === "sending"}>
+            <button className="btn btn-gold" type="submit" disabled={status === "sending"} data-loading={status === "sending"}>
               {status === "sending" ? "Envoi..." : "Envoyer le message"}
             </button>
           </div>
