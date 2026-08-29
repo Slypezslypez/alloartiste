@@ -86,7 +86,7 @@ export function DashboardClient({
   function toggleSpecialty(value: string) {
     setSpecialties((prev) => {
       if (prev.includes(value)) return prev.filter((s) => s !== value);
-      if (prev.length >= 3) return prev; // max 3 spécialités
+      if (prev.length >= 5) return prev; // max 5 spécialités
       return [...prev, value];
     });
   }
