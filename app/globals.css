@@ -51,6 +51,7 @@ header {
 .logo { font-family: "Playfair Display", serif; font-weight: 700; font-size: 24px; letter-spacing: -0.01em; color: var(--ink); white-space: nowrap; display: flex; align-items: center; }
 .logo span { background: linear-gradient(90deg, var(--gold-deep), var(--gold)); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .logo-img { height: 38px; width: auto; display: block; }
+.logo-img-dark { display: none; }
 
 .nav-actions-group { display: flex; align-items: center; gap: 36px; margin-left: auto; }
 .desktop-nav { display: flex; align-items: center; gap: 30px; }
@@ -644,6 +645,8 @@ footer { text-align: center; padding: 34px; color: var(--muted); font-size: 12px
   }
 
   .header-row { background: rgba(19, 17, 14, 0.94); }
+  .logo-img-light { display: none; }
+  .logo-img-dark { display: block; }
 
   .search-panel { box-shadow: none; }
   .panel, .ticket, .stat-box, .lead-card, .step-box, .video-embed, .video-item, .search-row,
