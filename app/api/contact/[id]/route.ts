@@ -3,13 +3,15 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { sendContactEmail, sendContactConfirmationEmail } from "@/lib/email";
 import { isSubscriptionVisible } from "@/lib/categories";
+import { verifyTurnstile } from "@/lib/turnstile";
 
 const schema = z.object({
   senderName: z.string().min(2).max(80),
   senderEmail: z.string().email(),
   senderPhone: z.string().max(30).optional(),
   eventDate: z.string().max(40).optional(),
-  message: z.string().min(10).max(3000)
+  message: z.string().min(10).max(3000),
+  turnstileToken: z.string().optional()
 });
 
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
@@ -20,6 +22,14 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 
   const parsed = schema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "Formulaire invalide." }, { status: 400 });
+
+  // Anti-spam : jeton Cloudflare Turnstile vérifié côté serveur (ce formulaire est accessible
+  // publiquement, sans compte, sur chaque fiche artiste).
+  const remoteIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
+  const isHuman = await verifyTurnstile(parsed.data.turnstileToken, remoteIp);
+  if (!isHuman) {
+    return NextResponse.json({ error: "Vérification anti-robot échouée, réessayez." }, { status: 400 });
+  }
 
   // On enregistre la demande de contact ("lead") pour que l'artiste la retrouve dans son espace,
   // même si l'envoi d'email venait à échouer.
