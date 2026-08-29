@@ -42,16 +42,20 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <Link href="/actualites">Actualités</Link>
             <Link href="/comment-ca-marche">Comment ça marche</Link>
             <Link href="/faq">FAQ</Link>
-            <Link href="/contact">Contact</Link>
             <Link href="/conditions">CGU</Link>
           </div>
           <p>{settings.siteName} — Annuaire d&apos;artistes pour producteurs &amp; demandeurs de devis</p>
           <p style={{ marginTop: 6, fontSize: 11, color: "var(--muted)" }}>
             © {new Date().getFullYear()} {settings.siteName}. Tous droits réservés.
           </p>
-          <Link href="/admin" className="footer-admin-link">
-            Administration
-          </Link>
+          <div style={{ marginTop: 6, display: "flex", justifyContent: "center", gap: 14 }}>
+            <Link href="/contact" className="footer-admin-link">
+              Contact AlloArtiste
+            </Link>
+            <Link href="/admin" className="footer-admin-link">
+              Administration
+            </Link>
+          </div>
         </footer>
         <CookieConsent />
       </body>
