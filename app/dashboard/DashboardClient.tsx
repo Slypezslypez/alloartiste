@@ -686,7 +686,7 @@ export function DashboardClient({
 
               {specialtyOptions.length > 0 && (
                 <>
-                  <label>Spécialités (facultatif, jusqu&apos;à 3)</label>
+                  <label>Spécialités (facultatif, jusqu&apos;à 5)</label>
                   <div className="specialty-grid">
                     {specialtyOptions.map((s) => {
                       const checked = specialties.includes(s);
@@ -696,7 +696,7 @@ export function DashboardClient({
                             type="checkbox"
                             checked={checked}
                             onChange={() => toggleSpecialty(s)}
-                            disabled={!checked && specialties.length >= 3}
+                            disabled={!checked && specialties.length >= 5}
                           />
                           {s}
                         </label>
