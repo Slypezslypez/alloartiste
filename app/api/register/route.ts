@@ -76,7 +76,7 @@ export async function POST(req: NextRequest) {
       ...(grantsFreeAccess
         ? {
             subscriptionStatus: "active",
-            currentPeriodEnd: new Date(Date.now() + 5 * 365 * 24 * 60 * 60 * 1000) // 5 ans, offert via code promo
+            currentPeriodEnd: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000) // 1 an, offert via code promo
           }
         : {})
     }
