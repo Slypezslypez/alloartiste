@@ -501,7 +501,7 @@ export function DashboardClient({
             Statistiques
           </button>
           <Link href="/dashboard/demandes" className="account-tab">
-            Demandes de contact
+            Message(s) reçu(s)
             {newLeadsCount > 0 && <span className="lead-count-badge" style={{ marginLeft: 8 }}>{newLeadsCount}</span>}
           </Link>
           <Link href="/dashboard/salles" className="account-tab">
