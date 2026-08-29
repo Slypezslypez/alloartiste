@@ -545,6 +545,7 @@ select {
 .profile-services-row { display: flex; flex-wrap: wrap; gap: 10px; }
 .profile-service-pill { display: inline-flex; align-items: center; gap: 6px; background: var(--gold-soft); border: 1px solid var(--gold-dim); color: var(--gold-deep); font-size: 13px; font-weight: 600; padding: 8px 14px; border-radius: 10px; }
 
+#evenements { scroll-margin-top: 110px; }
 .profile-events-list { display: flex; flex-direction: column; gap: 14px; margin-bottom: 4px; }
 .profile-event-item { display: flex; gap: 14px; background: var(--gold-soft); border: 1px solid var(--gold-dim); border-radius: 10px; padding: 12px 16px; }
 .profile-event-image { width: 96px; height: 96px; object-fit: cover; border-radius: 8px; flex-shrink: 0; }
