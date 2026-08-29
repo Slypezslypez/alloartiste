@@ -103,7 +103,12 @@ export function CatalogClient({ artists }: { artists: ArtistCard[] }) {
   const filtered = useMemo(() => {
     return artists
       .filter((a) => {
-        const matchesSearch = !search || a.name.toLowerCase().includes(search.toLowerCase());
+        const q = search.trim().toLowerCase();
+        const matchesSearch =
+          !q ||
+          a.name.toLowerCase().includes(q) ||
+          a.category.toLowerCase().includes(q) ||
+          a.specialties.some((s) => s.toLowerCase().includes(q));
         const matchesCountry = country === "Tous" || (a.country || "Belgique") === country;
         const matchesCity = city === "Toutes" || a.city === city;
         const matchesCategory = category === "Tous" || a.category === category;
@@ -150,7 +155,7 @@ export function CatalogClient({ artists }: { artists: ArtistCard[] }) {
         <div className="search-row">
           <input
             type="search"
-            placeholder="Rechercher un nom d'artiste..."
+            placeholder="Nom, métier ou spécialité..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="search-input"
