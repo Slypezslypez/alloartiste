@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { CATEGORIES, COUNTRIES, isNewArrival } from "@/lib/categories";
 import { SPECIALTY_TREE } from "@/lib/specialtyTree";
 
@@ -59,7 +58,6 @@ function formatPriceRange(min: number | null, max: number | null): string | null
 }
 
 export function CatalogClient({ artists }: { artists: ArtistCard[] }) {
-  const router = useRouter();
   const [search, setSearch] = useState("");
   const [country, setCountry] = useState("Tous");
   const [city, setCity] = useState("Toutes");
@@ -233,7 +231,9 @@ export function CatalogClient({ artists }: { artists: ArtistCard[] }) {
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        router.push(`/profil/${a.id}#evenements`);
+                        // Navigation complète (pas de router.push) : garantit que le navigateur
+                        // saute bien à l'ancre #evenements, y compris depuis cette même page.
+                        window.location.href = `/profil/${a.id}#evenements`;
                       }}
                     >
                       📅 Mes événements
