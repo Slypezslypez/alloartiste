@@ -224,21 +224,6 @@ export function CatalogClient({ artists }: { artists: ArtistCard[] }) {
               <Link key={a.id} className="ticket" href={`/profil/${a.id}`}>
                 <div className="photo-wrap">
                   {isNew && <span className="badge badge-new">Nouveau</span>}
-                  {a.hasUpcomingEvent && (
-                    <button
-                      type="button"
-                      className="badge-event-btn"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        // Navigation complète (pas de router.push) : garantit que le navigateur
-                        // saute bien à l'ancre #evenements, y compris depuis cette même page.
-                        window.location.href = `/profil/${a.id}#evenements`;
-                      }}
-                    >
-                      📅 Mes événements
-                    </button>
-                  )}
                   {isPlaying ? (
                     <iframe
                       className="photo video-preview"
@@ -295,6 +280,21 @@ export function CatalogClient({ artists }: { artists: ArtistCard[] }) {
                     )}
                   </div>
                   {priceLabel && <p className="price-range mono">{priceLabel}</p>}
+                  {a.hasUpcomingEvent && (
+                    <button
+                      type="button"
+                      className="ticket-event-btn"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        // Navigation complète (pas de router.push) : garantit que le navigateur
+                        // saute bien à l'ancre #evenements, y compris depuis cette même page.
+                        window.location.href = `/profil/${a.id}#evenements`;
+                      }}
+                    >
+                      📅 Mes événements
+                    </button>
+                  )}
                 </div>
               </Link>
             );
