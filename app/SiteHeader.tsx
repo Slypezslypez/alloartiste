@@ -84,7 +84,7 @@ export function SiteHeader({
       )}
       <div className="header-row">
         <Link href="/" className="logo">
-          {logoPart1}<span>{logoPart2}</span>
+          <img src="/logo.png" alt={`${logoPart1}${logoPart2}`} className="logo-img" />
         </Link>
 
         <div className="nav-actions-group">
