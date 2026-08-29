@@ -43,6 +43,7 @@ model Artist {
   stripeSubscriptionId String?   @unique
   subscriptionStatus   String? // active | trialing | past_due | canceled | incomplete | unpaid
   currentPeriodEnd     DateTime? // fin de la période payée en cours
+  cancelAtPeriodEnd    Boolean   @default(false) // true si l'artiste a annulé via le portail Stripe (reste actif jusqu'à currentPeriodEnd)
 
   leads Lead[]
   unavailableDates UnavailableDate[]
