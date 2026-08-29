@@ -19,6 +19,7 @@ type Settings = {
   spotlightArtistId1: string | null;
   spotlightArtistId2: string | null;
   promoImages: string[];
+  sponsorLogos: { imageUrl: string; name: string | null; linkUrl: string | null }[];
   contactReceiverEmail: string | null;
   headerBackgroundUrl: string | null;
   headerBackgroundPositionX: number;
@@ -34,6 +35,7 @@ type Settings = {
 type ArtistOption = { id: string; name: string };
 
 const MAX_PROMO_IMAGES = 10;
+const MAX_SPONSOR_LOGOS = 20;
 
 /** Petit sélecteur d'image avec point focal cliquable, réutilisé pour plusieurs champs. */
 function FocalImagePicker({
@@ -125,6 +127,7 @@ export function AdminSettings({ initialSettings, artistOptions }: { initialSetti
   const [uploadingHowArtists, setUploadingHowArtists] = useState(false);
   const [uploadingHowOrganizers, setUploadingHowOrganizers] = useState(false);
   const [uploadingPromo, setUploadingPromo] = useState(false);
+  const [uploadingSponsor, setUploadingSponsor] = useState(false);
 
   function set<K extends keyof Settings>(key: K, value: Settings[K]) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -168,6 +171,26 @@ export function AdminSettings({ initialSettings, artistOptions }: { initialSetti
     const next = [...form.promoImages];
     [next[index], next[target]] = [next[target], next[index]];
     set("promoImages", next);
+  }
+
+  function addSponsorLogo(file: File) {
+    uploadSiteImage(
+      file,
+      (url) => set("sponsorLogos", [...form.sponsorLogos, { imageUrl: url, name: "", linkUrl: "" }]),
+      setUploadingSponsor
+    );
+  }
+
+  function removeSponsorLogo(index: number) {
+    set(
+      "sponsorLogos",
+      form.sponsorLogos.filter((_, i) => i !== index)
+    );
+  }
+
+  function updateSponsorLogo(index: number, field: "name" | "linkUrl", value: string) {
+    const next = form.sponsorLogos.map((s, i) => (i === index ? { ...s, [field]: value } : s));
+    set("sponsorLogos", next);
   }
 
   async function save(e: React.FormEvent) {
@@ -340,6 +363,55 @@ export function AdminSettings({ initialSettings, artistOptions }: { initialSetti
           </>
         ) : (
           <p className="hint">Limite de {MAX_PROMO_IMAGES} images atteinte. Retirez-en une pour en ajouter une nouvelle.</p>
+        )}
+      </div>
+
+      <div className="panel wide">
+        <h2 style={{ fontSize: 24 }}>Bandeau sponsors (au-dessus du carrousel)</h2>
+        <p className="sub">
+          Logos qui défilent en continu tout en haut de la page d&apos;accueil, juste au-dessus du carrousel. Sans lien, un
+          logo n&apos;est pas cliquable ; avec un lien, il ouvre le site du sponsor dans un nouvel onglet.
+        </p>
+
+        {form.sponsorLogos.length === 0 && (
+          <p className="hint" style={{ marginTop: 0 }}>Aucun sponsor ajouté pour l&apos;instant — le bandeau restera masqué.</p>
+        )}
+
+        <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 14 }}>
+          {form.sponsorLogos.map((s, i) => (
+            <div key={s.imageUrl + i} style={{ display: "flex", alignItems: "center", gap: 12, background: "var(--shell)", borderRadius: 10, padding: 10, flexWrap: "wrap" }}>
+              <img src={s.imageUrl} alt="" style={{ width: 64, height: 40, objectFit: "contain", borderRadius: 6, border: "1px solid var(--line)", background: "#fff" }} />
+              <input
+                value={s.name || ""}
+                onChange={(e) => updateSponsorLogo(i, "name", e.target.value)}
+                placeholder="Nom du sponsor (optionnel)"
+                style={{ flex: "1 1 160px" }}
+              />
+              <input
+                type="url"
+                value={s.linkUrl || ""}
+                onChange={(e) => updateSponsorLogo(i, "linkUrl", e.target.value)}
+                placeholder="https://... (optionnel, sinon non cliquable)"
+                style={{ flex: "1 1 220px" }}
+              />
+              <button type="button" className="btn btn-outline" style={{ padding: "5px 10px", fontSize: 12, color: "var(--red)" }} onClick={() => removeSponsorLogo(i)}>
+                Retirer
+              </button>
+            </div>
+          ))}
+        </div>
+
+        {form.sponsorLogos.length < MAX_SPONSOR_LOGOS ? (
+          <>
+            <input type="file" accept="image/*" disabled={uploadingSponsor} onChange={(e) => e.target.files?.[0] && addSponsorLogo(e.target.files[0])} />
+            <p className="hint">
+              {uploadingSponsor
+                ? "Envoi en cours..."
+                : `Logo de préférence sur fond transparent (PNG). ${form.sponsorLogos.length}/${MAX_SPONSOR_LOGOS} logos.`}
+            </p>
+          </>
+        ) : (
+          <p className="hint">Limite de {MAX_SPONSOR_LOGOS} logos atteinte. Retirez-en un pour en ajouter un nouveau.</p>
         )}
       </div>
 
