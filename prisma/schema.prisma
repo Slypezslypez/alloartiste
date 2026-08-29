@@ -69,6 +69,7 @@ model InviteCode {
   usedAt               DateTime?
   usedByArtistId       String?
   expiryReminderSentAt DateTime? // rappel envoyé à l'artiste avant la fin de son accès gratuit (une seule fois)
+  expiredReminderSentAt DateTime? // rappel envoyé après la fin de l'accès gratuit, s'il ne s'est pas réabonné (une seule fois)
   createdAt            DateTime  @default(now())
 }
 
