@@ -23,8 +23,9 @@ export default async function EvenementsPage() {
       </Link>
       <h2 className="section-title">Mes événements</h2>
       <p className="sub" style={{ marginTop: -8, marginBottom: 24 }}>
-        L&apos;événement le plus proche apparaît automatiquement sur votre vignette dans « Découvrir les
-        artistes » et sur votre fiche publique. Les événements passés sont retirés automatiquement.
+        Dès qu&apos;un événement est ajouté, un bouton « Mes événements » apparaît sur votre vignette dans
+        « Découvrir les artistes » et renvoie vers votre fiche publique, où chaque événement est présenté en
+        détail. Les événements passés sont retirés automatiquement.
       </p>
 
       <EvenementsClient initialEvents={JSON.parse(JSON.stringify(events))} />
