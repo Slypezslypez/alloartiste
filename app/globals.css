@@ -51,7 +51,7 @@ header {
 .logo { font-family: "Playfair Display", serif; font-weight: 700; font-size: 24px; letter-spacing: -0.01em; color: var(--ink); white-space: nowrap; }
 .logo span { background: linear-gradient(90deg, var(--gold-deep), var(--gold)); -webkit-background-clip: text; background-clip: text; color: transparent; }
 
-.desktop-nav { display: flex; align-items: center; gap: 30px; }
+.desktop-nav { display: flex; align-items: center; justify-content: center; gap: 34px; flex: 1; }
 .nav-link { font-size: 14px; font-weight: 500; color: var(--ink-soft); position: relative; padding: 6px 0; white-space: nowrap; background: none; border: none; }
 .nav-link:hover { color: var(--gold-deep); }
 .nav-link-active { color: var(--gold-deep); font-weight: 700; }
