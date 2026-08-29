@@ -159,14 +159,14 @@ main { max-width: 1400px; margin: 0 auto; padding: 0 28px 80px; }
   100% { left: 100%; }
 }
 
-.search-panel { background: transparent; border: none; padding: 10px 0; margin-bottom: 14px; box-shadow: none; }
-.search-row { display: flex; flex-wrap: wrap; gap: 2px; margin-bottom: 10px; background: var(--shell); border-radius: var(--radius); padding: 3px; box-shadow: 0 3px 8px rgba(28,25,23,0.15); }
-.search-input { flex: 2; min-width: 200px; background: transparent; border: none; color: var(--ink); padding: 8px 15px; font-family: "Inter", sans-serif; font-size: 14px; border-radius: calc(var(--radius) - 2px); }
+.search-panel { background: transparent; border: none; padding: 4px 0; margin-bottom: 8px; box-shadow: none; }
+.search-row { display: flex; flex-wrap: wrap; gap: 2px; margin-bottom: 6px; background: var(--shell); border-radius: var(--radius); padding: 2px; box-shadow: 0 3px 8px rgba(28,25,23,0.15); }
+.search-input { flex: 2; min-width: 200px; background: transparent; border: none; color: var(--ink); padding: 6px 15px; font-family: "Inter", sans-serif; font-size: 14px; border-radius: calc(var(--radius) - 2px); }
 .search-input:focus { outline: none; box-shadow: 0 0 0 2px var(--gold-soft); }
-.search-select { flex: 1; min-width: 150px; background: transparent; border: none; border-left: 1px solid var(--line); color: var(--ink-soft); padding: 8px 34px 8px 15px; font-family: "JetBrains Mono", monospace; font-size: 13px; border-radius: 0; }
-.reset-link { background: none; border: none; color: var(--gold-deep); font-family: "JetBrains Mono", monospace; font-size: 12px; margin-top: 4px; padding: 0; font-weight: 600; }
+.search-select { flex: 1; min-width: 150px; background: transparent; border: none; border-left: 1px solid var(--line); color: var(--ink-soft); padding: 6px 34px 6px 15px; font-family: "JetBrains Mono", monospace; font-size: 13px; border-radius: 0; }
+.reset-link { background: none; border: none; color: var(--gold-deep); font-family: "JetBrains Mono", monospace; font-size: 12px; margin-top: 2px; padding: 0; font-weight: 600; }
 .reset-link:hover { text-decoration: underline; }
-.result-count { color: var(--muted); font-size: 13px; margin: 0 0 12px; font-family: "JetBrains Mono", monospace; }
+.result-count { color: var(--muted); font-size: 13px; margin: 0 0 8px; font-family: "JetBrains Mono", monospace; }
 .result-count strong { color: var(--gold-deep); }
 
 .marquee-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
