@@ -176,6 +176,11 @@ model SiteSettings {
   // Carrousel promotionnel sur l'accueil (images ajoutées via admin, max 10, contrôlé côté application)
   promoImages String[] @default([])
 
+  // Bandeau de logos sponsors défilant, juste au-dessus du carrousel de l'accueil.
+  // Stocké en texte JSON (pas de type Json natif utilisé ailleurs dans ce schéma) :
+  // [{ imageUrl: string, name: string|null, linkUrl: string|null }]
+  sponsorLogos String @default("[]")
+
   // Page "Comment ça marche" — illustrations optionnelles (modifiables via admin)
   howArtistsImageUrl String?
   howArtistsImagePositionX Int @default(50) // point focal du recadrage, en % (0-100)
