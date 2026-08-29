@@ -280,6 +280,17 @@ export function CatalogClient({ artists }: { artists: ArtistCard[] }) {
                     )}
                   </div>
                   {priceLabel && <p className="price-range mono">{priceLabel}</p>}
+                  <button
+                    type="button"
+                    className="ticket-event-btn ticket-contact-btn"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      window.location.href = `/profil/${a.id}#contact`;
+                    }}
+                  >
+                    ✉️ Me contacter
+                  </button>
                   {a.hasUpcomingEvent && (
                     <button
                       type="button"
