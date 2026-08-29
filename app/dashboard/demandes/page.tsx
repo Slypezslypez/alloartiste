@@ -29,7 +29,7 @@ export default async function DemandesPage({ searchParams }: { searchParams: { f
       <Link className="backlink" href="/dashboard">
         ← Retour à mon espace
       </Link>
-      <h2 className="section-title">Demandes de contact</h2>
+      <h2 className="section-title">Message(s) reçu(s)</h2>
 
       <div className="demandes-filters">
         <Link href="/dashboard/demandes" className={`demandes-filter ${filter === "all" ? "active" : ""}`}>
