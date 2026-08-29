@@ -87,47 +87,49 @@ export function SiteHeader({
           {logoPart1}<span>{logoPart2}</span>
         </Link>
 
-        <nav className="desktop-nav">
-          {NAV_ITEMS.map((item) => (
-            <Link key={item.href} href={item.href} className={`nav-link ${isActive(item.href) ? "nav-link-active" : ""}`}>
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-
-        <div className="desktop-actions">
-          <select
-            className="country-select-inline"
-            value={country}
-            onChange={(e) => changeCountry(e.target.value)}
-            aria-label="Pays des artistes recherchés"
-          >
-            {COUNTRIES.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
+        <div className="nav-actions-group">
+          <nav className="desktop-nav">
+            {NAV_ITEMS.map((item) => (
+              <Link key={item.href} href={item.href} className={`nav-link ${isActive(item.href) ? "nav-link-active" : ""}`}>
+                {item.label}
+              </Link>
             ))}
-            <option value="Tous">Belgique et France</option>
-          </select>
-          {loggedIn ? (
-            <>
-              <Link className={`nav-link ${pathname === "/dashboard" ? "nav-link-active" : ""}`} href="/dashboard">
-                Mon espace
-              </Link>
-              <button className="nav-link" onClick={logout}>
-                Déconnexion
-              </button>
-            </>
-          ) : (
-            <>
-              <Link className="nav-link" href="/connexion">
-                Connexion Artiste
-              </Link>
-              <Link className="nav-link" href="/inscription">
-                Je m&apos;inscris
-              </Link>
-            </>
-          )}
+          </nav>
+
+          <div className="desktop-actions">
+            <select
+              className="country-select-inline"
+              value={country}
+              onChange={(e) => changeCountry(e.target.value)}
+              aria-label="Pays des artistes recherchés"
+            >
+              {COUNTRIES.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+              <option value="Tous">Belgique et France</option>
+            </select>
+            {loggedIn ? (
+              <>
+                <Link className={`nav-link ${pathname === "/dashboard" ? "nav-link-active" : ""}`} href="/dashboard">
+                  Mon espace
+                </Link>
+                <button className="nav-link" onClick={logout}>
+                  Déconnexion
+                </button>
+              </>
+            ) : (
+              <>
+                <Link className="nav-link" href="/connexion">
+                  Connexion Artiste
+                </Link>
+                <Link className="nav-link" href="/inscription">
+                  Je m&apos;inscris
+                </Link>
+              </>
+            )}
+          </div>
         </div>
 
         <button className="mobile-toggle" onClick={() => setIsOpen(!isOpen)} aria-label="Menu">
