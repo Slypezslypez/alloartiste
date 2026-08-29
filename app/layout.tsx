@@ -3,6 +3,7 @@ import Link from "next/link";
 import "./globals.css";
 import { SiteHeader } from "./SiteHeader";
 import { NavigationProgress } from "./NavigationProgress";
+import { CookieConsent } from "./CookieConsent";
 import { getSiteSettings } from "@/lib/settings";
 
 export const metadata: Metadata = {
@@ -52,6 +53,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             Administration
           </Link>
         </footer>
+        <CookieConsent />
       </body>
     </html>
   );

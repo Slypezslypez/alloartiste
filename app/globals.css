@@ -661,3 +661,56 @@ footer { text-align: center; padding: 34px; color: var(--muted); font-size: 12px
   .rm { border-color: var(--white); }
   .thumb, .ticket .photo, .gallery img { background: var(--line); }
 }
+
+.cookie-banner {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+  z-index: 999;
+  max-width: 640px;
+  margin: 0 auto;
+  background: var(--ink);
+  color: #fff;
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+}
+.cookie-banner p {
+  flex: 1 1 260px;
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.88);
+}
+.cookie-banner-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.cookie-btn {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: calc(var(--radius) - 4px);
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: transparent;
+  color: #fff;
+}
+.cookie-btn-accept {
+  background: var(--gold-deep);
+  border-color: var(--gold-deep);
+  color: var(--ink);
+}
+.cookie-btn:hover { opacity: 0.85; }
+
+@media (max-width: 560px) {
+  .cookie-banner { flex-direction: column; align-items: stretch; }
+  .cookie-banner-actions { justify-content: flex-end; }
+}
