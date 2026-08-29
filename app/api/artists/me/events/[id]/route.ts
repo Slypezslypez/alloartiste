@@ -6,7 +6,10 @@ import { getCurrentArtist } from "@/lib/auth";
 const schema = z.object({
   title: z.string().min(2).max(140).optional(),
   date: z.coerce.date().optional(),
-  description: z.string().max(400).optional().nullable()
+  description: z.string().max(400).optional().nullable(),
+  location: z.string().max(200).optional().nullable(),
+  imageUrl: z.string().url().or(z.literal("")).optional().nullable(),
+  bookingLink: z.string().url().or(z.literal("")).optional().nullable()
 });
 
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
@@ -21,7 +24,12 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   const parsed = schema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "Champs invalides." }, { status: 400 });
 
-  const updated = await prisma.event.update({ where: { id: event.id }, data: parsed.data });
+  const data = { ...parsed.data };
+  if (data.location === "") data.location = null;
+  if (data.imageUrl === "") data.imageUrl = null;
+  if (data.bookingLink === "") data.bookingLink = null;
+
+  const updated = await prisma.event.update({ where: { id: event.id }, data });
   return NextResponse.json(updated);
 }
 
