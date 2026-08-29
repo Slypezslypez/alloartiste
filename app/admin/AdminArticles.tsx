@@ -1,46 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { isSubscriptionVisible } from "@/lib/categories";
-import { AdminArticles } from "./AdminArticles";
-import { AdminSettings } from "./AdminSettings";
-import { AdminBilling } from "./AdminBilling";
-import { AdminBackup } from "./AdminBackup";
-import { AdminSpecialties } from "./AdminSpecialties";
-
-type Artist = {
-  id: string;
-  name: string;
-  email: string;
-  category: string;
-  city: string;
-  isVerified: boolean;
-  subscriptionStatus: string | null;
-  currentPeriodEnd: string | null;
-  createdAt: string;
-};
-
-type Lead = {
-  id: string;
-  senderName: string;
-  senderEmail: string;
-  message: string;
-  status: "new" | "replied" | "archived";
-  createdAt: string;
-  artist: { name: string };
-};
-
-type ContactMessage = {
-  id: string;
-  name: string;
-  email: string;
-  phone: string | null;
-  role: string;
-  message: string;
-  status: "new" | "replied" | "archived";
-  createdAt: string;
-};
 
 type Article = {
   id: string;
@@ -57,289 +17,392 @@ type Article = {
   createdAt: string;
 };
 
-type Settings = {
-  siteName: string;
-  logoPart1: string;
-  logoPart2: string;
-  tagline: string;
-  heroLine1: string;
-  heroEmphasis: string;
-  heroLine2: string;
-  heroSubtitle: string;
-  statCommissionValue: string;
-  statCommissionLabel: string;
-  statDirectValue: string;
-  statDirectLabel: string;
-  spotlightArtistId1: string | null;
-  spotlightArtistId2: string | null;
-  promoImages: string[];
-  contactReceiverEmail: string | null;
-  headerBackgroundUrl: string | null;
-  headerBackgroundPositionX: number;
-  headerBackgroundPositionY: number;
-  howArtistsImageUrl: string | null;
-  howArtistsImagePositionX: number;
-  howArtistsImagePositionY: number;
-  howOrganizersImageUrl: string | null;
-  howOrganizersImagePositionX: number;
-  howOrganizersImagePositionY: number;
+const EMPTY_FORM = {
+  title: "",
+  excerpt: "",
+  category: "Conseils carrière",
+  body: "",
+  icon: "📰",
+  colorFrom: "#d4af37",
+  colorTo: "#8b6b1f",
+  readTime: "4 min",
+  published: true,
+  imageUrl: "" as string | null,
+  imagePositionX: 50,
+  imagePositionY: 50
 };
 
-export function AdminClient({
-  initialArtists,
-  initialLeads,
-  initialMessages,
-  initialArticles,
-  initialSettings
-}: {
-  initialArtists: Artist[];
-  initialLeads: Lead[];
-  initialMessages: ContactMessage[];
-  initialArticles: Article[];
-  initialSettings: Settings;
-}) {
-  const router = useRouter();
-  const [tab, setTab] = useState<"artists" | "leads" | "messages" | "articles" | "billing" | "backup" | "specialties" | "settings">("artists");
-  const [artists, setArtists] = useState(initialArtists);
-  const [leads, setLeads] = useState(initialLeads);
-  const [messages, setMessages] = useState(initialMessages);
-  const [search, setSearch] = useState("");
-  const [extendingId, setExtendingId] = useState<string | null>(null);
+export function AdminArticles({ initialArticles }: { initialArticles: Article[] }) {
+  const [articles, setArticles] = useState(initialArticles);
+  const knownCategories = Array.from(new Set(articles.map((a) => a.category).filter(Boolean)));
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [showForm, setShowForm] = useState(false);
+  const [form, setForm] = useState({ ...EMPTY_FORM });
+  const [uploading, setUploading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [aiTopic, setAiTopic] = useState("");
+  const [generating, setGenerating] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
 
-  async function logout() {
-    await fetch("/api/admin/logout", { method: "POST" });
-    router.push("/admin/login");
-    router.refresh();
+  function startCreate() {
+    setForm({ ...EMPTY_FORM });
+    setEditingId(null);
+    setShowForm(true);
   }
 
-  async function toggleVerified(id: string, current: boolean) {
-    const res = await fetch(`/api/admin/artists/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ isVerified: !current })
+  function startEdit(a: Article) {
+    const [colorFrom, colorTo] = extractColors(a.gradient);
+    setForm({
+      title: a.title,
+      excerpt: a.excerpt,
+      category: a.category,
+      body: a.body,
+      icon: a.icon,
+      colorFrom,
+      colorTo,
+      readTime: a.readTime,
+      published: a.published,
+      imageUrl: a.imageUrl,
+      imagePositionX: (a as any).imagePositionX ?? 50,
+      imagePositionY: (a as any).imagePositionY ?? 50
     });
-    if (res.ok) {
-      setArtists((list) => list.map((a) => (a.id === id ? { ...a, isVerified: !current } : a)));
+    setEditingId(a.id);
+    setShowForm(true);
+  }
+
+  function extractColors(gradient: string): [string, string] {
+    const matches = gradient.match(/#[0-9a-fA-F]{3,6}/g);
+    if (matches && matches.length >= 2) return [matches[0], matches[1]];
+    return ["#d4af37", "#8b6b1f"];
+  }
+
+  async function generateWithAI() {
+    if (!aiTopic.trim()) return;
+    setGenerating(true);
+    setAiError(null);
+    try {
+      const res = await fetch("/api/admin/articles/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ topic: aiTopic.trim() })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Échec de la génération.");
+      setForm((f) => ({
+        ...f,
+        title: data.title || f.title,
+        excerpt: data.excerpt || f.excerpt,
+        category: data.category || f.category,
+        icon: data.icon || f.icon,
+        readTime: data.readTime || f.readTime,
+        body: data.body || f.body
+      }));
+    } catch (err: any) {
+      setAiError(err.message || "Échec de la génération.");
+    } finally {
+      setGenerating(false);
     }
   }
 
-  async function deleteArtist(id: string, name: string) {
-    if (!confirm(`Supprimer définitivement le profil de ${name} ? Cette action est irréversible.`)) return;
-    const res = await fetch(`/api/admin/artists/${id}`, { method: "DELETE" });
-    if (res.ok) setArtists((list) => list.filter((a) => a.id !== id));
-  }
+  async function uploadImage(file: File) {
+    setUploading(true);
+    try {
+      const ext = file.name.split(".").pop() || "jpg";
+      const presign = await fetch("/api/admin/articles/upload-image", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fileExt: ext, contentType: file.type })
+      }).then((r) => r.json());
+      if (presign.error) throw new Error(presign.error);
 
-  async function extendOneYear(id: string) {
-    setExtendingId(id);
-    const res = await fetch(`/api/admin/artists/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ extendOneYear: true })
-    });
-    const data = await res.json().catch(() => ({}));
-    setExtendingId(null);
-    if (res.ok) {
-      setArtists((list) =>
-        list.map((a) => (a.id === id ? { ...a, subscriptionStatus: "active", currentPeriodEnd: data.currentPeriodEnd } : a))
-      );
+      await fetch(presign.uploadUrl, { method: "PUT", headers: { "Content-Type": file.type }, body: file });
+      setForm((f) => ({ ...f, imageUrl: presign.publicUrl }));
+    } catch {
+      alert("L'envoi de l'image a échoué.");
+    } finally {
+      setUploading(false);
     }
   }
 
-  async function updateLeadStatus(id: string, status: Lead["status"]) {
-    const res = await fetch(`/api/admin/leads/${id}`, {
+  async function save(e: React.FormEvent) {
+    e.preventDefault();
+    setSaving(true);
+    const payload = {
+      title: form.title,
+      excerpt: form.excerpt,
+      category: form.category,
+      body: form.body,
+      icon: form.icon,
+      gradient: `linear-gradient(135deg, ${form.colorFrom}, ${form.colorTo})`,
+      readTime: form.readTime,
+      published: form.published,
+      imageUrl: form.imageUrl || null,
+      imagePositionX: form.imagePositionX,
+      imagePositionY: form.imagePositionY
+    };
+
+    const res = editingId
+      ? await fetch(`/api/admin/articles/${editingId}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        })
+      : await fetch("/api/admin/articles", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+    setSaving(false);
+    if (!res.ok) {
+      alert("Échec de l'enregistrement.");
+      return;
+    }
+    const saved = await res.json();
+    setArticles((list) => {
+      if (editingId) return list.map((a) => (a.id === editingId ? saved : a));
+      return [saved, ...list];
+    });
+    setShowForm(false);
+  }
+
+  async function deleteArticle(id: string, title: string) {
+    if (!confirm(`Supprimer définitivement l'article "${title}" ?`)) return;
+    const res = await fetch(`/api/admin/articles/${id}`, { method: "DELETE" });
+    if (res.ok) setArticles((list) => list.filter((a) => a.id !== id));
+  }
+
+  async function togglePublished(a: Article) {
+    const res = await fetch(`/api/admin/articles/${a.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status })
+      body: JSON.stringify({ published: !a.published })
     });
-    if (res.ok) setLeads((list) => list.map((l) => (l.id === id ? { ...l, status } : l)));
+    if (res.ok) {
+      const updated = await res.json();
+      setArticles((list) => list.map((x) => (x.id === a.id ? updated : x)));
+    }
   }
 
-  async function updateMessageStatus(id: string, status: ContactMessage["status"]) {
-    const res = await fetch(`/api/admin/messages/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status })
-    });
-    if (res.ok) setMessages((list) => list.map((m) => (m.id === id ? { ...m, status } : m)));
+  if (showForm) {
+    return (
+      <div className="panel wide">
+        <h2 style={{ fontSize: 24 }}>{editingId ? "Modifier l'article" : "Nouvel article"}</h2>
+
+        <div className="ai-generate-box">
+          <label style={{ margin: "0 0 8px" }}>✨ Générer un brouillon avec l&apos;IA</label>
+          <div style={{ display: "flex", gap: 10 }}>
+            <input
+              type="text"
+              value={aiTopic}
+              onChange={(e) => setAiTopic(e.target.value)}
+              placeholder="Ex. Comment gérer le trac avant une prestation"
+              disabled={generating}
+            />
+            <button
+              type="button"
+              className="btn btn-gold"
+              onClick={generateWithAI}
+              disabled={generating || !aiTopic.trim()}
+              data-loading={generating}
+              style={{ whiteSpace: "nowrap" }}
+            >
+              {generating ? "Génération..." : "Générer"}
+            </button>
+          </div>
+          {aiError && <p className="error">{aiError}</p>}
+          <p className="hint">Le brouillon remplit les champs ci-dessous — relisez et modifiez avant d&apos;enregistrer.</p>
+        </div>
+
+        <form onSubmit={save}>
+          <label>Titre</label>
+          <input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required maxLength={140} />
+
+          <label>Résumé (affiché sur la carte)</label>
+          <textarea value={form.excerpt} onChange={(e) => setForm({ ...form, excerpt: e.target.value })} required maxLength={400} style={{ minHeight: 60 }} />
+
+          <div className="field-row">
+            <div>
+              <label>Rubrique (catégorie)</label>
+              <input
+                value={form.category}
+                onChange={(e) => setForm({ ...form, category: e.target.value })}
+                required
+                list="rubriques-existantes"
+                placeholder="Ex. Conseils carrière"
+              />
+              <datalist id="rubriques-existantes">
+                {knownCategories.map((c) => (
+                  <option key={c} value={c} />
+                ))}
+              </datalist>
+              <p className="hint" style={{ marginTop: 4 }}>Choisissez une rubrique existante ou tapez-en une nouvelle.</p>
+            </div>
+            <div>
+              <label>Temps de lecture</label>
+              <input value={form.readTime} onChange={(e) => setForm({ ...form, readTime: e.target.value })} placeholder="4 min" />
+            </div>
+          </div>
+
+          <label>Contenu (séparez les paragraphes par une ligne vide)</label>
+          <textarea value={form.body} onChange={(e) => setForm({ ...form, body: e.target.value })} required minLength={20} style={{ minHeight: 220 }} />
+
+          <label>Image de couverture (optionnelle)</label>
+          {form.imageUrl ? (
+            <div style={{ marginBottom: 10 }}>
+              <p className="hint" style={{ marginTop: 0, marginBottom: 10 }}>
+                Utilisez les curseurs ci-dessous pour cadrer précisément (ex. faire apparaître un visage) : l&apos;aperçu de droite montre exactement le rendu sur le site.
+              </p>
+              <div style={{ display: "flex", gap: 18, flexWrap: "wrap", marginBottom: 12 }}>
+                <div>
+                  <p className="hint" style={{ marginTop: 0, marginBottom: 6 }}>Image complète (repère)</p>
+                  <div style={{ width: 160, aspectRatio: "1/1", borderRadius: 10, overflow: "hidden", border: "1px solid var(--line)", background: "var(--cream)" }}>
+                    <img src={form.imageUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "contain", display: "block" }} />
+                  </div>
+                </div>
+                <div>
+                  <p className="hint" style={{ marginTop: 0, marginBottom: 6 }}>Aperçu tel qu&apos;affiché sur le site</p>
+                  <div style={{ position: "relative", width: 280, maxWidth: "100%", aspectRatio: "16/9", borderRadius: 10, overflow: "hidden", border: "1px solid var(--line)" }}>
+                    <img
+                      src={form.imageUrl}
+                      alt=""
+                      style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: `${form.imagePositionX}% ${form.imagePositionY}%`, display: "block" }}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="field-row">
+                <div>
+                  <label>Position horizontale ({form.imagePositionX}%)</label>
+                  <input
+                    type="range"
+                    min={0}
+                    max={100}
+                    value={form.imagePositionX}
+                    onChange={(e) => setForm((f) => ({ ...f, imagePositionX: Number(e.target.value) }))}
+                  />
+                </div>
+                <div>
+                  <label>Position verticale ({form.imagePositionY}%)</label>
+                  <input
+                    type="range"
+                    min={0}
+                    max={100}
+                    value={form.imagePositionY}
+                    onChange={(e) => setForm((f) => ({ ...f, imagePositionY: Number(e.target.value) }))}
+                  />
+                </div>
+              </div>
+              <p className="hint" style={{ marginTop: 4 }}>
+                Pour un visage situé en haut de la photo, réduisez la position verticale ; s&apos;il est en bas, augmentez-la.
+              </p>
+
+              <button type="button" className="btn btn-outline" style={{ padding: "6px 12px", fontSize: 12, marginTop: 8 }} onClick={() => setForm({ ...form, imageUrl: "" })}>
+                Retirer l&apos;image
+              </button>
+            </div>
+          ) : (
+            <>
+              <input type="file" accept="image/*" disabled={uploading} onChange={(e) => e.target.files?.[0] && uploadImage(e.target.files[0])} />
+              <p className="hint">{uploading ? "Envoi en cours..." : "Sans image, l'icône et le dégradé ci-dessous seront utilisés."}</p>
+            </>
+          )}
+
+          <div className="field-row">
+            <div>
+              <label>Icône (emoji)</label>
+              <input value={form.icon} onChange={(e) => setForm({ ...form, icon: e.target.value })} maxLength={4} />
+            </div>
+            <div>
+              <label>Couleur 1</label>
+              <input type="color" value={form.colorFrom} onChange={(e) => setForm({ ...form, colorFrom: e.target.value })} style={{ height: 44, padding: 4 }} />
+            </div>
+            <div>
+              <label>Couleur 2</label>
+              <input type="color" value={form.colorTo} onChange={(e) => setForm({ ...form, colorTo: e.target.value })} style={{ height: 44, padding: 4 }} />
+            </div>
+          </div>
+
+          <label style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 18 }}>
+            <input type="checkbox" checked={form.published} onChange={(e) => setForm({ ...form, published: e.target.checked })} style={{ width: "auto" }} />
+            <span style={{ textTransform: "none", fontFamily: "inherit", fontWeight: 500, color: "var(--ink-soft)" }}>Publié (visible sur le site)</span>
+          </label>
+
+          <div style={{ marginTop: 24, display: "flex", gap: 10 }}>
+            <button type="submit" className="btn btn-gold" disabled={saving} data-loading={saving}>
+              {saving ? "Enregistrement..." : "Enregistrer"}
+            </button>
+            <button type="button" className="btn btn-outline" onClick={() => setShowForm(false)}>
+              Annuler
+            </button>
+          </div>
+        </form>
+      </div>
+    );
   }
-
-  async function deleteMessage(id: string) {
-    const res = await fetch(`/api/admin/messages/${id}`, { method: "DELETE" });
-    if (res.ok) setMessages((list) => list.filter((m) => m.id !== id));
-  }
-
-  const filteredArtists = artists.filter(
-    (a) => !search || a.name.toLowerCase().includes(search.toLowerCase()) || a.email.toLowerCase().includes(search.toLowerCase())
-  );
-
-  const newLeadsCount = leads.filter((l) => l.status === "new").length;
-  const newMessagesCount = messages.filter((m) => m.status === "new").length;
 
   return (
-    <>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
-        <h2 className="section-title" style={{ marginBottom: 0 }}>
-          Administration
-        </h2>
-        <button className="navbtn" onClick={logout}>
-          Se déconnecter
+    <div className="panel wide">
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+        <h2 style={{ fontSize: 24, marginBottom: 0 }}>Articles ({articles.length})</h2>
+        <button className="btn btn-gold" onClick={startCreate}>
+          + Nouvel article
         </button>
       </div>
-
-      <div className="filters" style={{ marginBottom: 28 }}>
-        <button className={`chip ${tab === "artists" ? "active" : ""}`} onClick={() => setTab("artists")}>
-          Artistes ({artists.length})
-        </button>
-        <button className={`chip ${tab === "leads" ? "active" : ""}`} onClick={() => setTab("leads")}>
-          Demandes ({leads.length}){newLeadsCount > 0 && ` · ${newLeadsCount} nouvelle${newLeadsCount > 1 ? "s" : ""}`}
-        </button>
-        <button className={`chip ${tab === "messages" ? "active" : ""}`} onClick={() => setTab("messages")}>
-          Messages ({messages.length}){newMessagesCount > 0 && ` · ${newMessagesCount} nouveau${newMessagesCount > 1 ? "x" : ""}`}
-        </button>
-        <button className={`chip ${tab === "articles" ? "active" : ""}`} onClick={() => setTab("articles")}>
-          Actualité conseil ({initialArticles.length})
-        </button>
-        <button className={`chip ${tab === "billing" ? "active" : ""}`} onClick={() => setTab("billing")}>
-          Comptabilité
-        </button>
-        <button className={`chip ${tab === "backup" ? "active" : ""}`} onClick={() => setTab("backup")}>
-          Sauvegarde
-        </button>
-        <button className={`chip ${tab === "specialties" ? "active" : ""}`} onClick={() => setTab("specialties")}>
-          Spécialités
-        </button>
-        <button className={`chip ${tab === "settings" ? "active" : ""}`} onClick={() => setTab("settings")}>
-          Réglages
-        </button>
+      <div className="lead-list">
+        {articles.map((a) => (
+          <div key={a.id} className="lead-card">
+            <div className="lead-header">
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                {a.imageUrl ? (
+                  <img
+                    src={a.imageUrl}
+                    alt=""
+                    style={{ width: 56, height: 56, borderRadius: 8, objectFit: "cover", objectPosition: `${(a as any).imagePositionX ?? 50}% ${(a as any).imagePositionY ?? 50}%`, flexShrink: 0 }}
+                  />
+                ) : (
+                  <div
+                    style={{
+                      width: 56,
+                      height: 56,
+                      borderRadius: 8,
+                      flexShrink: 0,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: 22,
+                      background: a.gradient
+                    }}
+                  >
+                    {a.icon}
+                  </div>
+                )}
+                <div>
+                  <strong>{a.title}</strong>{" "}
+                  <br />
+                  <span className="mono" style={{ fontSize: 12, color: "var(--muted)" }}>
+                    {a.category}
+                  </span>
+                </div>
+              </div>
+              <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+                <span className={`admin-tag ${a.published ? "tag-active" : "tag-inactive"}`}>{a.published ? "Publié" : "Brouillon"}</span>
+                <button className="btn btn-outline" style={{ padding: "6px 12px", fontSize: 12 }} onClick={() => togglePublished(a)}>
+                  {a.published ? "Dépublier" : "Publier"}
+                </button>
+                <button className="btn btn-outline" style={{ padding: "6px 12px", fontSize: 12 }} onClick={() => startEdit(a)}>
+                  Modifier
+                </button>
+                <button className="btn btn-outline" style={{ padding: "6px 12px", fontSize: 12, color: "var(--red)" }} onClick={() => deleteArticle(a.id, a.title)}>
+                  Supprimer
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+        {articles.length === 0 && <p className="hint">Aucun article pour le moment.</p>}
       </div>
-
-      {tab === "artists" && (
-        <div className="panel wide">
-          <input
-            type="text"
-            placeholder="Rechercher par nom ou email..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            style={{ marginBottom: 20 }}
-          />
-          <div className="lead-list">
-            {filteredArtists.map((a) => {
-              const visible = isSubscriptionVisible({
-                subscriptionStatus: a.subscriptionStatus,
-                currentPeriodEnd: a.currentPeriodEnd ? new Date(a.currentPeriodEnd) : null
-              });
-              return (
-                <div key={a.id} className="lead-card">
-                  <div className="lead-header">
-                    <div>
-                      <strong>{a.name}</strong>{" "}
-                      <span className="mono" style={{ fontSize: 12, color: "var(--muted)" }}>
-                        {a.category} · {a.city || "—"}
-                      </span>
-                      <div style={{ fontSize: 12, color: "var(--muted)", marginTop: 2 }}>
-                        {a.email}
-                        {a.currentPeriodEnd && (
-                          <span> · Expire le {new Date(a.currentPeriodEnd).toLocaleDateString("fr-FR")}</span>
-                        )}
-                      </div>
-                    </div>
-                    <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-                      <span className={`admin-tag ${visible ? "tag-active" : "tag-inactive"}`}>
-                        {visible ? "Abonné" : "Non abonné"}
-                      </span>
-                      <button
-                        className="btn btn-outline"
-                        style={{ padding: "6px 12px", fontSize: 12 }}
-                        onClick={() => extendOneYear(a.id)}
-                        disabled={extendingId === a.id}
-                        data-loading={extendingId === a.id}
-                      >
-                        {extendingId === a.id ? "..." : "+1 an"}
-                      </button>
-                      <button className="btn btn-outline" style={{ padding: "6px 12px", fontSize: 12 }} onClick={() => toggleVerified(a.id, a.isVerified)}>
-                        {a.isVerified ? "✓ Vérifié" : "Marquer vérifié"}
-                      </button>
-                      <button className="btn btn-outline" style={{ padding: "6px 12px", fontSize: 12, color: "var(--red)" }} onClick={() => deleteArtist(a.id, a.name)}>
-                        Supprimer
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-            {filteredArtists.length === 0 && <p className="hint">Aucun artiste trouvé.</p>}
-          </div>
-        </div>
-      )}
-
-      {tab === "leads" && (
-        <div className="panel wide">
-          <div className="lead-list">
-            {leads.map((lead) => (
-              <div key={lead.id} className={`lead-card lead-${lead.status}`}>
-                <div className="lead-header">
-                  <div>
-                    <strong>{lead.senderName}</strong>{" "}
-                    <span className="mono" style={{ fontSize: 12, color: "var(--muted)" }}>
-                      → {lead.artist.name} · {new Date(lead.createdAt).toLocaleDateString("fr-FR")}
-                    </span>
-                  </div>
-                  <select value={lead.status} onChange={(e) => updateLeadStatus(lead.id, e.target.value as Lead["status"])} className="lead-status-select">
-                    <option value="new">Nouveau</option>
-                    <option value="replied">Traité</option>
-                    <option value="archived">Archivé</option>
-                  </select>
-                </div>
-                <p className="lead-message">{lead.message}</p>
-                <div className="lead-contact">{lead.senderEmail}</div>
-              </div>
-            ))}
-            {leads.length === 0 && <p className="hint">Aucune demande pour le moment.</p>}
-          </div>
-        </div>
-      )}
-
-      {tab === "messages" && (
-        <div className="panel wide">
-          <div className="lead-list">
-            {messages.map((m) => (
-              <div key={m.id} className={`lead-card lead-${m.status}`}>
-                <div className="lead-header">
-                  <div>
-                    <strong>{m.name}</strong>{" "}
-                    <span className="mono" style={{ fontSize: 12, color: "var(--muted)" }}>
-                      {m.role} · {new Date(m.createdAt).toLocaleDateString("fr-FR")}
-                    </span>
-                  </div>
-                  <div style={{ display: "flex", gap: 8 }}>
-                    <select value={m.status} onChange={(e) => updateMessageStatus(m.id, e.target.value as ContactMessage["status"])} className="lead-status-select">
-                      <option value="new">Nouveau</option>
-                      <option value="replied">Traité</option>
-                      <option value="archived">Archivé</option>
-                    </select>
-                    <button onClick={() => deleteMessage(m.id)} style={{ background: "none", border: "none", color: "var(--red)", fontSize: 16 }}>
-                      ×
-                    </button>
-                  </div>
-                </div>
-                <p className="lead-message">{m.message}</p>
-                <div className="lead-contact">
-                  {m.email}
-                  {m.phone && ` · ${m.phone}`}
-                </div>
-              </div>
-            ))}
-            {messages.length === 0 && <p className="hint">Aucun message pour le moment.</p>}
-          </div>
-        </div>
-      )}
-      {tab === "articles" && <AdminArticles initialArticles={initialArticles} />}
-      {tab === "billing" && <AdminBilling />}
-      {tab === "backup" && <AdminBackup />}
-      {tab === "specialties" && <AdminSpecialties />}
-      {tab === "settings" && (
-        <AdminSettings initialSettings={initialSettings} artistOptions={artists.map((a) => ({ id: a.id, name: a.name }))} />
-      )}
-    </>
+    </div>
   );
 }
