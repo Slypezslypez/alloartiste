@@ -567,6 +567,10 @@ select {
 .profile-main-photo-wrap { position: relative; }
 .profile-main-photo { width: 100%; aspect-ratio: 4/5; object-fit: cover; border-radius: var(--radius); box-shadow: 0 10px 30px rgba(0,0,0,0.1); display: block; }
 .profile-main-photo-empty { background: var(--line); }
+/* Dans l'espace membre uniquement (pas sur la fiche publique) : photo principale plus petite,
+   pour réduire la hauteur de la page du tableau de bord. */
+.dashboard-main-photo-wrap { max-width: 260px; }
+.dashboard-main-photo.profile-main-photo { aspect-ratio: 3 / 4; }
 .profile-verified-ribbon { position: absolute; top: 14px; left: 14px; background: linear-gradient(90deg, var(--gold), var(--gold-deep)); color: #fff; font-family: "JetBrains Mono", monospace; font-size: 11px; font-weight: 700; padding: 6px 12px; border-radius: 999px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
 .profile-media-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); font-weight: 700; margin: 18px 0 10px; }
 .profile-thumbs { display: flex; gap: 10px; flex-wrap: wrap; }
