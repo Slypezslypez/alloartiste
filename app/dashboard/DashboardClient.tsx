@@ -564,11 +564,11 @@ export function DashboardClient({
       <div className="profile-two-col" style={{ marginTop: 0 }}>
         {/* Colonne gauche : photo principale + galerie + vidéos, même disposition que la fiche publique */}
         <div className="profile-media-col" style={{ position: "static" }}>
-          <div className="profile-main-photo-wrap dashboard-main-photo-wrap">
+          <div className="profile-main-photo-wrap">
             {artist.photos[0] ? (
-              <img className="profile-main-photo dashboard-main-photo" src={artist.photos[0]} alt={artist.name} />
+              <img className="profile-main-photo" src={artist.photos[0]} alt={artist.name} />
             ) : (
-              <div className="profile-main-photo dashboard-main-photo profile-main-photo-empty" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <div className="profile-main-photo profile-main-photo-empty" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <span className="hint" style={{ margin: 0 }}>Aucune photo</span>
               </div>
             )}
