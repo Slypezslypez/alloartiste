@@ -2,10 +2,8 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { isSubscriptionVisible } from "@/lib/categories";
 import { getSiteSettings } from "@/lib/settings";
-import { parseSponsorLogos } from "@/lib/sponsors";
 import { CatalogClient } from "./CatalogClient";
 import { PromoCarousel } from "./PromoCarousel";
-import { SponsorsBar } from "./SponsorsBar";
 
 export const dynamic = "force-dynamic"; // toujours à jour (abonnements qui expirent, nouveaux artistes)
 
@@ -49,8 +47,6 @@ export default async function HomePage() {
 
   return (
     <>
-      <SponsorsBar sponsors={parseSponsorLogos(settings.sponsorLogos)} />
-
       <section className="marquee">
         <div className="marquee-grid">
           <div>

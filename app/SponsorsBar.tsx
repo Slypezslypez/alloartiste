@@ -12,18 +12,20 @@ export function SponsorsBar({ sponsors }: { sponsors: SponsorLogo[] }) {
 
   return (
     <div className="sponsors-bar" aria-label="Nos sponsors">
-      <div className="sponsors-track">
-        {track.map((s, i) =>
-          s.linkUrl ? (
-            <a key={i} href={s.linkUrl} target="_blank" rel="noopener noreferrer sponsored" className="sponsor-logo-link" title={s.name || undefined}>
-              <img src={s.imageUrl} alt={s.name || "Sponsor"} />
-            </a>
-          ) : (
-            <span key={i} className="sponsor-logo-item" title={s.name || undefined}>
-              <img src={s.imageUrl} alt={s.name || "Sponsor"} />
-            </span>
-          )
-        )}
+      <div className="sponsors-track-wrap">
+        <div className="sponsors-track">
+          {track.map((s, i) =>
+            s.linkUrl ? (
+              <a key={i} href={s.linkUrl} target="_blank" rel="noopener noreferrer sponsored" className="sponsor-logo-link" title={s.name || undefined}>
+                <img src={s.imageUrl} alt={s.name || "Sponsor"} className="sponsor-img" />
+              </a>
+            ) : (
+              <span key={i} className="sponsor-logo-item" title={s.name || undefined}>
+                <img src={s.imageUrl} alt={s.name || "Sponsor"} className="sponsor-img" />
+              </span>
+            )
+          )}
+        </div>
       </div>
     </div>
   );

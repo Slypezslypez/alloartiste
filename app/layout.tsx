@@ -5,6 +5,7 @@ import { SiteHeader } from "./SiteHeader";
 import { NavigationProgress } from "./NavigationProgress";
 import { CookieConsent } from "./CookieConsent";
 import { getSiteSettings } from "@/lib/settings";
+import { parseSponsorLogos } from "@/lib/sponsors";
 
 export const metadata: Metadata = {
   title: "AlloArtiste — Artistes & Producteurs",
@@ -35,6 +36,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           backgroundUrl={settings.headerBackgroundUrl}
           backgroundPositionX={settings.headerBackgroundPositionX}
           backgroundPositionY={settings.headerBackgroundPositionY}
+          sponsors={parseSponsorLogos(settings.sponsorLogos)}
         />
         <main>{children}</main>
         <footer>

@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { COUNTRIES } from "@/lib/categories";
+import { SponsorsBar } from "./SponsorsBar";
+import type { SponsorLogo } from "@/lib/sponsors";
 
 const NAV_ITEMS = [
   { href: "/", label: "Accueil" },
@@ -17,13 +19,15 @@ export function SiteHeader({
   logoPart2 = "ARTISTE",
   backgroundUrl,
   backgroundPositionX = 50,
-  backgroundPositionY = 50
+  backgroundPositionY = 50,
+  sponsors = []
 }: {
   logoPart1?: string;
   logoPart2?: string;
   backgroundUrl?: string | null;
   backgroundPositionX?: number;
   backgroundPositionY?: number;
+  sponsors?: SponsorLogo[];
 }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -180,6 +184,8 @@ export function SiteHeader({
           )}
         </div>
       )}
+
+      <SponsorsBar sponsors={sponsors} />
     </header>
   );
 }
