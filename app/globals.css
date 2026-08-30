@@ -172,10 +172,18 @@ main { max-width: 1400px; margin: 0 auto; padding: 0 28px 80px; }
 .result-count { color: var(--muted); font-size: 13px; margin: 0 0 8px; font-family: "JetBrains Mono", monospace; }
 .result-count strong { color: var(--gold-deep); }
 
-/* Bandeau sponsors : pas de fond ni de cadre visible ("bannière invisible"), juste les logos
-   qui défilent. Visible uniquement sur ordinateur (desktop) — masqué sur mobile plus bas. */
+/* Bandeau sponsors : pas de cadre visible autour des logos ("bannière invisible"), juste les
+   logos qui défilent. Intégré au <header> (voir SiteHeader.tsx) qui est en position sticky :
+   le bandeau reste donc toujours visible pendant le scroll, sur toutes les pages. Un fond
+   reprenant celui du header évite que le contenu qui défile ne se superpose visuellement aux
+   logos. Visible uniquement sur ordinateur (desktop) — masqué sur mobile plus bas. */
 .sponsors-bar {
-  overflow: hidden; width: 100%; max-width: 1400px; margin: 0 auto; padding: 14px 28px 0;
+  overflow: hidden; width: 100%;
+  background: rgba(243, 241, 236, 0.94); backdrop-filter: blur(10px);
+  border-top: 1px solid var(--line);
+}
+.sponsors-track-wrap {
+  max-width: 1400px; margin: 0 auto; padding: 10px 28px;
   -webkit-mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
   mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
 }
@@ -185,11 +193,11 @@ main { max-width: 1400px; margin: 0 auto; padding: 0 28px 80px; }
 }
 .sponsors-bar:hover .sponsors-track { animation-play-state: paused; }
 .sponsor-logo-link, .sponsor-logo-item { display: flex; align-items: center; height: 34px; flex-shrink: 0; }
-.sponsor-logo-link img, .sponsor-logo-item img {
+.sponsor-img {
   height: 100%; width: auto; max-width: 140px; object-fit: contain; opacity: 0.65;
   filter: grayscale(1); transition: opacity 0.2s, filter 0.2s;
 }
-.sponsor-logo-link:hover img { opacity: 1; filter: grayscale(0); }
+.sponsor-logo-link:hover .sponsor-img { opacity: 1; filter: grayscale(0); }
 /* Départ hors écran à droite (100vw), sortie complète par la gauche (-100% de sa propre
    largeur) : le bandeau entre bien depuis l'extrême droite à chaque passage. */
 @keyframes sponsors-scroll {
@@ -692,6 +700,7 @@ footer { text-align: center; padding: 34px; color: var(--muted); font-size: 12px
   }
 
   .header-row { background: rgba(19, 17, 14, 0.94); }
+  .sponsors-bar { background: rgba(19, 17, 14, 0.94); }
   .logo-img-light { display: none; }
   .logo-img-dark { display: block; }
 
