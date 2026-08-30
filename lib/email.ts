@@ -1,5 +1,6 @@
 import { Resend } from "resend";
 import { renderEmail, escapeHtml, nl2br } from "./emailTemplate";
+import type { ResourceStatus } from "./resourceMonitor";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -361,6 +362,63 @@ Vous pouvez activer votre abonnement à tout moment depuis votre espace, avant o
 ${process.env.NEXT_PUBLIC_SITE_URL || "https://alloartiste.be"}/dashboard
 
 L'équipe AlloArtiste`,
+    html
+  });
+}
+
+// Alerte l'administrateur du site (pas les artistes) quand une ressource technique (stockage,
+// temps de calcul...) approche de la limite gratuite d'un fournisseur. Un seul email peut couvrir
+// plusieurs ressources en même temps si elles franchissent le seuil le même jour.
+export async function sendResourceAlertEmail(resources: ResourceStatus[]) {
+  const receiver = process.env.CONTACT_RECEIVER_EMAIL || process.env.EMAIL_FROM;
+
+  const rowsHtml = resources
+    .map((r) => {
+      const percentLabel = r.percent !== null ? `${Math.round(r.percent)}%` : "?";
+      return `
+        <tr>
+          <td style="padding:8px 10px;border-bottom:1px solid #e7e2d8;">${escapeHtml(r.name)}</td>
+          <td style="padding:8px 10px;border-bottom:1px solid #e7e2d8;white-space:nowrap;">${escapeHtml(r.usedLabel)} / ${escapeHtml(r.limitLabel)}</td>
+          <td style="padding:8px 10px;border-bottom:1px solid #e7e2d8;font-weight:700;white-space:nowrap;">${percentLabel}</td>
+        </tr>`;
+    })
+    .join("");
+
+  const html = renderEmail({
+    title: "Une ressource du site approche de sa limite gratuite",
+    bodyHtml: `
+      <p style="margin:0 0 14px;">Bonjour,</p>
+      <p style="margin:0 0 14px;">
+        La vérification quotidienne d'AlloArtiste a détecté qu'au moins une ressource technique approche (ou dépasse)
+        le quota gratuit de son fournisseur :
+      </p>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;font-size:13px;margin:0 0 14px;">
+        <thead>
+          <tr>
+            <th style="text-align:left;padding:8px 10px;border-bottom:2px solid #c9922c;">Ressource</th>
+            <th style="text-align:left;padding:8px 10px;border-bottom:2px solid #c9922c;">Utilisé / limite</th>
+            <th style="text-align:left;padding:8px 10px;border-bottom:2px solid #c9922c;">%</th>
+          </tr>
+        </thead>
+        <tbody>${rowsHtml}</tbody>
+      </table>
+      <p style="margin:0;font-size:13px;color:#8c8578;">
+        Selon le fournisseur concerné, dépasser ce seuil peut déclencher une facturation (Cloudflare R2) ou nécessiter
+        un changement de forfait (Neon). Ce mail ne sera pas renvoyé avant quelques jours pour la même ressource.
+      </p>
+    `
+  });
+
+  const text = `Ressources techniques AlloArtiste approchant leur limite gratuite :
+
+${resources.map((r) => `- ${r.name} : ${r.usedLabel} / ${r.limitLabel} (${r.percent !== null ? Math.round(r.percent) + "%" : "?"})`).join("\n")}
+`;
+
+  return resend.emails.send({
+    from: process.env.EMAIL_FROM as string,
+    to: receiver as string,
+    subject: "AlloArtiste — une ressource approche de sa limite gratuite",
+    text,
     html
   });
 }
