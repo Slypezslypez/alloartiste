@@ -57,6 +57,9 @@ export function SiteHeader({
     router.refresh();
   }
 
+  // Le bandeau sponsors n'a pas sa place sur la fiche artiste ni dans l'espace membre.
+  const hideSponsorsBar = pathname.startsWith("/profil") || pathname.startsWith("/dashboard");
+
   function isActive(href: string) {
     if (href === "/") return pathname === "/";
     if (href.startsWith("/#")) return false; // ancre, jamais "active" par elle-même
@@ -185,7 +188,7 @@ export function SiteHeader({
         </div>
       )}
 
-      <SponsorsBar sponsors={sponsors} />
+      {!hideSponsorsBar && <SponsorsBar sponsors={sponsors} />}
     </header>
   );
 }
