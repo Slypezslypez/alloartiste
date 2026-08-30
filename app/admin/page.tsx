@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { isAdminAuthenticated } from "@/lib/adminAuth";
 import { prisma } from "@/lib/prisma";
 import { getSiteSettings } from "@/lib/settings";
+import { parseSponsorLogos } from "@/lib/sponsors";
 import { AdminClient } from "./AdminClient";
 
 export const dynamic = "force-dynamic";
@@ -24,7 +25,7 @@ export default async function AdminPage() {
       initialLeads={JSON.parse(JSON.stringify(leads))}
       initialMessages={JSON.parse(JSON.stringify(messages))}
       initialArticles={JSON.parse(JSON.stringify(articles))}
-      initialSettings={JSON.parse(JSON.stringify(settings))}
+      initialSettings={{ ...JSON.parse(JSON.stringify(settings)), sponsorLogos: parseSponsorLogos(settings.sponsorLogos) }}
     />
   );
 }
