@@ -179,7 +179,10 @@ main { max-width: 1400px; margin: 0 auto; padding: 0 28px 80px; }
   -webkit-mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
   mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
 }
-.sponsors-track { display: flex; align-items: center; gap: 52px; width: max-content; animation: sponsors-scroll 32s linear infinite; }
+.sponsors-track {
+  display: flex; align-items: center; gap: 52px; width: max-content;
+  animation: sponsors-scroll 24s linear infinite;
+}
 .sponsors-bar:hover .sponsors-track { animation-play-state: paused; }
 .sponsor-logo-link, .sponsor-logo-item { display: flex; align-items: center; height: 34px; flex-shrink: 0; }
 .sponsor-logo-link img, .sponsor-logo-item img {
@@ -187,7 +190,12 @@ main { max-width: 1400px; margin: 0 auto; padding: 0 28px 80px; }
   filter: grayscale(1); transition: opacity 0.2s, filter 0.2s;
 }
 .sponsor-logo-link:hover img { opacity: 1; filter: grayscale(0); }
-@keyframes sponsors-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+/* Départ hors écran à droite (100vw), sortie complète par la gauche (-100% de sa propre
+   largeur) : le bandeau entre bien depuis l'extrême droite à chaque passage. */
+@keyframes sponsors-scroll {
+  from { transform: translateX(100vw); }
+  to { transform: translateX(-100%); }
+}
 @media (max-width: 860px) {
   .sponsors-bar { display: none; } /* visible seulement sur ordinateur, pas sur mobile */
 }
