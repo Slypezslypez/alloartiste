@@ -53,6 +53,9 @@ export default async function ProfilePage({ params }: { params: { id: string } }
       })
     : [];
   const unavailableDateStrings = unavailableDates.map((d) => d.date.toISOString().slice(0, 10));
+  // Si l'artiste n'a inscrit aucune date d'indisponibilité, le calendrier n'apporte aucune
+  // information utile au visiteur : on le masque, même si l'option est activée côté artiste.
+  const showCalendar = artist.calendarVisible && unavailableDateStrings.length > 0;
 
   // Nettoyage au passage : les événements déjà passés sont supprimés, pas besoin de tâche
   // planifiée pour garder la table légère.
@@ -196,7 +199,7 @@ export default async function ProfilePage({ params }: { params: { id: string } }
               artistId={artist.id}
               artistName={artist.name}
               unavailableDates={unavailableDateStrings}
-              calendarVisible={artist.calendarVisible}
+              calendarVisible={showCalendar}
             />
           </div>
         </div>
