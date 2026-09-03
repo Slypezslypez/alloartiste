@@ -422,3 +422,58 @@ ${resources.map((r) => `- ${r.name} : ${r.usedLabel} / ${r.limitLabel} (${r.perc
     html
   });
 }
+
+// Alerte à l'administrateur (pas à l'artiste) lorsqu'un paiement d'abonnement échoue, pour être
+// prévenu sans avoir à surveiller le dashboard Stripe.
+export async function sendPaymentFailedAlertEmail(opts: {
+  artistName: string;
+  artistEmail: string;
+  amount?: string;
+  attemptCount?: number;
+  nextAttemptDate?: Date | null;
+}) {
+  const receiver = process.env.CONTACT_RECEIVER_EMAIL || process.env.EMAIL_FROM;
+
+  const html = renderEmail({
+    title: "Échec d'un paiement d'abonnement",
+    bodyHtml: `
+      <p style="margin:0 0 14px;">Bonjour,</p>
+      <p style="margin:0 0 14px;">
+        Le paiement de l'abonnement d'un artiste vient d'échouer sur AlloArtiste :
+      </p>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;font-size:13px;margin:0 0 14px;">
+        <tbody>
+          <tr>
+            <td style="padding:6px 10px;border-bottom:1px solid #e7e2d8;font-weight:700;">Artiste</td>
+            <td style="padding:6px 10px;border-bottom:1px solid #e7e2d8;">${escapeHtml(opts.artistName)}</td>
+          </tr>
+          <tr>
+            <td style="padding:6px 10px;border-bottom:1px solid #e7e2d8;font-weight:700;">Email</td>
+            <td style="padding:6px 10px;border-bottom:1px solid #e7e2d8;">${escapeHtml(opts.artistEmail)}</td>
+          </tr>
+          ${opts.amount ? `<tr><td style="padding:6px 10px;border-bottom:1px solid #e7e2d8;font-weight:700;">Montant</td><td style="padding:6px 10px;border-bottom:1px solid #e7e2d8;">${escapeHtml(opts.amount)}</td></tr>` : ""}
+          ${opts.attemptCount ? `<tr><td style="padding:6px 10px;border-bottom:1px solid #e7e2d8;font-weight:700;">Tentative n°</td><td style="padding:6px 10px;border-bottom:1px solid #e7e2d8;">${opts.attemptCount}</td></tr>` : ""}
+          ${opts.nextAttemptDate ? `<tr><td style="padding:6px 10px;border-bottom:1px solid #e7e2d8;font-weight:700;">Prochaine tentative</td><td style="padding:6px 10px;border-bottom:1px solid #e7e2d8;">${escapeHtml(opts.nextAttemptDate.toLocaleDateString("fr-BE"))}</td></tr>` : ""}
+        </tbody>
+      </table>
+      <p style="margin:0;font-size:13px;color:#8c8578;">
+        Stripe retentera automatiquement le prélèvement selon son calendrier habituel. Si tous les
+        essais échouent, le profil de l'artiste redeviendra invisible du public à la fin de la
+        période déjà payée — aucune action de ta part n'est requise pour l'instant.
+      </p>
+    `
+  });
+
+  const text = `Échec d'un paiement d'abonnement AlloArtiste :
+
+Artiste : ${opts.artistName} (${opts.artistEmail})
+${opts.amount ? `Montant : ${opts.amount}\n` : ""}${opts.attemptCount ? `Tentative n° : ${opts.attemptCount}\n` : ""}${opts.nextAttemptDate ? `Prochaine tentative : ${opts.nextAttemptDate.toLocaleDateString("fr-BE")}\n` : ""}`;
+
+  return resend.emails.send({
+    from: process.env.EMAIL_FROM as string,
+    to: receiver as string,
+    subject: `AlloArtiste — échec de paiement (${opts.artistName})`,
+    text,
+    html
+  });
+}
