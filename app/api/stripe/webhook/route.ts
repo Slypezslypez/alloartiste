@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { prisma } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
-import { sendPaymentFailedAlertEmail } from "@/lib/email";
+import { sendPaymentFailedAlertEmail, sendPaymentFailedArtistEmail } from "@/lib/email";
 
 // Stripe a besoin du corps brut (non parsé) pour vérifier la signature.
 export async function POST(req: NextRequest) {
@@ -67,16 +67,26 @@ export async function POST(req: NextRequest) {
           select: { name: true, email: true }
         });
         if (artist) {
+          const nextAttemptDate = invoice.next_payment_attempt ? new Date(invoice.next_payment_attempt * 1000) : null;
           try {
             await sendPaymentFailedAlertEmail({
               artistName: artist.name,
               artistEmail: artist.email,
               amount: invoice.amount_due != null ? `${(invoice.amount_due / 100).toFixed(2)} ${(invoice.currency || "eur").toUpperCase()}` : undefined,
               attemptCount: invoice.attempt_count || undefined,
-              nextAttemptDate: invoice.next_payment_attempt ? new Date(invoice.next_payment_attempt * 1000) : null
+              nextAttemptDate
             });
           } catch {
             // Ne bloque jamais le traitement du webhook si l'envoi d'email échoue.
+          }
+          try {
+            await sendPaymentFailedArtistEmail({
+              artistName: artist.name,
+              artistEmail: artist.email,
+              nextAttemptDate
+            });
+          } catch {
+            // Idem : un échec d'envoi ne doit jamais faire échouer le webhook.
           }
         }
       }
