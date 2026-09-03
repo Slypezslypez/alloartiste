@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { prisma } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
+import { sendPaymentFailedAlertEmail } from "@/lib/email";
 
 // Stripe a besoin du corps brut (non parsé) pour vérifier la signature.
 export async function POST(req: NextRequest) {
@@ -53,12 +54,31 @@ export async function POST(req: NextRequest) {
     }
 
     // Échec de paiement du renouvellement — le profil redeviendra invisible
-    // automatiquement puisque currentPeriodEnd ne sera pas repoussé.
+    // automatiquement puisque currentPeriodEnd ne sera pas repoussé. On prévient
+    // aussi l'administrateur par email pour qu'il ne découvre pas ça trop tard.
     case "invoice.payment_failed": {
       const invoice = event.data.object as Stripe.Invoice;
       if (invoice.subscription) {
         const sub = await stripe.subscriptions.retrieve(invoice.subscription as string);
         await updateByCustomer(sub);
+
+        const artist = await prisma.artist.findFirst({
+          where: { stripeSubscriptionId: sub.id },
+          select: { name: true, email: true }
+        });
+        if (artist) {
+          try {
+            await sendPaymentFailedAlertEmail({
+              artistName: artist.name,
+              artistEmail: artist.email,
+              amount: invoice.amount_due != null ? `${(invoice.amount_due / 100).toFixed(2)} ${(invoice.currency || "eur").toUpperCase()}` : undefined,
+              attemptCount: invoice.attempt_count || undefined,
+              nextAttemptDate: invoice.next_payment_attempt ? new Date(invoice.next_payment_attempt * 1000) : null
+            });
+          } catch {
+            // Ne bloque jamais le traitement du webhook si l'envoi d'email échoue.
+          }
+        }
       }
       break;
     }
