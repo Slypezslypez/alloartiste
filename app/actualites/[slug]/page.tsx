@@ -2,7 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 
-export const dynamic = "force-dynamic";
+// Même logique que la liste des actualités : contenu régénéré toutes les 5 minutes.
+export const revalidate = 300;
 
 export default async function ArticlePage({ params }: { params: { slug: string } }) {
   const article = await prisma.article.findUnique({ where: { slug: params.slug } });
