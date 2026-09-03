@@ -423,6 +423,56 @@ ${resources.map((r) => `- ${r.name} : ${r.usedLabel} / ${r.limitLabel} (${r.perc
   });
 }
 
+// Prévient l'artiste lui-même (en plus des emails automatiques de Stripe) que son paiement a
+// échoué, avec un lien direct vers son espace pour mettre à jour sa carte au plus vite.
+export async function sendPaymentFailedArtistEmail(opts: {
+  artistName: string;
+  artistEmail: string;
+  nextAttemptDate?: Date | null;
+}) {
+  const formattedDate = opts.nextAttemptDate
+    ? opts.nextAttemptDate.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })
+    : null;
+
+  const html = renderEmail({
+    title: "Le paiement de votre abonnement a échoué",
+    bodyHtml: `
+      <p style="margin:0 0 14px;">Bonjour ${escapeHtml(opts.artistName)},</p>
+      <p style="margin:0 0 14px;">
+        Le renouvellement de votre abonnement AlloArtiste n'a pas pu être prélevé (carte expirée, fonds
+        insuffisants, ou banque ayant refusé le paiement).
+      </p>
+      <p style="margin:0 0 14px;">
+        ${formattedDate ? `Une nouvelle tentative automatique aura lieu le <strong>${escapeHtml(formattedDate)}</strong>. ` : ""}
+        Pour éviter que votre profil ne devienne invisible du public, mettez à jour votre moyen de
+        paiement dès que possible depuis votre espace membre.
+      </p>
+      <p style="margin:0;font-size:13px;color:#8c8578;">
+        Si votre carte est correcte et que le problème persiste, contactez votre banque ou répondez à
+        cet email, nous vous aiderons.
+      </p>
+    `,
+    ctaLabel: "Mettre à jour mon paiement",
+    ctaUrl: `${process.env.NEXT_PUBLIC_SITE_URL || "https://alloartiste.be"}/dashboard`
+  });
+
+  const text = `Bonjour ${opts.artistName},
+
+Le renouvellement de votre abonnement AlloArtiste n'a pas pu être prélevé (carte expirée, fonds insuffisants, ou banque ayant refusé le paiement).
+${formattedDate ? `Une nouvelle tentative automatique aura lieu le ${formattedDate}. ` : ""}Pour éviter que votre profil ne devienne invisible du public, mettez à jour votre moyen de paiement dès que possible depuis votre espace membre :
+${process.env.NEXT_PUBLIC_SITE_URL || "https://alloartiste.be"}/dashboard
+
+L'équipe AlloArtiste`;
+
+  return resend.emails.send({
+    from: process.env.EMAIL_FROM as string,
+    to: opts.artistEmail,
+    subject: "AlloArtiste — échec du paiement de votre abonnement",
+    text,
+    html
+  });
+}
+
 // Alerte à l'administrateur (pas à l'artiste) lorsqu'un paiement d'abonnement échoue, pour être
 // prévenu sans avoir à surveiller le dashboard Stripe.
 export async function sendPaymentFailedAlertEmail(opts: {
