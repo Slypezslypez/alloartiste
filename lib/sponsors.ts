@@ -2,6 +2,9 @@ export type SponsorLogo = {
   imageUrl: string;
   name: string | null;
   linkUrl: string | null;
+  // Permet de désactiver un sponsor individuellement (il reste enregistré dans l'admin, prêt à être
+  // réactivé) sans le supprimer. Absent sur d'anciennes sauvegardes : traité comme "activé" par défaut.
+  enabled: boolean;
 };
 
 // Le champ SiteSettings.sponsorLogos est stocké en texte JSON brut (colonne TEXT, pas de
@@ -17,7 +20,8 @@ export function parseSponsorLogos(raw: string | null | undefined): SponsorLogo[]
       .map((x) => ({
         imageUrl: x.imageUrl as string,
         name: typeof x.name === "string" && x.name.trim() ? x.name : null,
-        linkUrl: typeof x.linkUrl === "string" && x.linkUrl.trim() ? x.linkUrl : null
+        linkUrl: typeof x.linkUrl === "string" && x.linkUrl.trim() ? x.linkUrl : null,
+        enabled: typeof x.enabled === "boolean" ? x.enabled : true
       }));
   } catch {
     return [];
