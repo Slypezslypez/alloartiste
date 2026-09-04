@@ -33,7 +33,9 @@ export function SiteHeader({
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [loggedIn, setLoggedIn] = useState<boolean | null>(null);
-  const [country, setCountry] = useState<string>("Belgique");
+  // "Tous" = option affichée "Belgique et France" dans le menu : c'est le choix par défaut à
+  // chaque chargement de page (on ne restaure plus le dernier choix depuis le stockage local).
+  const [country, setCountry] = useState<string>("Tous");
 
   useEffect(() => {
     fetch("/api/artists/me")
@@ -44,11 +46,6 @@ export function SiteHeader({
   useEffect(() => {
     setIsOpen(false);
   }, [pathname]);
-
-  useEffect(() => {
-    const saved = window.localStorage.getItem("alloartiste_country");
-    if (saved) setCountry(saved);
-  }, []);
 
   async function logout() {
     setLoggedIn(false); // mise à jour immédiate de l'affichage, sans attendre le rechargement
