@@ -19,7 +19,7 @@ type Settings = {
   spotlightArtistId1: string | null;
   spotlightArtistId2: string | null;
   promoImages: string[];
-  sponsorLogos: { imageUrl: string; name: string | null; linkUrl: string | null }[];
+  sponsorLogos: { imageUrl: string; name: string | null; linkUrl: string | null; enabled: boolean }[];
   sponsorsBarEnabled: boolean;
   contactReceiverEmail: string | null;
   headerBackgroundUrl: string | null;
@@ -177,9 +177,14 @@ export function AdminSettings({ initialSettings, artistOptions }: { initialSetti
   function addSponsorLogo(file: File) {
     uploadSiteImage(
       file,
-      (url) => set("sponsorLogos", [...form.sponsorLogos, { imageUrl: url, name: "", linkUrl: "" }]),
+      (url) => set("sponsorLogos", [...form.sponsorLogos, { imageUrl: url, name: "", linkUrl: "", enabled: true }]),
       setUploadingSponsor
     );
+  }
+
+  function toggleSponsorEnabled(index: number, checked: boolean) {
+    const next = form.sponsorLogos.map((s, i) => (i === index ? { ...s, enabled: checked } : s));
+    set("sponsorLogos", next);
   }
 
   function removeSponsorLogo(index: number) {
@@ -381,7 +386,8 @@ export function AdminSettings({ initialSettings, artistOptions }: { initialSetti
             onChange={(e) => set("sponsorsBarEnabled", e.target.checked)}
           />
           <span>
-            Activer le bandeau sponsors sur le site (le décocher le masque partout, sans supprimer les logos ci-dessous)
+            Activer le bandeau sponsors sur le site (interrupteur général : le décocher masque tout le bandeau,
+            même si des sponsors sont activés individuellement ci-dessous)
           </span>
         </label>
 
@@ -391,7 +397,7 @@ export function AdminSettings({ initialSettings, artistOptions }: { initialSetti
 
         <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 14 }}>
           {form.sponsorLogos.map((s, i) => (
-            <div key={s.imageUrl + i} style={{ display: "flex", flexDirection: "column", gap: 8, background: "var(--shell)", borderRadius: 10, padding: 10 }}>
+            <div key={s.imageUrl + i} style={{ display: "flex", flexDirection: "column", gap: 8, background: "var(--shell)", borderRadius: 10, padding: 10, opacity: s.enabled ? 1 : 0.55 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
                 <img src={s.imageUrl} alt="" style={{ width: 64, height: 40, objectFit: "contain", borderRadius: 6, border: "1px solid var(--line)", background: "#fff" }} />
                 <input
@@ -411,6 +417,10 @@ export function AdminSettings({ initialSettings, artistOptions }: { initialSetti
                   Retirer
                 </button>
               </div>
+              <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "var(--ink-soft)", cursor: "pointer" }}>
+                <input type="checkbox" checked={s.enabled} onChange={(e) => toggleSponsorEnabled(i, e.target.checked)} style={{ width: "auto" }} />
+                {s.enabled ? "Affiché sur le site" : "Masqué (conservé, non affiché)"}
+              </label>
             </div>
           ))}
         </div>
