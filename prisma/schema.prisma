@@ -180,6 +180,9 @@ model SiteSettings {
   // Stocké en texte JSON (pas de type Json natif utilisé ailleurs dans ce schéma) :
   // [{ imageUrl: string, name: string|null, linkUrl: string|null }]
   sponsorLogos String @default("[]")
+  // Interrupteur manuel dans l'admin : permet de masquer le bandeau sponsors sur tout le site sans
+  // avoir à retirer les logos un par un (ex. période sans sponsor actif).
+  sponsorsBarEnabled Boolean @default(true)
 
   // Anti-spam pour l'alerte quotidienne "ressource proche de sa limite gratuite" (Cloudflare R2,
   // Neon). Stocké en texte JSON : { [cléRessource: string]: dateISOduDernierEnvoi }. Permet de ne
