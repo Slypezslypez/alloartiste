@@ -20,6 +20,7 @@ type Settings = {
   spotlightArtistId2: string | null;
   promoImages: string[];
   sponsorLogos: { imageUrl: string; name: string | null; linkUrl: string | null }[];
+  sponsorsBarEnabled: boolean;
   contactReceiverEmail: string | null;
   headerBackgroundUrl: string | null;
   headerBackgroundPositionX: number;
@@ -373,30 +374,43 @@ export function AdminSettings({ initialSettings, artistOptions }: { initialSetti
           logo n&apos;est pas cliquable ; avec un lien, il ouvre le site du sponsor dans un nouvel onglet.
         </p>
 
+        <label className="calendar-visibility-toggle">
+          <input
+            type="checkbox"
+            checked={form.sponsorsBarEnabled}
+            onChange={(e) => set("sponsorsBarEnabled", e.target.checked)}
+          />
+          <span>
+            Activer le bandeau sponsors sur le site (le décocher le masque partout, sans supprimer les logos ci-dessous)
+          </span>
+        </label>
+
         {form.sponsorLogos.length === 0 && (
           <p className="hint" style={{ marginTop: 0 }}>Aucun sponsor ajouté pour l&apos;instant — le bandeau restera masqué.</p>
         )}
 
         <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 14 }}>
           {form.sponsorLogos.map((s, i) => (
-            <div key={s.imageUrl + i} style={{ display: "flex", alignItems: "center", gap: 12, background: "var(--shell)", borderRadius: 10, padding: 10, flexWrap: "wrap" }}>
-              <img src={s.imageUrl} alt="" style={{ width: 64, height: 40, objectFit: "contain", borderRadius: 6, border: "1px solid var(--line)", background: "#fff" }} />
-              <input
-                value={s.name || ""}
-                onChange={(e) => updateSponsorLogo(i, "name", e.target.value)}
-                placeholder="Nom du sponsor (optionnel)"
-                style={{ flex: "1 1 160px" }}
-              />
-              <input
-                type="url"
-                value={s.linkUrl || ""}
-                onChange={(e) => updateSponsorLogo(i, "linkUrl", e.target.value)}
-                placeholder="https://... (optionnel, sinon non cliquable)"
-                style={{ flex: "1 1 220px" }}
-              />
-              <button type="button" className="btn btn-outline" style={{ padding: "5px 10px", fontSize: 12, color: "var(--red)" }} onClick={() => removeSponsorLogo(i)}>
-                Retirer
-              </button>
+            <div key={s.imageUrl + i} style={{ display: "flex", flexDirection: "column", gap: 8, background: "var(--shell)", borderRadius: 10, padding: 10 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+                <img src={s.imageUrl} alt="" style={{ width: 64, height: 40, objectFit: "contain", borderRadius: 6, border: "1px solid var(--line)", background: "#fff" }} />
+                <input
+                  value={s.name || ""}
+                  onChange={(e) => updateSponsorLogo(i, "name", e.target.value)}
+                  placeholder="Nom du sponsor (optionnel)"
+                  style={{ flex: "1 1 160px" }}
+                />
+                <input
+                  type="url"
+                  value={s.linkUrl || ""}
+                  onChange={(e) => updateSponsorLogo(i, "linkUrl", e.target.value)}
+                  placeholder="https://... (optionnel, sinon non cliquable)"
+                  style={{ flex: "1 1 220px" }}
+                />
+                <button type="button" className="btn btn-outline" style={{ padding: "5px 10px", fontSize: 12, color: "var(--red)" }} onClick={() => removeSponsorLogo(i)}>
+                  Retirer
+                </button>
+              </div>
             </div>
           ))}
         </div>
