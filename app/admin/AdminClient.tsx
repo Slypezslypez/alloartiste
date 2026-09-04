@@ -73,7 +73,7 @@ type Settings = {
   spotlightArtistId1: string | null;
   spotlightArtistId2: string | null;
   promoImages: string[];
-  sponsorLogos: { imageUrl: string; name: string | null; linkUrl: string | null }[];
+  sponsorLogos: { imageUrl: string; name: string | null; linkUrl: string | null; enabled: boolean }[];
   sponsorsBarEnabled: boolean;
   contactReceiverEmail: string | null;
   headerBackgroundUrl: string | null;
