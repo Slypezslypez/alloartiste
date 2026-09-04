@@ -36,7 +36,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           backgroundUrl={settings.headerBackgroundUrl}
           backgroundPositionX={settings.headerBackgroundPositionX}
           backgroundPositionY={settings.headerBackgroundPositionY}
-          sponsors={parseSponsorLogos(settings.sponsorLogos)}
+          sponsors={settings.sponsorsBarEnabled ? parseSponsorLogos(settings.sponsorLogos) : []}
         />
         <main>{children}</main>
         <footer>
