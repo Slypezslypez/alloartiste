@@ -44,6 +44,7 @@ const schema = z.object({
     )
     .max(20)
     .optional(),
+  sponsorsBarEnabled: z.boolean().optional(),
   howArtistsImageUrl: z.string().url().optional().nullable(),
   howArtistsImagePositionX: z.number().min(0).max(100).optional(),
   howArtistsImagePositionY: z.number().min(0).max(100).optional(),
