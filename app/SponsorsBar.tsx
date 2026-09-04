@@ -4,11 +4,12 @@ import type { SponsorLogo } from "@/lib/sponsors";
 // défilent en continu. N'affiche rien si la liste est vide. Masqué sur mobile (voir CSS) :
 // demandé explicitement, ce bandeau n'a de sens que sur un écran assez large.
 export function SponsorsBar({ sponsors }: { sponsors: SponsorLogo[] }) {
-  if (sponsors.length === 0) return null;
+  const active = sponsors.filter((s) => s.enabled);
+  if (active.length === 0) return null;
 
   // La piste est dupliquée une fois pour permettre une boucle de défilement continue
   // (translation de 0 à -50%) sans saut visible au raccord.
-  const track = [...sponsors, ...sponsors];
+  const track = [...active, ...active];
 
   return (
     <div className="sponsors-bar" aria-label="Nos sponsors">
