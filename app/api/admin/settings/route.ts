@@ -39,7 +39,8 @@ const schema = z.object({
       z.object({
         imageUrl: z.string().url(),
         name: z.string().max(80).optional().nullable(),
-        linkUrl: z.string().url().optional().nullable().or(z.literal(""))
+        linkUrl: z.string().url().optional().nullable().or(z.literal("")),
+        enabled: z.boolean().optional()
       })
     )
     .max(20)
@@ -72,7 +73,8 @@ export async function PATCH(req: NextRequest) {
     const cleaned: SponsorLogo[] = sponsorLogos.map((s) => ({
       imageUrl: s.imageUrl,
       name: s.name || null,
-      linkUrl: s.linkUrl || null
+      linkUrl: s.linkUrl || null,
+      enabled: s.enabled ?? true
     }));
     data.sponsorLogos = stringifySponsorLogos(cleaned);
   }
