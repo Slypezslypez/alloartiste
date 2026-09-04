@@ -75,8 +75,10 @@ export function CatalogClient({ artists }: { artists: ArtistCard[] }) {
         setCity("Toutes");
       }
     }
+    // Le pays par défaut est "Belgique et France" à chaque chargement de page ; seul un lien direct
+    // avec ?country=... (venant du menu, depuis une autre page) impose un pays précis au chargement.
     const params = new URLSearchParams(window.location.search);
-    applyCountry(params.get("country") || window.localStorage.getItem("alloartiste_country"));
+    applyCountry(params.get("country"));
 
     function onCountryChanged(e: Event) {
       applyCountry((e as CustomEvent<string>).detail);
@@ -128,7 +130,7 @@ export function CatalogClient({ artists }: { artists: ArtistCard[] }) {
     // Le pays revient à celui choisi dans le menu du site (Belgique, France, ou Belgique et France),
     // pour rester cohérent avec ce qui est affiché en haut de page après un clic sur "Réinitialiser".
     const saved = window.localStorage.getItem("alloartiste_country");
-    setCountry(saved === "France" || saved === "Tous" ? saved : "Belgique");
+    setCountry(saved === "France" || saved === "Belgique" ? saved : "Tous");
     setCity("Toutes");
     setCategory("Tous");
     setSpecialty("Toutes");
