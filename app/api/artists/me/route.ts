@@ -27,7 +27,6 @@ const schema = z
     website: z.string().max(200).optional().nullable(),
     facebook: z.string().max(200).optional().nullable(),
     instagram: z.string().max(200).optional().nullable(),
-    technicalNeeds: z.string().max(1000).optional(),
     calendarVisible: z.boolean().optional()
   })
   .refine(
