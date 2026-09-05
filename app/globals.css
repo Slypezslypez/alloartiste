@@ -710,7 +710,8 @@ footer { text-align: center; padding: 34px; color: var(--muted); font-size: 12px
   /* Dans l'espace membre, les onglets (Abonnement/Statistiques/...) passent sur plusieurs lignes
      sur mobile : le même "gap" servait à la fois d'espace horizontal et vertical, ce qui laissait
      un vide beaucoup trop grand entre chaque ligne d'onglets. */
-  .account-tabs-bar { column-gap: 22px; row-gap: 4px; }
+  .account-tabs-bar { column-gap: 18px; row-gap: 0; }
+  .account-tab { padding-top: 6px; padding-bottom: 6px; }
 }
 
 /* ============================================================
