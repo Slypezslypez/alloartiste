@@ -672,6 +672,9 @@ select {
   .profile-media-col, .profile-right-col { min-width: 0; }
   .profile-media-col { position: static; }
   .profile-name { font-size: 30px; }
+  /* Les badges métier/spécialité + la ville ne tenaient plus sur une seule ligne sur les écrans
+     étroits, ce qui forçait un débordement horizontal de toute la page. */
+  .profile-top-row { flex-wrap: wrap; row-gap: 6px; }
 }
 .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; margin-bottom: 44px; }
 .gallery img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 12px; border: 1px solid var(--line); }
