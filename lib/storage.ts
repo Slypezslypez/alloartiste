@@ -65,6 +65,22 @@ export async function createPresignedEventUpload(artistId: string, fileExt: stri
   return { uploadUrl, publicUrl };
 }
 
+/** Upload d'un contrat (PDF) par l'artiste propriétaire, pour son cahier de comptes. */
+export async function createPresignedContractUpload(artistId: string, fileExt: string, contentType: string) {
+  const key = `contracts/${artistId}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${fileExt}`;
+
+  const command = new PutObjectCommand({
+    Bucket: process.env.S3_BUCKET,
+    Key: key,
+    ContentType: contentType
+  });
+
+  const uploadUrl = await getSignedUrl(s3, command, { expiresIn: 300 });
+  const publicUrl = `${process.env.S3_PUBLIC_BASE_URL}/${key}`;
+
+  return { uploadUrl, publicUrl };
+}
+
 /** Upload d'image pour les réglages du site (fond du header...), réservé à l'admin. */
 export async function createPresignedSiteUpload(fileExt: string, contentType: string) {
   const key = `site/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${fileExt}`;

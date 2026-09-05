@@ -22,6 +22,7 @@ type Artist = {
   website: string | null;
   facebook: string | null;
   instagram: string | null;
+  technicalNeeds: string;
   photos: string[];
   videos: string[];
   priceMin: number | null;
@@ -72,6 +73,7 @@ export function DashboardClient({
   const [category, setCategory] = useState<string>(isKnownCategory ? initialArtist.category : "Autre");
   const [customCategory, setCustomCategory] = useState(isKnownCategory ? "" : initialArtist.category);
   const isCustomCategory = category === "Autre";
+  const [technicalNeeds, setTechnicalNeeds] = useState(initialArtist.technicalNeeds || "");
   const [specialties, setSpecialties] = useState<string[]>(initialArtist.specialties || []);
   const [customSpecialty, setCustomSpecialty] = useState("");
   const specialtyOptions = SPECIALTY_TREE[category] || [];
@@ -307,7 +309,8 @@ export function DashboardClient({
         phone: fd.get("phone") || null,
         website: fd.get("website") || null,
         facebook: fd.get("facebook") || null,
-        instagram: fd.get("instagram") || null
+        instagram: fd.get("instagram") || null,
+        technicalNeeds: technicalNeeds.trim()
       })
     });
     if (res.ok) {
@@ -481,6 +484,9 @@ export function DashboardClient({
           </Link>
           <Link href="/dashboard/evenements" className="account-tab">
             Mes événements
+          </Link>
+          <Link href="/dashboard/contrats" className="account-tab">
+            Mes contrats
           </Link>
           <button className={`account-tab ${openTab === "calendrier" ? "active" : ""}`} onClick={() => setOpenTab(openTab === "calendrier" ? null : "calendrier")}>
             Calendrier
@@ -855,11 +861,29 @@ export function DashboardClient({
                 </div>
               </div>
 
+              <p className="profile-section-label mono">Fiche technique</p>
+              <label>Besoins techniques (facultatif)</label>
+              <textarea
+                name="technicalNeeds"
+                maxLength={1000}
+                rows={4}
+                placeholder="Ex. Sonorisation pour 100 personnes, 2 micros HF, alimentation 220V à proximité de la scène..."
+                value={technicalNeeds}
+                onChange={(e) => setTechnicalNeeds(e.target.value)}
+              />
+              <p className="hint">
+                Ces informations apparaissent sur votre fiche technique téléchargeable, utile pour les salles et
+                organisateurs.
+              </p>
+
               {profileMsg && <p className="success">{profileMsg}</p>}
-              <div style={{ marginTop: 20 }}>
+              <div style={{ marginTop: 20, display: "flex", gap: 12, flexWrap: "wrap" }}>
                 <button type="submit" className="btn btn-gold">
                   Enregistrer
                 </button>
+                <a href="/api/artists/me/technical-sheet" className="btn btn-outline" target="_blank" rel="noopener noreferrer">
+                  📄 Télécharger ma fiche technique
+                </a>
               </div>
             </form>
           </div>

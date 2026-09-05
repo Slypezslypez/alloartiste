@@ -22,6 +22,16 @@ type InviteCode = {
   usedByArtistName: string | null;
 };
 
+type AdminContract = {
+  id: string;
+  clientName: string;
+  eventDate: string | null;
+  amount: number | null;
+  fileUrl: string;
+  createdAt: string;
+  artist: { name: string; email: string };
+};
+
 const PRICE_PER_YEAR = 33; // doit rester cohérent avec SUBSCRIPTION_LABEL dans lib/categories.ts
 
 export function AdminBilling() {
@@ -35,6 +45,8 @@ export function AdminBilling() {
   const [createError, setCreateError] = useState("");
   const [mailingCodeId, setMailingCodeId] = useState<string | null>(null);
   const [codeStatusById, setCodeStatusById] = useState<Record<string, string>>({});
+  const [contracts, setContracts] = useState<AdminContract[] | null>(null);
+  const [contractsTotal, setContractsTotal] = useState(0);
 
   function loadCodes() {
     fetch("/api/admin/invite-codes")
@@ -50,6 +62,12 @@ export function AdminBilling() {
         setActiveCount(data.activeCount || 0);
       });
     loadCodes();
+    fetch("/api/admin/contracts")
+      .then((r) => r.json())
+      .then((data) => {
+        setContracts(data.contracts || []);
+        setContractsTotal(data.totalAmount || 0);
+      });
   }, []);
 
   async function resendInvoice(id: string) {
@@ -242,6 +260,55 @@ export function AdminBilling() {
                     {codeStatusById[c.id]}
                   </p>
                 )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="panel wide">
+        <h2 style={{ fontSize: 24 }}>Contrats des artistes</h2>
+        <p className="sub">
+          Vue d&apos;ensemble en lecture seule des contrats enregistrés par les artistes dans leur cahier de
+          comptes (dashboard → Mes contrats).
+        </p>
+
+        {contracts && contracts.length > 0 && (
+          <div className="stats-row" style={{ marginBottom: 20 }}>
+            <div className="stat-box">
+              <span className="stat-value">{contracts.length}</span>
+              <span className="stat-label">Contrats enregistrés</span>
+            </div>
+            <div className="stat-box">
+              <span className="stat-value">{contractsTotal.toLocaleString("fr-BE")} €</span>
+              <span className="stat-label">Montant cumulé</span>
+            </div>
+          </div>
+        )}
+
+        {!contracts ? (
+          <p className="hint">Chargement...</p>
+        ) : contracts.length === 0 ? (
+          <p className="hint">Aucun contrat enregistré par les artistes pour l&apos;instant.</p>
+        ) : (
+          <div className="lead-list">
+            {contracts.map((c) => (
+              <div key={c.id} className="lead-card">
+                <div className="lead-header">
+                  <div>
+                    <strong>{c.artist.name}</strong>{" "}
+                    <span className="mono" style={{ fontSize: 12, color: "var(--muted)" }}>
+                      client : {c.clientName}
+                    </span>
+                    <div style={{ fontSize: 12, color: "var(--muted)", marginTop: 2 }}>
+                      {c.eventDate ? new Date(c.eventDate).toLocaleDateString("fr-FR") : "Date non renseignée"}
+                      {c.amount != null ? ` · ${c.amount.toLocaleString("fr-BE")} €` : ""}
+                    </div>
+                  </div>
+                  <a className="btn btn-outline" style={{ padding: "6px 12px", fontSize: 12 }} href={c.fileUrl} target="_blank" rel="noopener noreferrer">
+                    Voir le PDF
+                  </a>
+                </div>
               </div>
             ))}
           </div>

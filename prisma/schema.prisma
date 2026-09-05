@@ -29,6 +29,10 @@ model Artist {
   facebook  String?
   instagram String?
 
+  // Besoins techniques (son, scène, alimentation électrique...) affichés sur la fiche technique PDF
+  // téléchargeable depuis l'espace membre. Facultatif, texte libre.
+  technicalNeeds String @default("")
+
   rating       Float   @default(0)
   reviewsCount Int     @default(0)
   views        Int     @default(0)
@@ -48,6 +52,7 @@ model Artist {
   leads Lead[]
   unavailableDates UnavailableDate[]
   events Event[]
+  contracts Contract[]
   calendarVisible  Boolean @default(true) // l'artiste peut masquer son calendrier de disponibilité du public
 
   termsAcceptedAt DateTime? // date d'acceptation des CGU (preuve, lors de l'abonnement)
@@ -113,6 +118,21 @@ model UnavailableDate {
   createdAt DateTime @default(now())
 
   @@unique([artistId, date])
+  @@index([artistId])
+}
+
+model Contract {
+  id           String   @id @default(cuid())
+  artistId     String
+  artist       Artist   @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  clientName   String // nom de l'organisateur / du client
+  eventDate    DateTime?
+  eventLocation String?
+  amount       Float? // montant du cachet en euros
+  note         String?
+  fileUrl      String // PDF du contrat (uploadé ou généré), stocké sur R2
+  createdAt    DateTime @default(now())
+
   @@index([artistId])
 }
 
