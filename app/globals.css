@@ -700,6 +700,10 @@ footer { text-align: center; padding: 34px; color: var(--muted); font-size: 12px
      choisi (ex. "Toutes les villes" devenait "Toutes les vil...") : chaque champ prend maintenant
      toute la largeur, un par ligne. */
   .search-input, .search-select { flex: 1 1 100%; min-width: 0; }
+  /* Même souci dans l'espace membre : les lignes de champs (Métier/Pays/Ville, etc.) affichaient
+     un texte tronqué ("Cha", "Belg") faute de place pour 2 ou 3 champs côte à côte. */
+  .field-row { flex-wrap: wrap; }
+  .field-row > div { flex: 1 1 100%; min-width: 0; }
   /* La ligne verticale entre champs n'a plus de sens une fois les champs empilés : une ligne
      horizontale la remplace pour continuer à séparer visuellement chaque ligne. */
   .search-select { border-left: none; border-top: 1px solid var(--line); }
