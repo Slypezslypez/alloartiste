@@ -29,9 +29,6 @@ model Artist {
   facebook  String?
   instagram String?
 
-  // Besoins techniques (son, scène, alimentation électrique...) affichés sur la fiche technique PDF
-  // téléchargeable depuis l'espace membre. Facultatif, texte libre.
-  technicalNeeds String @default("")
 
   rating       Float   @default(0)
   reviewsCount Int     @default(0)
