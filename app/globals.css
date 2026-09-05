@@ -242,6 +242,13 @@ main { max-width: 1400px; margin: 0 auto; padding: 0 28px 80px; }
   .marquee-photos { grid-template-columns: repeat(2, 1fr); gap: 10px; }
   .promo-carousel { height: 318px; }
   .desktop-nav, .desktop-actions { display: none; }
+  /* Le conteneur des liens desktop reste dans la mise en page même une fois son contenu masqué,
+     ce qui ajoutait un espacement invisible poussant le bouton menu hors de l'écran sur mobile. */
+  .nav-actions-group { display: none; }
+  /* Logo légèrement réduit uniquement sur mobile, pour laisser assez de place au bouton menu sans
+     jamais provoquer de défilement horizontal, même sur les écrans les plus étroits (iPhone SE...). */
+  .logo { font-size: 19px; }
+  .logo-img { height: 30px; }
   .mobile-toggle { display: flex; }
   .mobile-drawer {
     display: flex; flex-direction: column; gap: 4px; padding: 16px 20px 22px;
@@ -658,7 +665,11 @@ select {
 .availability-dot.unavailable { background: var(--red); }
 
 @media (max-width: 860px) {
-  .profile-two-col { grid-template-columns: 1fr; gap: 30px; }
+  /* "minmax(0, 1fr)" (et non "1fr" seul) empêche la colonne de s'agrandir au-delà de l'écran à
+     cause du contenu qu'elle contient (photo, formules, formulaire...) : sans ce minmax, une seule
+     ligne de contenu un peu large forçait toute la page à défiler horizontalement sur mobile. */
+  .profile-two-col { grid-template-columns: minmax(0, 1fr); gap: 30px; }
+  .profile-media-col, .profile-right-col { min-width: 0; }
   .profile-media-col { position: static; }
   .profile-name { font-size: 30px; }
 }
