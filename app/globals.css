@@ -696,6 +696,13 @@ footer { text-align: center; padding: 34px; color: var(--muted); font-size: 12px
   .header-row { padding: 12px 16px; }
   .marquee { padding: 46px 4px 32px; }
   .profile-name { font-size: 28px; }
+  /* Sur mobile, deux sélecteurs par ligne ne laissaient pas assez de place pour lire le texte
+     choisi (ex. "Toutes les villes" devenait "Toutes les vil...") : chaque champ prend maintenant
+     toute la largeur, un par ligne. */
+  .search-input, .search-select { flex: 1 1 100%; min-width: 0; }
+  /* La ligne verticale entre champs n'a plus de sens une fois les champs empilés : une ligne
+     horizontale la remplace pour continuer à séparer visuellement chaque ligne. */
+  .search-select { border-left: none; border-top: 1px solid var(--line); }
 }
 
 /* ============================================================
