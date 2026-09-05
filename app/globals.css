@@ -707,6 +707,10 @@ footer { text-align: center; padding: 34px; color: var(--muted); font-size: 12px
   /* La ligne verticale entre champs n'a plus de sens une fois les champs empilés : une ligne
      horizontale la remplace pour continuer à séparer visuellement chaque ligne. */
   .search-select { border-left: none; border-top: 1px solid var(--line); }
+  /* Dans l'espace membre, les onglets (Abonnement/Statistiques/...) passent sur plusieurs lignes
+     sur mobile : le même "gap" servait à la fois d'espace horizontal et vertical, ce qui laissait
+     un vide beaucoup trop grand entre chaque ligne d'onglets. */
+  .account-tabs-bar { column-gap: 22px; row-gap: 4px; }
 }
 
 /* ============================================================
