@@ -6,7 +6,6 @@ import { CATEGORIES, COUNTRIES, CITIES_BY_COUNTRY, MAX_PHOTOS, MAX_VIDEOS, isSub
 import { SPECIALTY_TREE } from "@/lib/specialtyTree";
 import { AvailabilityCalendar } from "@/app/AvailabilityCalendar";
 import { compressImage } from "@/lib/imageCompress";
-import { parseTechnicalSheet, isTechnicalSheetEmpty, type TechnicalSheetData } from "@/lib/technicalSheet";
 
 type Artist = {
   id: string;
@@ -23,7 +22,6 @@ type Artist = {
   website: string | null;
   facebook: string | null;
   instagram: string | null;
-  technicalNeeds: string;
   photos: string[];
   videos: string[];
   priceMin: number | null;
@@ -74,7 +72,6 @@ export function DashboardClient({
   const [category, setCategory] = useState<string>(isKnownCategory ? initialArtist.category : "Autre");
   const [customCategory, setCustomCategory] = useState(isKnownCategory ? "" : initialArtist.category);
   const isCustomCategory = category === "Autre";
-  const [technicalSheet, setTechnicalSheet] = useState<TechnicalSheetData>(parseTechnicalSheet(initialArtist.technicalNeeds));
   const [specialties, setSpecialties] = useState<string[]>(initialArtist.specialties || []);
   const [customSpecialty, setCustomSpecialty] = useState("");
   const specialtyOptions = SPECIALTY_TREE[category] || [];
@@ -310,8 +307,7 @@ export function DashboardClient({
         phone: fd.get("phone") || null,
         website: fd.get("website") || null,
         facebook: fd.get("facebook") || null,
-        instagram: fd.get("instagram") || null,
-        technicalNeeds: JSON.stringify(technicalSheet)
+        instagram: fd.get("instagram") || null
       })
     });
     if (res.ok) {
@@ -862,80 +858,11 @@ export function DashboardClient({
                 </div>
               </div>
 
-              <p className="profile-section-label mono">Fiche technique (rider)</p>
-              <p className="hint" style={{ marginTop: -4, marginBottom: 14 }}>
-                Ces informations servent uniquement à générer votre fiche technique téléchargeable, à destination
-                des salles et régisseurs — elles n&apos;apparaissent pas sur votre profil public.
-              </p>
-
-              <label>Nombre de personnes sur scène</label>
-              <input
-                type="text"
-                maxLength={60}
-                placeholder="Ex. 3"
-                value={technicalSheet.onStageCount}
-                onChange={(e) => setTechnicalSheet({ ...technicalSheet, onStageCount: e.target.value })}
-              />
-
-              <label>Espace scénique minimum</label>
-              <input
-                type="text"
-                maxLength={120}
-                placeholder="Ex. 4m x 3m, sol plat"
-                value={technicalSheet.stageSize}
-                onChange={(e) => setTechnicalSheet({ ...technicalSheet, stageSize: e.target.value })}
-              />
-
-              <label>Sonorisation (micros, entrées console, retours...)</label>
-              <textarea
-                maxLength={500}
-                rows={3}
-                placeholder="Ex. 2 micros HF, 1 DI, 2 retours de scène"
-                value={technicalSheet.soundNeeds}
-                onChange={(e) => setTechnicalSheet({ ...technicalSheet, soundNeeds: e.target.value })}
-              />
-
-              <label>Lumière (facultatif)</label>
-              <textarea
-                maxLength={500}
-                rows={2}
-                placeholder="Ex. Éclairage de scène standard suffisant"
-                value={technicalSheet.lightNeeds}
-                onChange={(e) => setTechnicalSheet({ ...technicalSheet, lightNeeds: e.target.value })}
-              />
-
-              <label>Alimentation électrique</label>
-              <input
-                type="text"
-                maxLength={200}
-                placeholder="Ex. 2 prises 220V à proximité de la scène"
-                value={technicalSheet.powerNeeds}
-                onChange={(e) => setTechnicalSheet({ ...technicalSheet, powerNeeds: e.target.value })}
-              />
-
-              <label>Contact technique (régisseur, tourneur...)</label>
-              <input
-                type="text"
-                maxLength={120}
-                placeholder="Ex. Jean Dupont — 04XX XX XX XX"
-                value={technicalSheet.technicalContact}
-                onChange={(e) => setTechnicalSheet({ ...technicalSheet, technicalContact: e.target.value })}
-              />
-
               {profileMsg && <p className="success">{profileMsg}</p>}
-              <div style={{ marginTop: 20, display: "flex", gap: 12, flexWrap: "wrap" }}>
+              <div style={{ marginTop: 20 }}>
                 <button type="submit" className="btn btn-gold">
                   Enregistrer
                 </button>
-                {isTechnicalSheetEmpty(technicalSheet) ? (
-                  <span className="hint" style={{ alignSelf: "center" }}>
-                    Renseignez au moins un champ ci-dessus (puis enregistrez) pour pouvoir télécharger votre fiche technique.
-                  </span>
-                ) : (
-                  <a href="/api/artists/me/technical-sheet" className="btn btn-outline" target="_blank" rel="noopener noreferrer">
-                    📄 Télécharger ma fiche technique
-                  </a>
-                )}
               </div>
             </form>
           </div>
