@@ -482,9 +482,6 @@ export function DashboardClient({
           <Link href="/dashboard/evenements" className="account-tab">
             Mes événements
           </Link>
-          <Link href="/dashboard/carte-nfc" className="account-tab">
-            Carte NFC
-          </Link>
           <button className={`account-tab ${openTab === "calendrier" ? "active" : ""}`} onClick={() => setOpenTab(openTab === "calendrier" ? null : "calendrier")}>
             Calendrier
           </button>
