@@ -20,11 +20,17 @@ export async function compressImage(file: File, maxDim = 1600, quality = 0.82): 
     if (!ctx) return file;
     ctx.drawImage(bitmap, 0, 0, width, height);
 
-    const blob: Blob | null = await new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", quality));
+    // Les PNG sont conservés en PNG (jamais convertis en JPEG) : le format JPEG n'a pas de canal
+    // alpha, donc un logo à fond transparent se retrouverait avec un fond uni (noir ou blanc selon
+    // le navigateur) une fois "compressé" — un défaut resté invisible tant qu'aucune image avec
+    // transparence n'avait été testée (logos sponsors, notamment).
+    const isPng = file.type === "image/png";
+    const outputType = isPng ? "image/png" : "image/jpeg";
+    const blob: Blob | null = await new Promise((resolve) => canvas.toBlob(resolve, outputType, isPng ? undefined : quality));
     if (!blob || blob.size >= file.size) return file;
 
-    const newName = file.name.replace(/\.\w+$/, "") + ".jpg";
-    return new File([blob], newName, { type: "image/jpeg" });
+    const newName = file.name.replace(/\.\w+$/, "") + (isPng ? ".png" : ".jpg");
+    return new File([blob], newName, { type: outputType });
   } catch {
     return file;
   }
