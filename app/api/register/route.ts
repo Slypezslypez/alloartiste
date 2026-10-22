@@ -87,7 +87,11 @@ export async function POST(req: NextRequest) {
             subscriptionStatus: "active",
             currentPeriodEnd: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000) // 1 an, offert via code promo
           }
-        : {})
+        : {
+            // Sans code : 3 mois d'essai gratuits (profil visible), puis abonnement à 39 €/an.
+            subscriptionStatus: "trialing",
+            currentPeriodEnd: new Date(Date.now() + 91 * 24 * 60 * 60 * 1000)
+          })
     }
   });
 
