@@ -1,8 +1,10 @@
+import { LEGAL_LAST_UPDATE } from "@/lib/legal";
+
 export default function ConditionsPage() {
   return (
     <div className="panel">
       <h2>Conditions Générales d&apos;Utilisation</h2>
-      <p className="sub">AlloArtiste — Dernière mise à jour : {new Date().toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}</p>
+      <p className="sub">AlloArtiste — Dernière mise à jour : {LEGAL_LAST_UPDATE}</p>
 
       <div className="article-body" style={{ marginTop: 0 }}>
         <p><strong>1. Objet</strong></p>
@@ -10,7 +12,11 @@ export default function ConditionsPage() {
           AlloArtiste (ci-après « la Plateforme ») est un service de mise en relation entre des artistes indépendants
           et des organisateurs, producteurs, agents ou toute autre personne recherchant une prestation artistique
           (ci-après « les Utilisateurs »). La Plateforme permet aux artistes de créer un profil public et aux
-          Utilisateurs de les contacter directement.
+          Utilisateurs de les contacter directement. L&apos;éditeur de la Plateforme est identifié sur la page{" "}
+          <a href="/mentions-legales" style={{ color: "var(--gold-deep)", fontWeight: 600 }}>
+            Mentions légales
+          </a>
+          .
         </p>
 
         <p><strong>2. Rôle d&apos;intermédiaire technique</strong></p>
@@ -84,6 +90,18 @@ export default function ConditionsPage() {
           cas d&apos;interruption ou de panne technique empêchant temporairement l&apos;affichage du profil,
           AlloArtiste s&apos;efforcera de rétablir le service dans les meilleurs délais, sans que cela ne puisse
           donner lieu à un remboursement automatique, sauf disposition légale contraire applicable.
+        </p>
+        <p>
+          Le prix de l&apos;abonnement, taxes comprises, est affiché avant toute souscription et ne peut être modifié
+          en cours de période payée. L&apos;abonnement s&apos;adresse à des artistes agissant à titre professionnel
+          ou indépendant. Lorsque l&apos;artiste agit en qualité de consommateur, il bénéficie, dans les conditions
+          prévues par la loi, du droit de rétractation applicable aux contrats conclus à distance.
+        </p>
+        <p>
+          Pour le moment, l&apos;accès au catalogue public peut être réservé aux artistes invités : l&apos;inscription
+          reste gratuite, mais AlloArtiste décide de l&apos;activation de la visibilité d&apos;un profil dans le
+          catalogue et peut la refuser ou la retirer, notamment en cas de profil incomplet, trompeur ou contraire aux
+          présentes conditions.
         </p>
         <p>
           AlloArtiste peut proposer ponctuellement à certains artistes un code promotionnel donnant droit à une
