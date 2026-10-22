@@ -10,6 +10,12 @@ export const MAX_PHOTOS = 5;
 export const MAX_VIDEOS = 5;
 export const SUBSCRIPTION_LABEL = "33 € / an";
 
+/** Interrupteur des paiements (Stripe / PayPal). Tant que la variable d'environnement
+ *  NEXT_PUBLIC_PAYMENTS_ENABLED n'est pas "true" dans Vercel, l'abonnement payant est fermé :
+ *  l'inscription reste ouverte et la visibilité s'obtient uniquement via un code d'invitation.
+ *  À passer à "true" une fois Stripe configuré en mode réel. */
+export const PAYMENTS_ENABLED = process.env.NEXT_PUBLIC_PAYMENTS_ENABLED === "true";
+
 /** Un profil n'est visible publiquement que si son abonnement Stripe est actif ou en essai
  *  et que la période payée courante n'est pas expirée. */
 export function isSubscriptionVisible(artist: {
