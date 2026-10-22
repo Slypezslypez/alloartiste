@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { hashPassword, createSession } from "@/lib/auth";
 import { sendVerificationEmail } from "@/lib/email";
 import { CATEGORIES, COUNTRIES, CITIES_BY_COUNTRY } from "@/lib/categories";
+import { verifyTurnstile } from "@/lib/turnstile";
 
 const schema = z
   .object({
@@ -18,7 +19,8 @@ const schema = z
     bio: z.string().max(600).optional().default(""),
     priceMin: z.number().int().min(0).max(100000).optional().nullable(),
     priceMax: z.number().int().min(0).max(100000).optional().nullable(),
-    promoCode: z.string().max(60).optional()
+    promoCode: z.string().max(60).optional(),
+    turnstileToken: z.string().optional()
   })
   .refine((data) => CITIES_BY_COUNTRY[data.country].includes(data.city as any), {
     message: "Ville invalide pour ce pays.",
@@ -36,6 +38,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Champs invalides." }, { status: 400 });
   }
   const { name, email, password, category, specialties, country, city, bio, priceMin, priceMax, promoCode } = parsed.data;
+
+  // Anti-spam : jeton Cloudflare Turnstile vérifié côté serveur avant toute création de compte.
+  const remoteIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
+  const isHuman = await verifyTurnstile(parsed.data.turnstileToken, remoteIp);
+  if (!isHuman) {
+    return NextResponse.json({ error: "Vérification anti-robot échouée, réessayez." }, { status: 400 });
+  }
 
   const existing = await prisma.artist.findUnique({ where: { email: email.toLowerCase() } });
   if (existing) {
