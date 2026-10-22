@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { COUNTRIES, CITIES_BY_COUNTRY, type Country } from "@/lib/categories";
+import { COUNTRIES, CITIES_BY_COUNTRY, PAYMENTS_ENABLED, type Country } from "@/lib/categories";
 import { SPECIALTY_TREE } from "@/lib/specialtyTree";
 
 export function InscriptionForm({ categories }: { categories: string[] }) {
@@ -125,8 +125,9 @@ export function InscriptionForm({ categories }: { categories: string[] }) {
     <div className="panel">
       <h2>Créer mon profil</h2>
       <p className="sub">
-        L&apos;inscription est gratuite. Le profil devient visible dans le catalogue une fois l&apos;abonnement
-        activé (renouvelable automatiquement).
+        {PAYMENTS_ENABLED
+          ? "L'inscription est gratuite. Le profil devient visible dans le catalogue une fois l'abonnement activé (renouvelable automatiquement)."
+          : "L'inscription est gratuite. Pour le moment, l'accès au catalogue se fait sur invitation : si vous avez reçu un code d'invitation, saisissez-le en bas du formulaire pour rendre votre profil visible. Sans code, votre compte est créé et votre profil sera activable à l'ouverture des abonnements."}
       </p>
       <form onSubmit={submit}>
         <label>Nom / nom de scène</label>
@@ -246,7 +247,7 @@ export function InscriptionForm({ categories }: { categories: string[] }) {
         <input name="passwordConfirm" type="password" required minLength={8} />
         <label>Bio courte</label>
         <textarea name="bio" maxLength={600} placeholder="Présentez votre parcours, votre style, vos disponibilités..." />
-        <label>Code promo (facultatif)</label>
+        <label>{PAYMENTS_ENABLED ? "Code promo (facultatif)" : "Code d'invitation (facultatif)"}</label>
         <input name="promoCode" type="text" maxLength={60} placeholder="Laissez vide si vous n'en avez pas" />
         {error && <p className="error">{error}</p>}
         <div style={{ marginTop: 24 }}>
