@@ -92,16 +92,17 @@ export default function ConditionsPage() {
           donner lieu à un remboursement automatique, sauf disposition légale contraire applicable.
         </p>
         <p>
-          Le prix de l&apos;abonnement, taxes comprises, est affiché avant toute souscription et ne peut être modifié
-          en cours de période payée. L&apos;abonnement s&apos;adresse à des artistes agissant à titre professionnel
+          Le prix de l&apos;abonnement est de 39 € par an, taxes comprises. Il est précédé d&apos;une période d&apos;essai
+          gratuite de 3 mois, accordée à l&apos;inscription, pendant laquelle le profil est visible dans le catalogue sans
+          aucun paiement. À l&apos;issue de cette période, le profil cesse d&apos;être visible tant que l&apos;abonnement
+          n&apos;est pas souscrit ; aucun prélèvement n&apos;est effectué sans action de l&apos;artiste. Le prix est affiché
+          avant toute souscription et ne peut être modifié en cours de période payée. L&apos;abonnement s&apos;adresse à des artistes agissant à titre professionnel
           ou indépendant. Lorsque l&apos;artiste agit en qualité de consommateur, il bénéficie, dans les conditions
           prévues par la loi, du droit de rétractation applicable aux contrats conclus à distance.
         </p>
         <p>
-          Pour le moment, l&apos;accès au catalogue public peut être réservé aux artistes invités : l&apos;inscription
-          reste gratuite, mais AlloArtiste décide de l&apos;activation de la visibilité d&apos;un profil dans le
-          catalogue et peut la refuser ou la retirer, notamment en cas de profil incomplet, trompeur ou contraire aux
-          présentes conditions.
+          AlloArtiste peut refuser ou retirer la visibilité d&apos;un profil dans le catalogue, notamment en cas de
+          profil incomplet, trompeur ou contraire aux présentes conditions.
         </p>
         <p>
           AlloArtiste peut proposer ponctuellement à certains artistes un code promotionnel donnant droit à une
