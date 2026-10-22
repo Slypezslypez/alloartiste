@@ -174,7 +174,7 @@ export async function sendWelcomeEmail(artistName: string, artistEmail: string) 
       <p style="margin:0 0 14px;">Bonjour ${escapeHtml(artistName)},</p>
       <p style="margin:0 0 14px;">Votre compte a bien été créé.</p>
       <p style="margin:0;">
-        Activez votre abonnement (33€/an) depuis votre espace pour rendre votre profil visible dans le catalogue.
+        Votre profil est visible dans le catalogue gratuitement pendant 3 mois. Ensuite, l'abonnement est de 39€/an.
       </p>
     `,
     ctaLabel: "Accéder à mon espace",
@@ -187,7 +187,7 @@ export async function sendWelcomeEmail(artistName: string, artistEmail: string) 
     subject: "Bienvenue sur AlloArtiste",
     text: `Bonjour ${artistName},
 
-Votre compte a bien été créé. Activez votre abonnement (33€/an) depuis votre espace pour rendre votre profil visible dans le catalogue.
+Votre compte a bien été créé. Votre profil est visible dans le catalogue gratuitement pendant 3 mois. Ensuite, l'abonnement est de 39€/an.
 
 À bientôt,
 L'équipe AlloArtiste`,
@@ -205,8 +205,7 @@ export async function sendVerificationEmail(artistName: string, artistEmail: str
         (ce lien est valable 24 heures).
       </p>
       <p style="margin:0;font-size:13px;color:#8c8578;">
-        Une fois confirmé, vous pourrez accéder à votre espace et activer votre abonnement (33€/an) pour rendre
-        votre profil visible dans le catalogue.
+        Une fois confirmé, vous pourrez accéder à votre espace. Votre profil est visible gratuitement pendant 3 mois, puis l'abonnement est de 39€/an.
       </p>
     `,
     ctaLabel: "Confirmer mon adresse email",
@@ -222,7 +221,7 @@ export async function sendVerificationEmail(artistName: string, artistEmail: str
 Votre compte AlloArtiste a bien été créé. Il ne reste qu'une étape : confirmez votre adresse email en cliquant sur le lien suivant (valable 24 heures) :
 ${verifyUrl}
 
-Une fois confirmé, vous pourrez accéder à votre espace et activer votre abonnement (33€/an) pour rendre votre profil visible dans le catalogue.
+Une fois confirmé, vous pourrez accéder à votre espace. Votre profil est visible gratuitement pendant 3 mois, puis l'abonnement est de 39€/an.
 
 Si vous n'êtes pas à l'origine de cette inscription, ignorez simplement cet email.
 
@@ -309,7 +308,7 @@ export async function sendPromoExpiredEmail(artistName: string, artistEmail: str
         visible dans le catalogue pour le moment.
       </p>
       <p style="margin:0;font-size:13px;color:#8c8578;">
-        Vous pouvez réactiver votre visibilité à tout moment en souscrivant un abonnement (33€/an) depuis votre espace.
+        Vous pouvez réactiver votre visibilité à tout moment en souscrivant un abonnement (39€/an) depuis votre espace.
       </p>
     `,
     ctaLabel: "Réactiver mon profil",
@@ -324,7 +323,7 @@ export async function sendPromoExpiredEmail(artistName: string, artistEmail: str
 
 L'accès gratuit obtenu via votre code promo AlloArtiste est arrivé à son terme. Votre profil n'est donc plus visible dans le catalogue pour le moment.
 
-Vous pouvez réactiver votre visibilité à tout moment en souscrivant un abonnement (33€/an) depuis votre espace :
+Vous pouvez réactiver votre visibilité à tout moment en souscrivant un abonnement (39€/an) depuis votre espace :
 ${process.env.NEXT_PUBLIC_SITE_URL || "https://alloartiste.be"}/dashboard
 
 L'équipe AlloArtiste`,
@@ -340,7 +339,7 @@ export async function sendPromoExpiryReminderEmail(artistName: string, artistEma
       <p style="margin:0 0 14px;">Bonjour ${escapeHtml(artistName)},</p>
       <p style="margin:0 0 14px;">
         L'accès gratuit obtenu via votre code promo AlloArtiste se termine le <strong>${escapeHtml(formattedDate)}</strong>.
-        Passé cette date, votre profil ne sera plus visible dans le catalogue tant qu'un abonnement (33€/an) n'est pas activé.
+        Passé cette date, votre profil ne sera plus visible dans le catalogue tant qu'un abonnement (39€/an) n'est pas activé.
       </p>
       <p style="margin:0;font-size:13px;color:#8c8578;">
         Vous pouvez activer votre abonnement à tout moment depuis votre espace, avant ou après cette date.
@@ -356,7 +355,7 @@ export async function sendPromoExpiryReminderEmail(artistName: string, artistEma
     subject: "Votre accès gratuit AlloArtiste se termine bientôt",
     text: `Bonjour ${artistName},
 
-L'accès gratuit obtenu via votre code promo AlloArtiste se termine le ${formattedDate}. Passé cette date, votre profil ne sera plus visible dans le catalogue tant qu'un abonnement (33€/an) n'est pas activé.
+L'accès gratuit obtenu via votre code promo AlloArtiste se termine le ${formattedDate}. Passé cette date, votre profil ne sera plus visible dans le catalogue tant qu'un abonnement (39€/an) n'est pas activé.
 
 Vous pouvez activer votre abonnement à tout moment depuis votre espace, avant ou après cette date :
 ${process.env.NEXT_PUBLIC_SITE_URL || "https://alloartiste.be"}/dashboard

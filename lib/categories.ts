@@ -8,7 +8,7 @@ export type Category = string;
 
 export const MAX_PHOTOS = 5;
 export const MAX_VIDEOS = 5;
-export const SUBSCRIPTION_LABEL = "33 € / an";
+export const SUBSCRIPTION_LABEL = "39 € / an";
 
 /** Interrupteur des paiements (Stripe / PayPal). Tant que la variable d'environnement
  *  NEXT_PUBLIC_PAYMENTS_ENABLED n'est pas "true" dans Vercel, l'abonnement payant est fermé :
