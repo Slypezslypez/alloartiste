@@ -1,12 +1,48 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { COUNTRIES, CITIES_BY_COUNTRY, PAYMENTS_ENABLED, type Country } from "@/lib/categories";
 import { SPECIALTY_TREE } from "@/lib/specialtyTree";
 
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+
+// Charge le script Cloudflare Turnstile (anti-robot) une seule fois, puis affiche explicitement le widget
+// dans le conteneur donné (fonctionne aussi quand on arrive sur la page par navigation interne).
+function useTurnstileWidget(containerRef: React.RefObject<HTMLDivElement>) {
+  useEffect(() => {
+    if (!TURNSTILE_SITE_KEY) return;
+
+    function renderWidget() {
+      const turnstile = (window as any).turnstile;
+      const el = containerRef.current;
+      if (!turnstile || !el || el.childElementCount > 0) return;
+      turnstile.render(el, { sitekey: TURNSTILE_SITE_KEY });
+    }
+
+    const scriptId = "cf-turnstile-sdk";
+    let script = document.getElementById(scriptId) as HTMLScriptElement | null;
+    if ((window as any).turnstile) {
+      renderWidget();
+      return;
+    }
+    if (!script) {
+      script = document.createElement("script");
+      script.id = scriptId;
+      script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
+      script.async = true;
+      script.defer = true;
+      document.body.appendChild(script);
+    }
+    script.addEventListener("load", renderWidget);
+    return () => script?.removeEventListener("load", renderWidget);
+  }, [containerRef]);
+}
+
 export function InscriptionForm({ categories }: { categories: string[] }) {
   const router = useRouter();
+  const turnstileRef = useRef<HTMLDivElement>(null);
+  useTurnstileWidget(turnstileRef);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [category, setCategory] = useState<string>(categories[0] || "Autre");
@@ -108,7 +144,8 @@ export function InscriptionForm({ categories }: { categories: string[] }) {
         bio: fd.get("bio"),
         priceMin: finalPriceMin,
         priceMax: finalPriceMax,
-        promoCode: fd.get("promoCode") || undefined
+        promoCode: fd.get("promoCode") || undefined,
+        turnstileToken: fd.get("cf-turnstile-response") || undefined
       })
     });
     setLoading(false);
@@ -249,6 +286,21 @@ export function InscriptionForm({ categories }: { categories: string[] }) {
         <textarea name="bio" maxLength={600} placeholder="Présentez votre parcours, votre style, vos disponibilités..." />
         <label>{PAYMENTS_ENABLED ? "Code promo (facultatif)" : "Code d'invitation (facultatif)"}</label>
         <input name="promoCode" type="text" maxLength={60} placeholder="Laissez vide si vous n'en avez pas" />
+        <label style={{ display: "flex", alignItems: "flex-start", gap: 10, marginTop: 20 }}>
+          <input type="checkbox" name="acceptTerms" required style={{ width: "auto", marginTop: 3 }} />
+          <span style={{ textTransform: "none", fontFamily: "inherit", fontWeight: 400, color: "var(--ink-soft)", fontSize: 14 }}>
+            J&apos;ai lu et j&apos;accepte les{" "}
+            <a href="/conditions" target="_blank" rel="noopener noreferrer" style={{ color: "var(--gold-deep)", fontWeight: 600 }}>
+              Conditions Générales d&apos;Utilisation
+            </a>{" "}
+            et la{" "}
+            <a href="/confidentialite" target="_blank" rel="noopener noreferrer" style={{ color: "var(--gold-deep)", fontWeight: 600 }}>
+              Politique de confidentialité
+            </a>
+            .
+          </span>
+        </label>
+        {TURNSTILE_SITE_KEY && <div ref={turnstileRef} style={{ marginTop: 12 }} />}
         {error && <p className="error">{error}</p>}
         <div style={{ marginTop: 24 }}>
           <button type="submit" className="btn btn-gold" disabled={loading} data-loading={loading}>
