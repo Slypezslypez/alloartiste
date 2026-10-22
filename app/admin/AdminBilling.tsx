@@ -32,7 +32,7 @@ type AdminContract = {
   artist: { name: string; email: string };
 };
 
-const PRICE_PER_YEAR = 33; // doit rester cohérent avec SUBSCRIPTION_LABEL dans lib/categories.ts
+const PRICE_PER_YEAR = 39; // doit rester cohérent avec SUBSCRIPTION_LABEL dans lib/categories.ts
 
 export function AdminBilling() {
   const [artists, setArtists] = useState<BillingArtist[] | null>(null);
