@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { CATEGORIES, COUNTRIES, CITIES_BY_COUNTRY, MAX_PHOTOS, MAX_VIDEOS, isSubscriptionVisible, type Country } from "@/lib/categories";
+import { CATEGORIES, COUNTRIES, CITIES_BY_COUNTRY, MAX_PHOTOS, MAX_VIDEOS, PAYMENTS_ENABLED, isSubscriptionVisible, type Country } from "@/lib/categories";
 import { SPECIALTY_TREE } from "@/lib/specialtyTree";
 import { AvailabilityCalendar } from "@/app/AvailabilityCalendar";
 import { compressImage } from "@/lib/imageCompress";
@@ -113,7 +113,7 @@ export function DashboardClient({
   const [paypalMsg, setPaypalMsg] = useState<string | null>(null);
 
   useEffect(() => {
-    if (active || !termsAccepted) return;
+    if (!PAYMENTS_ENABLED || active || !termsAccepted) return;
     const clientId = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID;
     const planId = process.env.NEXT_PUBLIC_PAYPAL_PLAN_ID;
     if (!clientId || !planId) return;
@@ -425,7 +425,24 @@ export function DashboardClient({
         </span>
       </h2>
 
-      {!active && (
+      {!active && !PAYMENTS_ENABLED && (
+        <div className="panel wide">
+          <h2 style={{ fontSize: 24 }}>Profil en attente d&apos;activation</h2>
+          <p className="sub">
+            Votre compte est créé, mais les abonnements ne sont pas encore ouverts : l&apos;accès au catalogue public
+            se fait pour l&apos;instant sur invitation. Contactez-nous pour faire activer votre profil ; il pourra
+            aussi être activé dès l&apos;ouverture des abonnements. En attendant, vous pouvez déjà compléter votre
+            profil, vos photos et vos vidéos.
+          </p>
+          <p className="hint">
+            <Link href="/contact" style={{ color: "var(--gold-deep)", fontWeight: 600 }}>
+              Nous contacter
+            </Link>
+          </p>
+        </div>
+      )}
+
+      {!active && PAYMENTS_ENABLED && (
         <div className="panel wide">
           <h2 style={{ fontSize: 24 }}>Activer l&apos;abonnement</h2>
           <p className="sub">Abonnement annuel, renouvelable automatiquement. Requis pour apparaître dans le catalogue public.</p>
