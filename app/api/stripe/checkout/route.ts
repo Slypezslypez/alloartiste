@@ -3,10 +3,19 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getCurrentArtist } from "@/lib/auth";
 import { stripe } from "@/lib/stripe";
+import { PAYMENTS_ENABLED } from "@/lib/categories";
 
 const schema = z.object({ accepted: z.literal(true) });
 
 export async function POST(req: NextRequest) {
+  // Paiements fermés : empêche aussi d'appeler directement cette route (même en contournant le bouton).
+  if (!PAYMENTS_ENABLED) {
+    return NextResponse.json(
+      { error: "Les abonnements ne sont pas encore ouverts. Utilisez un code d'invitation." },
+      { status: 403 }
+    );
+  }
+
   const artist = await getCurrentArtist();
   if (!artist) return NextResponse.json({ error: "Non authentifié." }, { status: 401 });
 
