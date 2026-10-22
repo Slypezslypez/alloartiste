@@ -11,7 +11,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/comment-ca-marche`, changeFrequency: "monthly", priority: 0.5 },
     { url: `${baseUrl}/contact`, changeFrequency: "monthly", priority: 0.4 },
     { url: `${baseUrl}/faq`, changeFrequency: "monthly", priority: 0.4 },
-    { url: `${baseUrl}/conditions`, changeFrequency: "yearly", priority: 0.2 }
+    { url: `${baseUrl}/conditions`, changeFrequency: "yearly", priority: 0.2 },
+    { url: `${baseUrl}/confidentialite`, changeFrequency: "yearly", priority: 0.2 },
+    { url: `${baseUrl}/mentions-legales`, changeFrequency: "yearly", priority: 0.2 }
   ];
 
   // Seuls les profils réellement visibles publiquement (abonnement actif) doivent apparaître :
