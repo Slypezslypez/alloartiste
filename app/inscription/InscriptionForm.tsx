@@ -161,11 +161,22 @@ export function InscriptionForm({ categories }: { categories: string[] }) {
   return (
     <div className="panel">
       <h2>Créer mon profil</h2>
-      <p className="sub">
-        {PAYMENTS_ENABLED
-          ? "L'inscription est gratuite. Le profil devient visible dans le catalogue une fois l'abonnement activé (renouvelable automatiquement)."
-          : "L'inscription est gratuite. Pour le moment, l'accès au catalogue se fait sur invitation : si vous avez reçu un code d'invitation, saisissez-le en bas du formulaire pour rendre votre profil visible. Sans code, votre compte est créé et votre profil sera activable à l'ouverture des abonnements."}
-      </p>
+      <p className="sub">L&apos;inscription est gratuite et votre profil est visible dans le catalogue pendant 3 mois offerts.</p>
+      <div
+        style={{
+          border: "1px solid var(--gold-deep)",
+          borderRadius: 10,
+          padding: "12px 14px",
+          margin: "12px 0 4px",
+          fontSize: 14,
+          lineHeight: 1.5
+        }}
+      >
+        <strong>Tarif : 39 € par an</strong>, après <strong>3 mois gratuits</strong> pour commencer. Aucun paiement n&apos;est demandé
+        à l&apos;inscription. À la fin des 3 mois, votre profil n&apos;est plus visible tant que vous n&apos;avez pas souscrit
+        l&apos;abonnement annuel (renouvelable automatiquement, résiliable à tout moment). Un code d&apos;invitation donne droit à
+        1 an gratuit.
+      </div>
       <form onSubmit={submit}>
         <label>Nom / nom de scène</label>
         <input name="name" type="text" required maxLength={60} />
