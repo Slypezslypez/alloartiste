@@ -7,6 +7,7 @@ import { isSubscriptionVisible } from "@/lib/categories";
 import { ContactForm } from "./ContactForm";
 import { ProfileGallery } from "./ProfileGallery";
 import { ScrollToHash } from "./ScrollToHash";
+import { PhoneReveal } from "./PhoneReveal";
 
 export const dynamic = "force-dynamic";
 
@@ -173,7 +174,7 @@ export default async function ProfilePage({ params }: { params: { id: string } }
               <>
                 <p className="profile-section-label mono">Liens directs</p>
                 <div className="profile-links-row">
-                  {artist.phone && <span className="profile-link-pill mono">📞 {artist.phone}</span>}
+                  {artist.phone && <PhoneReveal artistId={artist.id} />}
                   {artist.website && (
                     <a href={formatUrl(artist.website)} target="_blank" rel="noopener noreferrer" className="profile-link-pill">
                       🔗 Site web
