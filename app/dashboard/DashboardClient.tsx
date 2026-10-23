@@ -854,6 +854,12 @@ export function DashboardClient({
               </div>
 
               <p className="profile-section-label mono">Liens directs</p>
+              <label>Email</label>
+              <input type="email" value={artist.email} readOnly style={{ opacity: 0.85 }} />
+              <p className="hint">
+                C&apos;est l&apos;adresse de votre compte : vous l&apos;utilisez pour vous connecter et vous y recevez les demandes des
+                organisateurs. Elle n&apos;est jamais affichée publiquement ; les organisateurs vous écrivent via le formulaire de votre fiche.
+              </p>
               <div className="field-row">
                 <div>
                   <label>Téléphone</label>
