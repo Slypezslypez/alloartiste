@@ -113,6 +113,11 @@ export function InscriptionForm({ categories }: { categories: string[] }) {
 
     const fd = new FormData(e.currentTarget); // capturé tout de suite, avant tout "await" (sinon React invalide la référence)
 
+    if (String(fd.get("email") || "").trim().toLowerCase() !== String(fd.get("emailConfirm") || "").trim().toLowerCase()) {
+      setError("Les deux adresses email ne correspondent pas.");
+      return;
+    }
+
     if (fd.get("password") !== fd.get("passwordConfirm")) {
       setError("Les deux mots de passe ne correspondent pas.");
       return;
@@ -292,8 +297,14 @@ export function InscriptionForm({ categories }: { categories: string[] }) {
         </div>
         <p className="hint">Donne une idée de budget aux organisateurs directement sur votre fiche et votre vignette. Modifiable à tout moment.</p>
 
-        <label>Email de contact</label>
-        <input name="email" type="email" required />
+        <label>Votre email (connexion et réception des demandes)</label>
+        <input name="email" type="email" required autoComplete="email" />
+        <label>Confirmez votre email</label>
+        <input name="emailConfirm" type="email" required autoComplete="off" />
+        <p className="hint">
+          Les demandes des organisateurs arrivent à cette adresse, et vous l&apos;utilisez aussi pour vous connecter. Elle n&apos;est
+          jamais affichée publiquement : les organisateurs vous écrivent via le formulaire de votre fiche.
+        </p>
         <label>Mot de passe</label>
         <input name="password" type="password" required minLength={8} />
         <label>Confirmez le mot de passe</label>
