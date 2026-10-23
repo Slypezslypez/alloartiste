@@ -3,7 +3,7 @@ import { z } from "zod";
 import crypto from "crypto";
 import { prisma } from "@/lib/prisma";
 import { hashPassword, createSession } from "@/lib/auth";
-import { sendVerificationEmail } from "@/lib/email";
+import { sendVerificationEmail, sendNewArtistAlertEmail } from "@/lib/email";
 import { CATEGORIES, COUNTRIES, CITIES_BY_COUNTRY } from "@/lib/categories";
 import { verifyTurnstile } from "@/lib/turnstile";
 
@@ -105,6 +105,22 @@ export async function POST(req: NextRequest) {
     await sendVerificationEmail(artist.name, artist.email, verifyUrl);
   } catch (err) {
     console.error("Échec de l'envoi de l'email de confirmation:", err);
+  }
+
+  // Alerte à l'administrateur (n'empêche jamais l'inscription en cas d'échec d'envoi).
+  try {
+    await sendNewArtistAlertEmail({
+      artistName: artist.name,
+      artistEmail: artist.email,
+      category,
+      city,
+      country,
+      bio,
+      freeAccessCode: grantsFreeAccess,
+      artistId: artist.id
+    });
+  } catch (err) {
+    console.error("Échec de l'envoi de l'alerte nouvelle inscription:", err);
   }
 
   return NextResponse.json({ ok: true, artistId: artist.id, freeAccess: grantsFreeAccess });
