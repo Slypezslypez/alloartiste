@@ -858,7 +858,7 @@ export function DashboardClient({
                 <div>
                   <label>Téléphone</label>
                   <input name="phone" type="text" defaultValue={artist.phone || ""} maxLength={30} />
-                  <p className="hint">Facultatif. Ce numéro sera visible publiquement après un clic sur « Afficher le numéro ». Utilisez de préférence un numéro professionnel, pas votre numéro privé.</p>
+                  <p className="hint">Facultatif. <strong>Attention :</strong> ce numéro sera visible publiquement après un clic sur « Afficher le numéro ». Utilisez de préférence un numéro professionnel, pas votre numéro privé.</p>
                 </div>
                 <div>
                   <label>Site web</label>
