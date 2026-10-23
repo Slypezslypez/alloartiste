@@ -183,9 +183,14 @@ export function AdminClient({
         <h2 className="section-title" style={{ marginBottom: 0 }}>
           Administration
         </h2>
-        <button className="navbtn" onClick={logout}>
-          Se déconnecter
-        </button>
+        <div style={{ display: "flex", gap: 8 }}>
+          <a className="navbtn" href="/apercu">
+            Voir l&apos;accueil avec les artistes
+          </a>
+          <button className="navbtn" onClick={logout}>
+            Se déconnecter
+          </button>
+        </div>
       </div>
 
       <div className="filters" style={{ marginBottom: 28 }}>
