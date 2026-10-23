@@ -10,6 +10,10 @@ export const MAX_PHOTOS = 5;
 export const MAX_VIDEOS = 5;
 export const SUBSCRIPTION_LABEL = "39 € / an";
 
+/** Catalogue public sur la page d'accueil. Tant que NEXT_PUBLIC_CATALOG_OPEN n'est pas "true" dans Vercel,
+ *  l'accueil n'affiche ni la liste d'artistes ni le compteur : seulement l'invitation à s'inscrire (lancement). */
+export const CATALOG_OPEN = process.env.NEXT_PUBLIC_CATALOG_OPEN === "true";
+
 /** Interrupteur des paiements (Stripe / PayPal). Tant que la variable d'environnement
  *  NEXT_PUBLIC_PAYMENTS_ENABLED n'est pas "true" dans Vercel, l'abonnement payant est fermé :
  *  l'inscription reste ouverte et la visibilité s'obtient uniquement via un code d'invitation.
