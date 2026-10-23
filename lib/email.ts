@@ -1,6 +1,7 @@
 import { Resend } from "resend";
 import { renderEmail, escapeHtml, nl2br } from "./emailTemplate";
 import type { ResourceStatus } from "./resourceMonitor";
+import { CATALOG_OPEN } from "./categories";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -174,7 +175,7 @@ export async function sendWelcomeEmail(artistName: string, artistEmail: string) 
       <p style="margin:0 0 14px;">Bonjour ${escapeHtml(artistName)},</p>
       <p style="margin:0 0 14px;">Votre compte a bien été créé.</p>
       <p style="margin:0;">
-        Votre profil est visible dans le catalogue gratuitement pendant 3 mois. Ensuite, l'abonnement est de 39€/an.
+        ${CATALOG_OPEN ? "Votre profil est visible dans le catalogue gratuitement pendant 3 mois." : "Vos 3 mois gratuits commenceront dès l'ouverture de l'annuaire au public."} Ensuite, l'abonnement est de 39€/an.
       </p>
     `,
     ctaLabel: "Accéder à mon espace",
@@ -187,7 +188,7 @@ export async function sendWelcomeEmail(artistName: string, artistEmail: string) 
     subject: "Bienvenue sur AlloArtiste",
     text: `Bonjour ${artistName},
 
-Votre compte a bien été créé. Votre profil est visible dans le catalogue gratuitement pendant 3 mois. Ensuite, l'abonnement est de 39€/an.
+Votre compte a bien été créé. ${CATALOG_OPEN ? "Votre profil est visible dans le catalogue gratuitement pendant 3 mois." : "Vos 3 mois gratuits commenceront dès l'ouverture de l'annuaire au public."} Ensuite, l'abonnement est de 39€/an.
 
 À bientôt,
 L'équipe AlloArtiste`,
@@ -205,7 +206,7 @@ export async function sendVerificationEmail(artistName: string, artistEmail: str
         (ce lien est valable 24 heures).
       </p>
       <p style="margin:0;font-size:13px;color:#8c8578;">
-        Une fois confirmé, vous pourrez accéder à votre espace. Votre profil est visible gratuitement pendant 3 mois, puis l'abonnement est de 39€/an.
+        Une fois confirmé, vous pourrez accéder à votre espace. ${CATALOG_OPEN ? "Votre profil est visible gratuitement pendant 3 mois" : "Vos 3 mois gratuits commenceront dès l'ouverture de l'annuaire au public"}, puis l'abonnement est de 39€/an.
       </p>
     `,
     ctaLabel: "Confirmer mon adresse email",
@@ -221,7 +222,7 @@ export async function sendVerificationEmail(artistName: string, artistEmail: str
 Votre compte AlloArtiste a bien été créé. Il ne reste qu'une étape : confirmez votre adresse email en cliquant sur le lien suivant (valable 24 heures) :
 ${verifyUrl}
 
-Une fois confirmé, vous pourrez accéder à votre espace. Votre profil est visible gratuitement pendant 3 mois, puis l'abonnement est de 39€/an.
+Une fois confirmé, vous pourrez accéder à votre espace. ${CATALOG_OPEN ? "Votre profil est visible gratuitement pendant 3 mois" : "Vos 3 mois gratuits commenceront dès l'ouverture de l'annuaire au public"}, puis l'abonnement est de 39€/an.
 
 Si vous n'êtes pas à l'origine de cette inscription, ignorez simplement cet email.
 
