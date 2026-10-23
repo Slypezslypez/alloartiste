@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { COUNTRIES, CITIES_BY_COUNTRY, PAYMENTS_ENABLED, type Country } from "@/lib/categories";
+import { COUNTRIES, CITIES_BY_COUNTRY, PAYMENTS_ENABLED, CATALOG_OPEN, type Country } from "@/lib/categories";
 import { SPECIALTY_TREE } from "@/lib/specialtyTree";
 
 const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
@@ -161,7 +161,11 @@ export function InscriptionForm({ categories }: { categories: string[] }) {
   return (
     <div className="panel">
       <h2>Créer mon profil</h2>
-      <p className="sub">L&apos;inscription est gratuite et votre profil est visible dans le catalogue pendant 3 mois offerts.</p>
+      <p className="sub">
+        {CATALOG_OPEN
+          ? "L'inscription est gratuite et votre profil est visible dans le catalogue pendant 3 mois offerts."
+          : "L'inscription est gratuite. Vos 3 mois offerts commencent dès l'ouverture de l'annuaire au public."}
+      </p>
       <div
         style={{
           border: "1px solid var(--gold-deep)",
@@ -172,9 +176,10 @@ export function InscriptionForm({ categories }: { categories: string[] }) {
           lineHeight: 1.5
         }}
       >
-        <strong>Tarif : 39 € par an</strong>, après <strong>3 mois gratuits</strong> pour commencer. Aucun paiement n&apos;est demandé
-        à l&apos;inscription. À la fin des 3 mois, votre profil n&apos;est plus visible tant que vous n&apos;avez pas souscrit
-        l&apos;abonnement annuel (renouvelable automatiquement, résiliable à tout moment). Un code d&apos;invitation donne droit à
+        <strong>Tarif : 39 € par an</strong>, après <strong>3 mois gratuits</strong> pour commencer
+        {CATALOG_OPEN ? "" : " (ils débutent dès que l'annuaire est ouvert au public, pas avant)"}. Aucun paiement n&apos;est
+        demandé à l&apos;inscription. À la fin des 3 mois, votre profil n&apos;est plus visible tant que vous n&apos;avez pas
+        souscrit l&apos;abonnement annuel (renouvelable automatiquement, résiliable à tout moment). Un code d&apos;invitation donne droit à
         1 an gratuit.
       </div>
       <form onSubmit={submit}>
