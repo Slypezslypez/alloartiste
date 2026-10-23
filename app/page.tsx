@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { isSubscriptionVisible } from "@/lib/categories";
+import { isSubscriptionVisible, CATALOG_OPEN } from "@/lib/categories";
 import { getSiteSettings } from "@/lib/settings";
 import { CatalogClient } from "./CatalogClient";
 import { PromoCarousel } from "./PromoCarousel";
@@ -64,16 +64,20 @@ export default async function HomePage() {
               <Link className="btn btn-gold" href="/inscription">
                 Je m&apos;inscris
               </Link>
-              <a className="btn btn-outline" href="#catalogue">
-                Découvrir les artistes
-              </a>
+              {CATALOG_OPEN && (
+                <a className="btn btn-outline" href="#catalogue">
+                  Découvrir les artistes
+                </a>
+              )}
             </div>
 
             <div className="stats-row-hero">
-              <div>
-                <span className="stat-num">{visible.length}+</span>
-                <span className="stat-cap mono">Artistes belges</span>
-              </div>
+              {CATALOG_OPEN && (
+                <div>
+                  <span className="stat-num">{visible.length}+</span>
+                  <span className="stat-cap mono">Artistes belges</span>
+                </div>
+              )}
               <div>
                 <span className="stat-num">{settings.statCommissionValue}</span>
                 <span className="stat-cap mono">{settings.statCommissionLabel}</span>
@@ -85,11 +89,26 @@ export default async function HomePage() {
             </div>
           </div>
 
-          <PromoCarousel spotlight={spotlight} promoImages={settings.promoImages} />
+          <PromoCarousel spotlight={CATALOG_OPEN ? spotlight : []} promoImages={settings.promoImages} />
         </div>
       </section>
 
-      <CatalogClient artists={visible} />
+      {CATALOG_OPEN ? (
+        <CatalogClient artists={visible} />
+      ) : (
+        <section className="panel" style={{ maxWidth: 720, margin: "40px auto", textAlign: "center" }}>
+          <h2>Soyez les premiers !</h2>
+          <p className="sub">
+            L&apos;annuaire ouvre bientôt au public. Les premiers artistes s&apos;inscrivent en ce moment : créez votre profil dès
+            maintenant et profitez de 3 mois gratuits, puis 39 € par an, sans commission.
+          </p>
+          <div className="ctas" style={{ justifyContent: "center", marginTop: 18 }}>
+            <Link className="btn btn-gold" href="/inscription">
+              Je m&apos;inscris
+            </Link>
+          </div>
+        </section>
+      )}
     </>
   );
 }
