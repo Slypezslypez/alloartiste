@@ -526,3 +526,63 @@ ${opts.amount ? `Montant : ${opts.amount}\n` : ""}${opts.attemptCount ? `Tentati
     html
   });
 }
+
+// Alerte envoyée à l'administrateur à chaque nouvelle inscription d'artiste (le profil étant visible
+// automatiquement pendant l'essai, cela permet de le contrôler rapidement).
+export async function sendNewArtistAlertEmail(opts: {
+  artistName: string;
+  artistEmail: string;
+  category: string;
+  city: string;
+  country: string;
+  bio: string;
+  freeAccessCode: boolean;
+  artistId: string;
+}) {
+  const receiver = process.env.CONTACT_RECEIVER_EMAIL || process.env.EMAIL_FROM;
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.alloartiste.be";
+  const profileUrl = `${siteUrl}/profil/${opts.artistId}`;
+  const access = opts.freeAccessCode ? "1 an gratuit (code d'invitation)" : "3 mois gratuits (essai)";
+  const bioShort = opts.bio.length > 300 ? `${opts.bio.slice(0, 300)}…` : opts.bio;
+  const cell = "padding:6px 10px;border-bottom:1px solid #e7e2d8;";
+
+  const html = renderEmail({
+    title: "Nouvelle inscription d'artiste",
+    bodyHtml: `
+      <p style="margin:0 0 14px;">Un nouvel artiste vient de s'inscrire sur AlloArtiste. Son profil est visible dans le catalogue :</p>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;font-size:13px;margin:0 0 14px;">
+        <tbody>
+          <tr><td style="${cell}font-weight:700;">Nom</td><td style="${cell}">${escapeHtml(opts.artistName)}</td></tr>
+          <tr><td style="${cell}font-weight:700;">Email</td><td style="${cell}">${escapeHtml(opts.artistEmail)}</td></tr>
+          <tr><td style="${cell}font-weight:700;">Métier</td><td style="${cell}">${escapeHtml(opts.category)}</td></tr>
+          <tr><td style="${cell}font-weight:700;">Lieu</td><td style="${cell}">${escapeHtml(opts.city)} (${escapeHtml(opts.country)})</td></tr>
+          <tr><td style="${cell}font-weight:700;">Accès</td><td style="${cell}">${escapeHtml(access)}</td></tr>
+          ${bioShort ? `<tr><td style="${cell}font-weight:700;">Bio</td><td style="${cell}">${escapeHtml(bioShort)}</td></tr>` : ""}
+        </tbody>
+      </table>
+      <p style="margin:0;font-size:13px;color:#8c8578;">
+        Si le profil vous semble douteux, vous pouvez le masquer depuis l'administration.
+      </p>
+    `,
+    ctaLabel: "Voir le profil",
+    ctaUrl: profileUrl
+  });
+
+  const text = `Nouvelle inscription d'artiste sur AlloArtiste :
+
+Nom : ${opts.artistName}
+Email : ${opts.artistEmail}
+Métier : ${opts.category}
+Lieu : ${opts.city} (${opts.country})
+Accès : ${access}
+${bioShort ? `Bio : ${bioShort}\n` : ""}
+Profil : ${profileUrl}`;
+
+  return resend.emails.send({
+    from: process.env.EMAIL_FROM as string,
+    to: receiver as string,
+    subject: `AlloArtiste — nouvelle inscription (${opts.artistName})`,
+    text,
+    html
+  });
+}
