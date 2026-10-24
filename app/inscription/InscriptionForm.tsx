@@ -166,22 +166,6 @@ export function InscriptionForm({ categories }: { categories: string[] }) {
           ? "L'inscription est gratuite et votre profil est visible dans le catalogue pendant 3 mois offerts."
           : "L'inscription est gratuite. Vos 3 mois offerts commencent dès l'ouverture de l'annuaire au public."}
       </p>
-      <div
-        style={{
-          border: "1px solid var(--gold-deep)",
-          borderRadius: 10,
-          padding: "12px 14px",
-          margin: "12px 0 4px",
-          fontSize: 14,
-          lineHeight: 1.5
-        }}
-      >
-        <strong>Tarif : 39 € par an</strong>, après <strong>3 mois gratuits</strong> pour commencer
-        {CATALOG_OPEN ? "" : " (ils débutent dès que l'annuaire est ouvert au public, pas avant)"}. Aucun paiement n&apos;est
-        demandé à l&apos;inscription. À la fin des 3 mois, votre profil n&apos;est plus visible tant que vous n&apos;avez pas
-        souscrit l&apos;abonnement annuel (renouvelable automatiquement, résiliable à tout moment). Un code d&apos;invitation donne droit à
-        1 an gratuit.
-      </div>
       <form onSubmit={submit}>
         <label>Nom / nom de scène</label>
         <input name="name" type="text" required maxLength={60} />
@@ -316,6 +300,10 @@ export function InscriptionForm({ categories }: { categories: string[] }) {
             .
           </span>
         </label>
+        <p className="hint" style={{ marginTop: 14, fontSize: 12.5 }}>
+          Aucun paiement n&apos;est demandé à l&apos;inscription. Après les 3 mois offerts{CATALOG_OPEN ? "" : " (qui débutent à l'ouverture de l'annuaire au public)"}, la visibilité
+          dans le catalogue nécessite un abonnement de 39 € par an, renouvelable automatiquement et résiliable à tout moment.
+        </p>
         {TURNSTILE_SITE_KEY && <div ref={turnstileRef} style={{ marginTop: 12 }} />}
         {error && <p className="error">{error}</p>}
         <div style={{ marginTop: 24 }}>
