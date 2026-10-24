@@ -54,6 +54,17 @@ header {
 .logo span { background: linear-gradient(90deg, var(--gold-deep), var(--gold)); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .logo-img { height: 38px; width: auto; display: block; }
 .logo-img-dark { display: none; }
+/* Alternance AlloArtiste / TopArtiste dans l'en-tête (fondu enchaîné, 10 s). */
+.logo-stack { display: grid; }
+.logo-slide { grid-area: 1 / 1; display: flex; align-items: center; }
+.logo-slide-a { animation: logoSwapA 10s ease-in-out infinite; }
+.logo-slide-b { animation: logoSwapB 10s ease-in-out infinite; }
+@keyframes logoSwapA { 0%, 40% { opacity: 1; } 50%, 90% { opacity: 0; } 100% { opacity: 1; } }
+@keyframes logoSwapB { 0%, 40% { opacity: 0; } 50%, 90% { opacity: 1; } 100% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .logo-slide-a, .logo-slide-b { animation: none; }
+  .logo-slide-b { display: none; }
+}
 
 .nav-actions-group { display: flex; align-items: center; gap: 36px; margin-left: auto; }
 .desktop-nav { display: flex; align-items: center; gap: 30px; }

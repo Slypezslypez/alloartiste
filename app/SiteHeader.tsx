@@ -88,8 +88,16 @@ export function SiteHeader({
       )}
       <div className="header-row">
         <Link href="/" className="logo">
-          <img src="/logo.png" alt={`${logoPart1}${logoPart2}`} className="logo-img logo-img-light" />
-          <img src="/logo-dark.png" alt={`${logoPart1}${logoPart2}`} className="logo-img logo-img-dark" />
+          <span className="logo-stack">
+            <span className="logo-slide logo-slide-a">
+              <img src="/logo.png" alt={`${logoPart1}${logoPart2}`} className="logo-img logo-img-light" />
+              <img src="/logo-dark.png" alt={`${logoPart1}${logoPart2}`} className="logo-img logo-img-dark" />
+            </span>
+            <span className="logo-slide logo-slide-b" aria-hidden="true">
+              <img src="/topartiste.png" alt="" className="logo-img logo-img-light" />
+              <img src="/topartiste-dark.png" alt="" className="logo-img logo-img-dark" />
+            </span>
+          </span>
         </Link>
 
         <div className="nav-actions-group">
