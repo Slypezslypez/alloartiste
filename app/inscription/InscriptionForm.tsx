@@ -181,7 +181,7 @@ export function InscriptionForm({ categories }: { categories: string[] }) {
       <p className="sub">
         {CATALOG_OPEN
           ? "L'inscription est gratuite et votre profil est visible dans le catalogue pendant 3 mois offerts."
-          : "L'inscription est gratuite. Vos 3 mois offerts commencent dès l'ouverture de l'annuaire au public."}
+          : "L'inscription est gratuite."}
       </p>
       <form onSubmit={submit}>
         <label>Nom / nom de scène</label>
