@@ -61,11 +61,11 @@ export function DemandesListClient({ initialLeads }: { initialLeads: Lead[] }) {
             </div>
             <p className="lead-message">
               Un organisateur vous a contacté. Avec le compte gratuit, une seule demande est lisible : passez à la version PRO
-              (39 € par an) pour lire celle-ci et répondre.
+              pour lire celle-ci et répondre.
             </p>
             <div className="lead-contact">
-              <a href="/dashboard" style={{ color: "var(--gold-deep)", fontWeight: 600 }}>
-                Voir mon abonnement
+              <a href="/version-pro" style={{ color: "var(--gold-deep)", fontWeight: 600 }}>
+                Voir la version PRO
               </a>
             </div>
           </div>
