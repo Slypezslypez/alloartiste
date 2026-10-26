@@ -3,7 +3,11 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getCurrentArtist } from "@/lib/auth";
 import { createPresignedUpload, deleteObjectByUrl } from "@/lib/storage";
-import { MAX_PHOTOS } from "@/lib/categories";
+import { MAX_PHOTOS, FREE_MAX_PHOTOS, isFreeAccount } from "@/lib/categories";
+
+function photoLimit(artist: { subscriptionStatus: string | null }) {
+  return isFreeAccount(artist) ? FREE_MAX_PHOTOS : MAX_PHOTOS;
+}
 
 const ALLOWED = ["jpg", "jpeg", "png", "webp"];
 
@@ -16,8 +20,11 @@ const requestSchema = z.object({
 export async function POST(req: NextRequest) {
   const artist = await getCurrentArtist();
   if (!artist) return NextResponse.json({ error: "Non authentifié." }, { status: 401 });
-  if (artist.photos.length >= MAX_PHOTOS) {
-    return NextResponse.json({ error: `Maximum ${MAX_PHOTOS} photos.` }, { status: 400 });
+  if (artist.photos.length >= photoLimit(artist)) {
+    return NextResponse.json(
+      { error: isFreeAccount(artist) ? "Le compte gratuit est limité à 1 photo." : `Maximum ${MAX_PHOTOS} photos.` },
+      { status: 400 }
+    );
   }
 
   const parsed = requestSchema.safeParse(await req.json().catch(() => null));
@@ -40,8 +47,11 @@ const confirmSchema = z.object({ publicUrl: z.string().url() });
 export async function PUT(req: NextRequest) {
   const artist = await getCurrentArtist();
   if (!artist) return NextResponse.json({ error: "Non authentifié." }, { status: 401 });
-  if (artist.photos.length >= MAX_PHOTOS) {
-    return NextResponse.json({ error: `Maximum ${MAX_PHOTOS} photos.` }, { status: 400 });
+  if (artist.photos.length >= photoLimit(artist)) {
+    return NextResponse.json(
+      { error: isFreeAccount(artist) ? "Le compte gratuit est limité à 1 photo." : `Maximum ${MAX_PHOTOS} photos.` },
+      { status: 400 }
+    );
   }
 
   const parsed = confirmSchema.safeParse(await req.json().catch(() => null));
