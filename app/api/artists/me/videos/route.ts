@@ -2,13 +2,16 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getCurrentArtist } from "@/lib/auth";
-import { MAX_VIDEOS } from "@/lib/categories";
+import { MAX_VIDEOS, isFreeAccount } from "@/lib/categories";
 
 const addSchema = z.object({ url: z.string().url() });
 
 export async function POST(req: NextRequest) {
   const artist = await getCurrentArtist();
   if (!artist) return NextResponse.json({ error: "Non authentifié." }, { status: 401 });
+  if (isFreeAccount(artist)) {
+    return NextResponse.json({ error: "Les vidéos sont réservées aux abonnés (39 € par an)." }, { status: 403 });
+  }
   if (artist.videos.length >= MAX_VIDEOS) {
     return NextResponse.json({ error: `Maximum ${MAX_VIDEOS} vidéos.` }, { status: 400 });
   }
