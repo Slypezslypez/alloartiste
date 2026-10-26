@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
       specialties: specialties || [],
       country,
       city,
-      bio,
+      bio: grantsFreeAccess ? bio : bio.slice(0, 200), // compte gratuit : bio courte (200 caractères)
       priceMin: priceMin ?? null,
       priceMax: priceMax ?? null,
       emailVerificationTokenHash: tokenHash,
