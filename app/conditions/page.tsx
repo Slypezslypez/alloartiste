@@ -94,7 +94,7 @@ export default function ConditionsPage() {
         <p>
           Le prix de l&apos;abonnement est de 39 € par an, taxes comprises. L&apos;inscription donne droit à un compte
           gratuit « découverte » : le profil est visible dans le catalogue et l&apos;artiste reçoit toutes les demandes de
-          devis, mais seule la première est lisible ; les suivantes sont réservées aux abonnés tant que l&apos;abonnement n&apos;est
+          devis, mais seule la première est lisible ; les suivantes sont réservées à la version PRO tant que l&apos;abonnement n&apos;est
           pas souscrit. Aucun prélèvement n&apos;est effectué sans action de l&apos;artiste. Les artistes inscrits avant la
           mise en place du compte gratuit conservent la période d&apos;essai gratuite de 3 mois annoncée lors de leur
           inscription, à l&apos;issue de laquelle leur profil cesse d&apos;être visible tant que l&apos;abonnement n&apos;est pas
