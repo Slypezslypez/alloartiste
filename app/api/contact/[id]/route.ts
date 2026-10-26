@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { sendContactEmail, sendContactConfirmationEmail } from "@/lib/email";
-import { isSubscriptionVisible } from "@/lib/categories";
+import { sendContactEmail, sendContactConfirmationEmail, sendLockedLeadEmail } from "@/lib/email";
+import { isSubscriptionVisible, isFreeAccount, FREE_READABLE_LEADS } from "@/lib/categories";
 import { verifyTurnstile } from "@/lib/turnstile";
 
 const schema = z.object({
@@ -44,14 +44,22 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     }
   });
 
+  // Compte gratuit « découverte » : seule la première demande est lisible. À partir de la deuxième, l'artiste
+  // reçoit un email « teaser » (sans nom ni message) qui l'invite à s'abonner pour la lire.
+  const locked = isFreeAccount(artist) && (await prisma.lead.count({ where: { artistId: artist.id } })) > FREE_READABLE_LEADS;
+
   try {
-    await sendContactEmail({
-      artistName: artist.name,
-      artistEmail: artist.email,
-      senderName: parsed.data.senderName,
-      senderEmail: parsed.data.senderEmail,
-      message: parsed.data.message
-    });
+    if (locked) {
+      await sendLockedLeadEmail({ artistName: artist.name, artistEmail: artist.email });
+    } else {
+      await sendContactEmail({
+        artistName: artist.name,
+        artistEmail: artist.email,
+        senderName: parsed.data.senderName,
+        senderEmail: parsed.data.senderEmail,
+        message: parsed.data.message
+      });
+    }
   } catch (err) {
     console.error("Échec de l'envoi de l'email de contact artiste:", err);
   }
