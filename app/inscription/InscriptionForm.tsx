@@ -160,7 +160,24 @@ export function InscriptionForm({ categories }: { categories: string[] }) {
 
   return (
     <div className="panel">
-      <h2>Créer mon profil</h2>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12 }}>
+        <h2 style={{ margin: 0 }}>Créer mon profil</h2>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
+          <img
+            src="/carlos.jpg"
+            alt="Carlos Vaquera"
+            width={52}
+            height={52}
+            style={{ width: 52, height: 52, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }}
+          />
+          <div className="parrain-text" style={{ lineHeight: 1.3, textAlign: "center", maxWidth: 190 }}>
+            <strong style={{ display: "block", fontSize: 15, marginBottom: 2 }}>Carlos Vaquera</strong>
+            <span style={{ display: "block", fontSize: 12.5, color: "var(--ink-soft)", textWrap: "balance" } as React.CSSProperties}>
+              Donnons de la visibilité à nos artistes
+            </span>
+          </div>
+        </div>
+      </div>
       <p className="sub">
         {CATALOG_OPEN
           ? "L'inscription est gratuite et votre profil est visible dans le catalogue pendant 3 mois offerts."
