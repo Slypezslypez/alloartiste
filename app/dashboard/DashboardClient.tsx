@@ -70,7 +70,8 @@ export function DashboardClient({
   const lockedBox: React.CSSProperties = isFree ? { opacity: 0.45, pointerEvents: "none", userSelect: "none" } : {};
   const lockedNote = (
     <p className="hint" style={{ color: "var(--gold-deep)", fontWeight: 600, margin: "6px 0 10px" }}>
-      🔒 Réservé à la version PRO (39 € par an)
+      🔒 Réservé à la version PRO —{" "}
+      <Link href="/version-pro" style={{ textDecoration: "underline" }}>Voir la version PRO</Link>
     </p>
   );
   // `active` = abonnement réellement actif ou en essai (payant / code d'invitation), hors compte gratuit.
@@ -449,7 +450,7 @@ export function DashboardClient({
           <p className="sub">
             Votre profil est visible dans l&apos;annuaire et vous recevez toutes les demandes de devis. Avec le compte
             gratuit, seule la première demande est lisible : les suivantes sont réservées à la version PRO
-            (abonnement à 39 € par an, bientôt disponible).
+            (bientôt disponible). <Link href="/version-pro" style={{ textDecoration: "underline" }}>Voir la version PRO</Link>
           </p>
         </div>
       )}
@@ -668,7 +669,8 @@ export function DashboardClient({
           )}
           {isFree && artist.photos.length >= photoMax && (
             <p className="hint" style={{ color: "var(--gold-deep)", fontWeight: 600 }}>
-              🔒 Compte gratuit : 1 photo. Jusqu&apos;à {MAX_PHOTOS} photos avec la version PRO (39 € par an).
+              🔒 Compte gratuit : 1 photo. Jusqu&apos;à {MAX_PHOTOS} photos avec la version PRO.{" "}
+              <Link href="/version-pro" style={{ textDecoration: "underline" }}>Voir la version PRO</Link>
             </p>
           )}
 
