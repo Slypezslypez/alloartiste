@@ -100,7 +100,7 @@ export default async function HomePage() {
           <h2>Soyez les premiers !</h2>
           <p className="sub">
             L&apos;annuaire ouvre bientôt au public. Les premiers artistes s&apos;inscrivent en ce moment : créez votre profil dès
-            maintenant et profitez de 3 mois offerts, puis seulement 39 € par an, sans obligation.
+            maintenant, gratuitement. L&apos;abonnement à 39 € par an, sans obligation, vous donne accès à toutes vos demandes.
           </p>
           <div className="ctas" style={{ justifyContent: "center", marginTop: 18 }}>
             <Link className="btn btn-gold" href="/inscription">
