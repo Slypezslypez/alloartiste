@@ -4,7 +4,7 @@ import crypto from "crypto";
 import { prisma } from "@/lib/prisma";
 import { hashPassword, createSession } from "@/lib/auth";
 import { sendVerificationEmail, sendNewArtistAlertEmail } from "@/lib/email";
-import { CATEGORIES, COUNTRIES, CITIES_BY_COUNTRY, CATALOG_OPEN } from "@/lib/categories";
+import { CATEGORIES, COUNTRIES, CITIES_BY_COUNTRY } from "@/lib/categories";
 import { verifyTurnstile } from "@/lib/turnstile";
 
 const schema = z
@@ -88,11 +88,11 @@ export async function POST(req: NextRequest) {
             currentPeriodEnd: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000) // 1 an, offert via code promo
           }
         : {
-            // Sans code : 3 mois d'essai gratuits, puis abonnement à 39 €/an. Les 3 mois commencent à l'ouverture
-            // du catalogue au public : tant qu'il est fermé, la date de fin est repoussée très loin (rien n'expire),
-            // et elle est remise à « maintenant + 91 jours » au lancement (voir le guide, requête SQL d'ouverture).
-            subscriptionStatus: "trialing",
-            currentPeriodEnd: new Date(Date.now() + (CATALOG_OPEN ? 91 : 730) * 24 * 60 * 60 * 1000)
+            // Sans code : compte gratuit « découverte » (plus de période d'essai de 3 mois). Le profil est visible,
+            // mais seule la première demande de devis est lisible ; les suivantes sont verrouillées jusqu'à
+            // l'abonnement à 39 €/an (voir lib/leadLock.ts). Pas de date de fin.
+            subscriptionStatus: "free",
+            currentPeriodEnd: null
           })
     }
   });
