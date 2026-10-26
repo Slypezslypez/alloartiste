@@ -62,10 +62,15 @@ export function DashboardClient({
   const [leads, setLeads] = useState(initialLeads);
   const [unavailableDates, setUnavailableDates] = useState<string[]>(initialUnavailableDates || []);
   const [pendingDate, setPendingDate] = useState<string | null>(null);
-  const active = isSubscriptionVisible({
-    subscriptionStatus: artist.subscriptionStatus,
-    currentPeriodEnd: artist.currentPeriodEnd ? new Date(artist.currentPeriodEnd) : null
-  });
+  // Compte gratuit « découverte » : profil visible, mais une seule demande de devis lisible.
+  const isFree = artist.subscriptionStatus === "free";
+  // `active` = abonnement réellement actif ou en essai (payant / code d'invitation), hors compte gratuit.
+  const active =
+    !isFree &&
+    isSubscriptionVisible({
+      subscriptionStatus: artist.subscriptionStatus,
+      currentPeriodEnd: artist.currentPeriodEnd ? new Date(artist.currentPeriodEnd) : null
+    });
 
   const [profileMsg, setProfileMsg] = useState<string | null>(null);
   const isKnownCategory = CATEGORIES.includes(initialArtist.category as any);
@@ -419,13 +424,24 @@ export function DashboardClient({
     <>
       <h2 className="section-title">
         Mon espace — {artist.name}
-        <span className={`dashboard-status ${active ? "is-active" : "is-inactive"}`}>
+        <span className={`dashboard-status ${active || isFree ? "is-active" : "is-inactive"}`}>
           <span className="dot">●</span>
-          {active ? "Abonnement actif" : "Profil non visible — abonnement inactif"}
+          {active ? "Abonnement actif" : isFree ? "Compte gratuit — version découverte" : "Profil non visible — abonnement inactif"}
         </span>
       </h2>
 
-      {!active && !PAYMENTS_ENABLED && (
+      {isFree && !PAYMENTS_ENABLED && (
+        <div className="panel wide">
+          <h2 style={{ fontSize: 24 }}>Votre compte gratuit (version découverte)</h2>
+          <p className="sub">
+            Votre profil est visible dans l&apos;annuaire et vous recevez toutes les demandes de devis. Avec le compte
+            gratuit, seule la première demande est lisible : les suivantes sont verrouillées jusqu&apos;à
+            l&apos;abonnement (39 € par an), qui sera bientôt disponible.
+          </p>
+        </div>
+      )}
+
+      {!active && !isFree && !PAYMENTS_ENABLED && (
         <div className="panel wide">
           <h2 style={{ fontSize: 24 }}>Profil en attente d&apos;activation</h2>
           <p className="sub">

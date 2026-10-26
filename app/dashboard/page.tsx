@@ -2,6 +2,8 @@ import { redirect } from "next/navigation";
 import { getCurrentArtist } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
+import { isFreeAccount } from "@/lib/categories";
+import { lockLeadsForFreeAccount } from "@/lib/leadLock";
 import { DashboardClient } from "./DashboardClient";
 
 export const dynamic = "force-dynamic";
@@ -36,11 +38,13 @@ export default async function DashboardPage() {
     }
   }
 
-  const leads = await prisma.lead.findMany({
+  const rawLeads = await prisma.lead.findMany({
     where: { artistId: artist.id },
     orderBy: { createdAt: "desc" },
     take: 50
   });
+  // Compte gratuit : le contenu des demandes verrouillées est retiré côté serveur.
+  const leads = lockLeadsForFreeAccount(rawLeads, isFreeAccount(artist));
 
   const unavailableDates = await prisma.unavailableDate.findMany({
     where: { artistId: artist.id },
