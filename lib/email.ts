@@ -597,7 +597,7 @@ export async function sendLockedLeadEmail(opts: { artistName: string; artistEmai
       <p style="margin:0 0 14px;">Bonjour ${escapeHtml(opts.artistName)},</p>
       <p style="margin:0 0 14px;">
         Un organisateur vient de vous contacter via AlloArtiste. Avec le compte gratuit, une seule demande est lisible :
-        celle-ci est verrouillée.
+        celle-ci est réservée aux abonnés.
       </p>
       <p style="margin:0;font-size:13px;color:#8c8578;">
         Pour la lire et répondre à l'organisateur, passez à l'abonnement (39€/an) depuis votre espace.
@@ -613,7 +613,7 @@ export async function sendLockedLeadEmail(opts: { artistName: string; artistEmai
     subject: "Vous avez reçu une nouvelle demande — AlloArtiste",
     text: `Bonjour ${opts.artistName},
 
-Un organisateur vient de vous contacter via AlloArtiste. Avec le compte gratuit, une seule demande est lisible : celle-ci est verrouillée.
+Un organisateur vient de vous contacter via AlloArtiste. Avec le compte gratuit, une seule demande est lisible : celle-ci est réservée aux abonnés.
 
 Pour la lire et répondre à l'organisateur, passez à l'abonnement (39€/an) depuis votre espace : ${siteUrl}/dashboard
 

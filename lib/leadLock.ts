@@ -27,6 +27,6 @@ export function lockLeadsForFreeAccount<T extends LeadLike>(leads: T[], isFree: 
   return leads.map((l) =>
     readableIds.has(l.id)
       ? { ...l, locked: false }
-      : { ...l, senderName: "Demande verrouillée", senderEmail: "", senderPhone: null, eventDate: null, message: "", locked: true }
+      : { ...l, senderName: "Demande réservée aux abonnés", senderEmail: "", senderPhone: null, eventDate: null, message: "", locked: true }
   );
 }
