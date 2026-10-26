@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
   const artist = await getCurrentArtist();
   if (!artist) return NextResponse.json({ error: "Non authentifié." }, { status: 401 });
   if (isFreeAccount(artist)) {
-    return NextResponse.json({ error: "Les vidéos sont réservées aux abonnés (39 € par an)." }, { status: 403 });
+    return NextResponse.json({ error: "Les vidéos sont réservées à la version PRO (39 € par an)." }, { status: 403 });
   }
   if (artist.videos.length >= MAX_VIDEOS) {
     return NextResponse.json({ error: `Maximum ${MAX_VIDEOS} vidéos.` }, { status: 400 });
