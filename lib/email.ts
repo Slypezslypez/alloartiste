@@ -537,12 +537,17 @@ export async function sendNewArtistAlertEmail(opts: {
   country: string;
   bio: string;
   freeAccessCode: boolean;
+  wantsPro?: boolean;
   artistId: string;
 }) {
   const receiver = process.env.CONTACT_RECEIVER_EMAIL || process.env.EMAIL_FROM;
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.alloartiste.be";
   const profileUrl = `${siteUrl}/profil/${opts.artistId}`;
-  const access = opts.freeAccessCode ? "1 an gratuit (code d'invitation)" : "Compte gratuit « découverte » (1 demande lisible)";
+  const access = opts.freeAccessCode
+    ? "1 an gratuit (code d'invitation)"
+    : opts.wantsPro
+      ? "Souhaite la VERSION PRO (compte gratuit en attendant l'ouverture des paiements)"
+      : "Compte gratuit « découverte » (1 demande lisible)";
   const bioShort = opts.bio.length > 300 ? `${opts.bio.slice(0, 300)}…` : opts.bio;
   const cell = "padding:6px 10px;border-bottom:1px solid #e7e2d8;";
 
