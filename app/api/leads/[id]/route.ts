@@ -21,7 +21,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     const all = await prisma.lead.findMany({ where: { artistId: artist.id } });
     const isLocked = lockLeadsForFreeAccount(all, true).find((l) => l.id === lead.id)?.locked;
     if (isLocked) {
-      return NextResponse.json({ error: "Demande verrouillée : abonnez-vous pour la consulter." }, { status: 403 });
+      return NextResponse.json({ error: "Demande réservée aux abonnés : abonnez-vous pour la consulter." }, { status: 403 });
     }
   }
 
