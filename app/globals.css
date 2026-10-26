@@ -54,6 +54,7 @@ header {
 .logo span { background: linear-gradient(90deg, var(--gold-deep), var(--gold)); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .logo-img { height: 38px; width: auto; display: block; }
 .logo-img-dark { display: none; }
+@media (max-width: 520px) { .parrain-text { display: none; } }
 /* Alternance AlloArtiste / TopArtiste dans l'en-tête (fondu enchaîné, 10 s). */
 .logo-stack { display: grid; }
 .logo-slide { grid-area: 1 / 1; display: flex; align-items: center; }
