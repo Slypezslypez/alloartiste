@@ -1,7 +1,7 @@
 const FAQ_ITEMS = [
   {
     q: "Combien coûte un profil sur AlloArtiste ?",
-    a: "L'inscription est gratuite. Votre profil est visible pendant 3 mois offerts, qui commencent dès l'ouverture de l'annuaire au public (ou à l'inscription si l'annuaire est déjà ouvert). Ensuite, la visibilité dans le catalogue public nécessite un abonnement de 39 € par an, renouvelable automatiquement, résiliable à tout moment depuis votre espace."
+    a: "L'inscription est gratuite (version découverte) : votre profil est visible et vous recevez toutes les demandes de devis, mais seule la première est lisible. Pour lire toutes les demandes et répondre aux organisateurs, l'abonnement est de 39 € par an, renouvelable automatiquement, résiliable à tout moment depuis votre espace."
   },
   {
     q: "Comment les organisateurs me contactent-ils ?",
