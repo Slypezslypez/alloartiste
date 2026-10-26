@@ -191,12 +191,15 @@ export function InscriptionForm({ categories }: { categories: string[] }) {
               { value: "free", title: "Compte gratuit", text: "Version découverte : profil visible, 1ʳᵉ demande lisible." },
               { value: "pro", title: "Version PRO", text: "Toutes les demandes lisibles, photos, vidéos et liens directs." }
             ] as const
-          ).map((o) => (
+          ).map((o) => {
+            const disabled = o.value === "pro" && !PAYMENTS_ENABLED; // version PRO grisée jusqu'à l'ouverture des paiements
+            return (
             <label
               key={o.value}
               style={{
                 display: "block",
-                cursor: "pointer",
+                cursor: disabled ? "not-allowed" : "pointer",
+                opacity: disabled ? 0.45 : 1,
                 padding: "12px 14px",
                 borderRadius: 12,
                 border: plan === o.value ? "2px solid var(--gold-deep)" : "1px solid var(--line, #d9d2c3)",
@@ -210,24 +213,27 @@ export function InscriptionForm({ categories }: { categories: string[] }) {
                 name="plan"
                 value={o.value}
                 checked={plan === o.value}
+                disabled={disabled}
                 onChange={() => setPlan(o.value)}
                 style={{ width: "auto", marginRight: 8 }}
               />
               <strong>{o.title}</strong>
+              {disabled && <span style={{ marginLeft: 8, fontSize: 12, fontWeight: 600 }}>— bientôt disponible</span>}
               <span style={{ display: "block", fontSize: 13, fontWeight: 400, color: "var(--ink-soft)", marginTop: 4 }}>{o.text}</span>
             </label>
-          ))}
+            );
+          })}
         </div>
-        {plan === "pro" && (
-          <p className="hint" style={{ marginTop: 0 }}>
-            {PAYMENTS_ENABLED
-              ? "Vous activerez la version PRO depuis votre espace, juste après la confirmation de votre email. "
-              : "Le paiement de la version PRO ouvre bientôt : votre compte est créé dès maintenant en version découverte, et la version PRO vous sera proposée dès son ouverture. "}
-            <a href="/version-pro" target="_blank" rel="noopener noreferrer" style={{ color: "var(--gold-deep)", fontWeight: 600 }}>
-              Voir la version PRO
-            </a>
-          </p>
-        )}
+        <p className="hint" style={{ marginTop: 0 }}>
+          {plan === "pro" && PAYMENTS_ENABLED
+            ? "Vous activerez la version PRO depuis votre espace, juste après la confirmation de votre email. "
+            : !PAYMENTS_ENABLED
+              ? "La version PRO ouvre bientôt. Vous pourrez y passer depuis votre espace dès son ouverture. "
+              : ""}
+          <a href="/version-pro" target="_blank" rel="noopener noreferrer" style={{ color: "var(--gold-deep)", fontWeight: 600 }}>
+            Voir la version PRO
+          </a>
+        </p>
 
         <label>Nom / nom de scène</label>
         <input name="name" type="text" required maxLength={60} />
