@@ -36,7 +36,7 @@ export default async function InscriptionPage() {
         />
         <div>
           <strong style={{ display: "block", fontSize: 17 }}>Carlos Vaquera</strong>
-          <span style={{ fontSize: 14, color: "var(--ink-soft)" }}>Parrain d&apos;AlloArtiste</span>
+          <span style={{ fontSize: 14, color: "var(--ink-soft)" }}>Donnons de la visibilité à nos artistes</span>
         </div>
       </div>
       <InscriptionForm categories={allCategories} />
