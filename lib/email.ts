@@ -174,7 +174,7 @@ export async function sendWelcomeEmail(artistName: string, artistEmail: string) 
       <p style="margin:0 0 14px;">Bonjour ${escapeHtml(artistName)},</p>
       <p style="margin:0 0 14px;">Votre compte a bien été créé.</p>
       <p style="margin:0;">
-        Votre profil est visible dans l'annuaire avec un compte gratuit : vous recevez toutes les demandes de devis, la première est lisible gratuitement, les suivantes se débloquent avec l'abonnement (39€/an).
+        Votre profil est visible dans l'annuaire avec un compte gratuit : vous recevez toutes les demandes de devis, la première est lisible gratuitement, les suivantes sont réservées à la version PRO.
       </p>
     `,
     ctaLabel: "Accéder à mon espace",
@@ -187,7 +187,7 @@ export async function sendWelcomeEmail(artistName: string, artistEmail: string) 
     subject: "Bienvenue sur AlloArtiste",
     text: `Bonjour ${artistName},
 
-Votre compte a bien été créé. Votre profil est visible dans l'annuaire avec un compte gratuit : vous recevez toutes les demandes de devis, la première est lisible gratuitement, les suivantes se débloquent avec l'abonnement (39€/an).
+Votre compte a bien été créé. Votre profil est visible dans l'annuaire avec un compte gratuit : vous recevez toutes les demandes de devis, la première est lisible gratuitement, les suivantes sont réservées à la version PRO.
 
 À bientôt,
 L'équipe AlloArtiste`,
@@ -205,7 +205,7 @@ export async function sendVerificationEmail(artistName: string, artistEmail: str
         (ce lien est valable 24 heures).
       </p>
       <p style="margin:0;font-size:13px;color:#8c8578;">
-        Une fois confirmé, vous pourrez accéder à votre espace. Votre profil est visible dans l'annuaire avec un compte gratuit : vous recevez toutes les demandes de devis, la première est lisible gratuitement, les suivantes se débloquent avec l'abonnement (39€/an).
+        Une fois confirmé, vous pourrez accéder à votre espace. Votre profil est visible dans l'annuaire avec un compte gratuit : vous recevez toutes les demandes de devis, la première est lisible gratuitement, les suivantes sont réservées à la version PRO.
       </p>
     `,
     ctaLabel: "Confirmer mon adresse email",
@@ -221,7 +221,7 @@ export async function sendVerificationEmail(artistName: string, artistEmail: str
 Votre compte AlloArtiste a bien été créé. Il ne reste qu'une étape : confirmez votre adresse email en cliquant sur le lien suivant (valable 24 heures) :
 ${verifyUrl}
 
-Une fois confirmé, vous pourrez accéder à votre espace. Votre profil est visible dans l'annuaire avec un compte gratuit : vous recevez toutes les demandes de devis, la première est lisible gratuitement, les suivantes se débloquent avec l'abonnement (39€/an).
+Une fois confirmé, vous pourrez accéder à votre espace. Votre profil est visible dans l'annuaire avec un compte gratuit : vous recevez toutes les demandes de devis, la première est lisible gratuitement, les suivantes sont réservées à la version PRO.
 
 Si vous n'êtes pas à l'origine de cette inscription, ignorez simplement cet email.
 
@@ -600,11 +600,11 @@ export async function sendLockedLeadEmail(opts: { artistName: string; artistEmai
         celle-ci est réservée à la version PRO.
       </p>
       <p style="margin:0;font-size:13px;color:#8c8578;">
-        Pour la lire et répondre à l'organisateur, passez à l'abonnement (39€/an) depuis votre espace.
+        Pour la lire et répondre à l'organisateur, passez à la version PRO.
       </p>
     `,
-    ctaLabel: "Accéder à mon espace",
-    ctaUrl: `${siteUrl}/dashboard`
+    ctaLabel: "Voir la version PRO",
+    ctaUrl: `${siteUrl}/version-pro`
   });
 
   return resend.emails.send({
@@ -615,7 +615,7 @@ export async function sendLockedLeadEmail(opts: { artistName: string; artistEmai
 
 Un organisateur vient de vous contacter via AlloArtiste. Avec le compte gratuit, une seule demande est lisible : celle-ci est réservée à la version PRO.
 
-Pour la lire et répondre à l'organisateur, passez à l'abonnement (39€/an) depuis votre espace : ${siteUrl}/dashboard
+Pour la lire et répondre à l'organisateur, passez à la version PRO : ${siteUrl}/version-pro
 
 L'équipe AlloArtiste`,
     html
