@@ -70,7 +70,7 @@ export function DashboardClient({
   const lockedBox: React.CSSProperties = isFree ? { opacity: 0.45, pointerEvents: "none", userSelect: "none" } : {};
   const lockedNote = (
     <p className="hint" style={{ color: "var(--gold-deep)", fontWeight: 600, margin: "6px 0 10px" }}>
-      🔒 Réservé aux abonnés (39 € par an)
+      🔒 Réservé à la version PRO (39 € par an)
     </p>
   );
   // `active` = abonnement réellement actif ou en essai (payant / code d'invitation), hors compte gratuit.
@@ -448,7 +448,7 @@ export function DashboardClient({
           <h2 style={{ fontSize: 24 }}>Votre compte gratuit (version découverte)</h2>
           <p className="sub">
             Votre profil est visible dans l&apos;annuaire et vous recevez toutes les demandes de devis. Avec le compte
-            gratuit, seule la première demande est lisible : les suivantes sont réservées aux abonnés
+            gratuit, seule la première demande est lisible : les suivantes sont réservées à la version PRO
             (abonnement à 39 € par an, bientôt disponible).
           </p>
         </div>
@@ -668,7 +668,7 @@ export function DashboardClient({
           )}
           {isFree && artist.photos.length >= photoMax && (
             <p className="hint" style={{ color: "var(--gold-deep)", fontWeight: 600 }}>
-              🔒 Compte gratuit : 1 photo. Jusqu&apos;à {MAX_PHOTOS} photos avec l&apos;abonnement (39 € par an).
+              🔒 Compte gratuit : 1 photo. Jusqu&apos;à {MAX_PHOTOS} photos avec la version PRO (39 € par an).
             </p>
           )}
 
@@ -846,7 +846,7 @@ export function DashboardClient({
               <textarea name="bio" maxLength={bioMax} value={bioValue} onChange={(e) => setBioValue(e.target.value)} />
               <p className="hint">
                 {bioValue.length}/{bioMax} caractères
-                {isFree && ` — bio courte avec le compte gratuit (jusqu'à ${BIO_MAX} caractères avec l'abonnement).`}
+                {isFree && ` — bio courte avec le compte gratuit (jusqu'à ${BIO_MAX} caractères avec la version PRO).`}
               </p>
 
               <p className="profile-section-label mono">Formules & prestations</p>
