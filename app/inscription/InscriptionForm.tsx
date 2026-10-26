@@ -299,7 +299,7 @@ export function InscriptionForm({ categories }: { categories: string[] }) {
         <input name="passwordConfirm" type="password" required minLength={8} />
         <label>Bio courte</label>
         <textarea name="bio" maxLength={200} placeholder="Présentez votre parcours, votre style, vos disponibilités..." />
-        <p className="hint">200 caractères maximum avec le compte gratuit (600 avec l&apos;abonnement).</p>
+        <p className="hint">200 caractères maximum avec le compte gratuit (600 avec la version PRO).</p>
         <label>{PAYMENTS_ENABLED ? "Code promo (facultatif)" : "Code d'invitation (facultatif)"}</label>
         <input name="promoCode" type="text" maxLength={60} placeholder="Laissez vide si vous n'en avez pas" />
         <label style={{ display: "flex", alignItems: "flex-start", gap: 10, marginTop: 20 }}>
