@@ -318,8 +318,11 @@ export function InscriptionForm({ categories }: { categories: string[] }) {
         </label>
         <p className="hint" style={{ marginTop: 14, fontSize: 12.5 }}>
           Aucun paiement n&apos;est demandé à l&apos;inscription. Le compte gratuit (version découverte) rend votre profil visible et
-          vous permet de lire votre première demande de devis ; pour lire toutes les demandes, l&apos;abonnement est de 39 € par an,
-          renouvelable automatiquement et résiliable à tout moment.
+          vous permet de lire votre première demande de devis ; pour lire toutes les demandes, il existe la version PRO, sans
+          obligation et résiliable à tout moment.{" "}
+          <a href="/version-pro" target="_blank" rel="noopener noreferrer" style={{ color: "var(--gold-deep)", fontWeight: 600 }}>
+            Voir la version PRO
+          </a>
         </p>
         {TURNSTILE_SITE_KEY && <div ref={turnstileRef} style={{ marginTop: 12 }} />}
         {error && <p className="error">{error}</p>}
