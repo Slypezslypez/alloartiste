@@ -448,8 +448,8 @@ export function DashboardClient({
           <h2 style={{ fontSize: 24 }}>Votre compte gratuit (version découverte)</h2>
           <p className="sub">
             Votre profil est visible dans l&apos;annuaire et vous recevez toutes les demandes de devis. Avec le compte
-            gratuit, seule la première demande est lisible : les suivantes sont verrouillées jusqu&apos;à
-            l&apos;abonnement (39 € par an), qui sera bientôt disponible.
+            gratuit, seule la première demande est lisible : les suivantes sont réservées aux abonnés
+            (abonnement à 39 € par an, bientôt disponible).
           </p>
         </div>
       )}
