@@ -26,10 +26,19 @@ export function isSubscriptionVisible(artist: {
   subscriptionStatus: string | null;
   currentPeriodEnd: Date | null;
 }) {
+  if (artist.subscriptionStatus === "free") return true; // compte gratuit « découverte » : visible sans date de fin
   if (!artist.subscriptionStatus || !artist.currentPeriodEnd) return false;
   const okStatus = artist.subscriptionStatus === "active" || artist.subscriptionStatus === "trialing";
   return okStatus && artist.currentPeriodEnd.getTime() > Date.now();
 }
+
+/** Compte gratuit « découverte » : le profil est visible, mais seule la première demande de devis est lisible. */
+export function isFreeAccount(artist: { subscriptionStatus: string | null }) {
+  return artist.subscriptionStatus === "free";
+}
+
+/** Nombre de demandes de devis lisibles pour un compte gratuit (les suivantes sont verrouillées). */
+export const FREE_READABLE_LEADS = 1;
 
 /** Un profil est considéré "Nouveau" pendant les 14 jours suivant sa création. */
 export function isNewArrival(createdAt: Date | string) {

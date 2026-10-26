@@ -1,7 +1,6 @@
 import { Resend } from "resend";
 import { renderEmail, escapeHtml, nl2br } from "./emailTemplate";
 import type { ResourceStatus } from "./resourceMonitor";
-import { CATALOG_OPEN } from "./categories";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -175,7 +174,7 @@ export async function sendWelcomeEmail(artistName: string, artistEmail: string) 
       <p style="margin:0 0 14px;">Bonjour ${escapeHtml(artistName)},</p>
       <p style="margin:0 0 14px;">Votre compte a bien été créé.</p>
       <p style="margin:0;">
-        ${CATALOG_OPEN ? "Votre profil est visible dans le catalogue gratuitement pendant 3 mois." : "Vos 3 mois gratuits commenceront dès l'ouverture de l'annuaire au public."} Ensuite, l'abonnement est de 39€/an.
+        Votre profil est visible dans l'annuaire avec un compte gratuit : vous recevez toutes les demandes de devis, la première est lisible gratuitement, les suivantes se débloquent avec l'abonnement (39€/an).
       </p>
     `,
     ctaLabel: "Accéder à mon espace",
@@ -188,7 +187,7 @@ export async function sendWelcomeEmail(artistName: string, artistEmail: string) 
     subject: "Bienvenue sur AlloArtiste",
     text: `Bonjour ${artistName},
 
-Votre compte a bien été créé. ${CATALOG_OPEN ? "Votre profil est visible dans le catalogue gratuitement pendant 3 mois." : "Vos 3 mois gratuits commenceront dès l'ouverture de l'annuaire au public."} Ensuite, l'abonnement est de 39€/an.
+Votre compte a bien été créé. Votre profil est visible dans l'annuaire avec un compte gratuit : vous recevez toutes les demandes de devis, la première est lisible gratuitement, les suivantes se débloquent avec l'abonnement (39€/an).
 
 À bientôt,
 L'équipe AlloArtiste`,
@@ -206,7 +205,7 @@ export async function sendVerificationEmail(artistName: string, artistEmail: str
         (ce lien est valable 24 heures).
       </p>
       <p style="margin:0;font-size:13px;color:#8c8578;">
-        Une fois confirmé, vous pourrez accéder à votre espace. ${CATALOG_OPEN ? "Votre profil est visible gratuitement pendant 3 mois" : "Vos 3 mois gratuits commenceront dès l'ouverture de l'annuaire au public"}, puis l'abonnement est de 39€/an.
+        Une fois confirmé, vous pourrez accéder à votre espace. Votre profil est visible dans l'annuaire avec un compte gratuit : vous recevez toutes les demandes de devis, la première est lisible gratuitement, les suivantes se débloquent avec l'abonnement (39€/an).
       </p>
     `,
     ctaLabel: "Confirmer mon adresse email",
@@ -222,7 +221,7 @@ export async function sendVerificationEmail(artistName: string, artistEmail: str
 Votre compte AlloArtiste a bien été créé. Il ne reste qu'une étape : confirmez votre adresse email en cliquant sur le lien suivant (valable 24 heures) :
 ${verifyUrl}
 
-Une fois confirmé, vous pourrez accéder à votre espace. ${CATALOG_OPEN ? "Votre profil est visible gratuitement pendant 3 mois" : "Vos 3 mois gratuits commenceront dès l'ouverture de l'annuaire au public"}, puis l'abonnement est de 39€/an.
+Une fois confirmé, vous pourrez accéder à votre espace. Votre profil est visible dans l'annuaire avec un compte gratuit : vous recevez toutes les demandes de devis, la première est lisible gratuitement, les suivantes se débloquent avec l'abonnement (39€/an).
 
 Si vous n'êtes pas à l'origine de cette inscription, ignorez simplement cet email.
 
@@ -543,7 +542,7 @@ export async function sendNewArtistAlertEmail(opts: {
   const receiver = process.env.CONTACT_RECEIVER_EMAIL || process.env.EMAIL_FROM;
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.alloartiste.be";
   const profileUrl = `${siteUrl}/profil/${opts.artistId}`;
-  const access = opts.freeAccessCode ? "1 an gratuit (code d'invitation)" : "3 mois gratuits (essai)";
+  const access = opts.freeAccessCode ? "1 an gratuit (code d'invitation)" : "Compte gratuit « découverte » (1 demande lisible)";
   const bioShort = opts.bio.length > 300 ? `${opts.bio.slice(0, 300)}…` : opts.bio;
   const cell = "padding:6px 10px;border-bottom:1px solid #e7e2d8;";
 
@@ -584,6 +583,41 @@ Profil : ${profileUrl}`;
     to: receiver as string,
     subject: `AlloArtiste — nouvelle inscription (${opts.artistName})`,
     text,
+    html
+  });
+}
+
+// Email « teaser » envoyé à un artiste en compte gratuit lorsqu'il reçoit une demande verrouillée :
+// il sait qu'une demande est arrivée, mais ni l'expéditeur ni le message ne sont révélés (ils se débloquent avec l'abonnement).
+export async function sendLockedLeadEmail(opts: { artistName: string; artistEmail: string }) {
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.alloartiste.be";
+  const html = renderEmail({
+    title: "Vous avez reçu une nouvelle demande",
+    bodyHtml: `
+      <p style="margin:0 0 14px;">Bonjour ${escapeHtml(opts.artistName)},</p>
+      <p style="margin:0 0 14px;">
+        Un organisateur vient de vous contacter via AlloArtiste. Avec le compte gratuit, une seule demande est lisible :
+        celle-ci est verrouillée.
+      </p>
+      <p style="margin:0;font-size:13px;color:#8c8578;">
+        Pour la lire et répondre à l'organisateur, passez à l'abonnement (39€/an) depuis votre espace.
+      </p>
+    `,
+    ctaLabel: "Accéder à mon espace",
+    ctaUrl: `${siteUrl}/dashboard`
+  });
+
+  return resend.emails.send({
+    from: process.env.EMAIL_FROM as string,
+    to: opts.artistEmail,
+    subject: "Vous avez reçu une nouvelle demande — AlloArtiste",
+    text: `Bonjour ${opts.artistName},
+
+Un organisateur vient de vous contacter via AlloArtiste. Avec le compte gratuit, une seule demande est lisible : celle-ci est verrouillée.
+
+Pour la lire et répondre à l'organisateur, passez à l'abonnement (39€/an) depuis votre espace : ${siteUrl}/dashboard
+
+L'équipe AlloArtiste`,
     html
   });
 }
