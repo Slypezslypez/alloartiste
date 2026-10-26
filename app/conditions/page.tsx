@@ -92,10 +92,13 @@ export default function ConditionsPage() {
           donner lieu à un remboursement automatique, sauf disposition légale contraire applicable.
         </p>
         <p>
-          Le prix de l&apos;abonnement est de 39 € par an, taxes comprises. Il est précédé d&apos;une période d&apos;essai
-          gratuite de 3 mois, pendant laquelle le profil est visible dans le catalogue sans aucun paiement. Cette période
-          commence à l&apos;ouverture du catalogue au public ou, si celui-ci est déjà ouvert, à l&apos;inscription. À l&apos;issue de cette période, le profil cesse d&apos;être visible tant que l&apos;abonnement
-          n&apos;est pas souscrit ; aucun prélèvement n&apos;est effectué sans action de l&apos;artiste. Le prix est affiché
+          Le prix de l&apos;abonnement est de 39 € par an, taxes comprises. L&apos;inscription donne droit à un compte
+          gratuit « découverte » : le profil est visible dans le catalogue et l&apos;artiste reçoit toutes les demandes de
+          devis, mais seule la première est lisible ; les suivantes sont verrouillées tant que l&apos;abonnement n&apos;est
+          pas souscrit. Aucun prélèvement n&apos;est effectué sans action de l&apos;artiste. Les artistes inscrits avant la
+          mise en place du compte gratuit conservent la période d&apos;essai gratuite de 3 mois annoncée lors de leur
+          inscription, à l&apos;issue de laquelle leur profil cesse d&apos;être visible tant que l&apos;abonnement n&apos;est pas
+          souscrit. Le prix est affiché
           avant toute souscription et ne peut être modifié en cours de période payée. L&apos;abonnement s&apos;adresse à des artistes agissant à titre professionnel
           ou indépendant. Lorsque l&apos;artiste agit en qualité de consommateur, il bénéficie, dans les conditions
           prévues par la loi, du droit de rétractation applicable aux contrats conclus à distance.
