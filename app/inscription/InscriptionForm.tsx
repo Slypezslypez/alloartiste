@@ -353,6 +353,45 @@ export function InscriptionForm({ categories }: { categories: string[] }) {
         <label>Bio courte</label>
         <textarea name="bio" maxLength={200} placeholder="Présentez votre parcours, votre style, vos disponibilités..." />
         <p className="hint">200 caractères maximum avec le compte gratuit (600 avec la version PRO).</p>
+        <div style={{ marginTop: 22 }}>
+          <label style={{ marginBottom: 4 }}>Options de la version PRO</label>
+          <p className="hint" style={{ marginTop: 0, color: "var(--gold-deep)", fontWeight: 600 }}>
+            🔒 Réservé à la version PRO — {PAYMENTS_ENABLED ? "à compléter depuis votre espace." : "bientôt disponible."}{" "}
+            <a href="/version-pro" target="_blank" rel="noopener noreferrer" style={{ textDecoration: "underline" }}>
+              Voir la version PRO
+            </a>
+          </p>
+          <div style={{ opacity: 0.45, pointerEvents: "none", userSelect: "none" }} aria-disabled="true">
+            <label>Photos (jusqu&apos;à 5)</label>
+            <input type="file" disabled />
+            <label>Vidéos & extraits (jusqu&apos;à 5)</label>
+            <input type="url" disabled placeholder="https://youtube.com/watch?v=..." />
+            <label>Citation courte</label>
+            <input type="text" disabled placeholder="Spécialiste de la musique électronique, événements corporate haut de gamme." />
+            <label>Formules & prestations</label>
+            <input type="text" disabled placeholder="ex. Mariages premium" />
+            <div className="field-row">
+              <div>
+                <label>Téléphone</label>
+                <input type="text" disabled />
+              </div>
+              <div>
+                <label>Site web</label>
+                <input type="text" disabled placeholder="monsite.be" />
+              </div>
+            </div>
+            <div className="field-row">
+              <div>
+                <label>Facebook</label>
+                <input type="text" disabled placeholder="facebook.com/..." />
+              </div>
+              <div>
+                <label>Instagram</label>
+                <input type="text" disabled placeholder="instagram.com/..." />
+              </div>
+            </div>
+          </div>
+        </div>
         <label>{PAYMENTS_ENABLED ? "Code promo (facultatif)" : "Code d'invitation (facultatif)"}</label>
         <input name="promoCode" type="text" maxLength={60} placeholder="Laissez vide si vous n'en avez pas" />
         <label style={{ display: "flex", alignItems: "flex-start", gap: 10, marginTop: 20 }}>
