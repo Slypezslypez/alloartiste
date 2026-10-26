@@ -17,6 +17,7 @@ const schema = z
     country: z.enum(COUNTRIES).optional().default("Belgique"),
     city: z.string().min(1).max(60).optional().default("Autre"),
     bio: z.string().max(600).optional().default(""),
+    plan: z.enum(["free", "pro"]).optional(),
     priceMin: z.number().int().min(0).max(100000).optional().nullable(),
     priceMax: z.number().int().min(0).max(100000).optional().nullable(),
     promoCode: z.string().max(60).optional(),
@@ -37,7 +38,7 @@ export async function POST(req: NextRequest) {
   if (!parsed.success) {
     return NextResponse.json({ error: "Champs invalides." }, { status: 400 });
   }
-  const { name, email, password, category, specialties, country, city, bio, priceMin, priceMax, promoCode } = parsed.data;
+  const { name, email, password, category, specialties, country, city, bio, priceMin, priceMax, promoCode, plan } = parsed.data;
 
   // Anti-spam : jeton Cloudflare Turnstile vérifié côté serveur avant toute création de compte.
   const remoteIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
@@ -119,6 +120,7 @@ export async function POST(req: NextRequest) {
       country,
       bio,
       freeAccessCode: grantsFreeAccess,
+      wantsPro: plan === "pro",
       artistId: artist.id
     });
   } catch (err) {
