@@ -53,7 +53,7 @@ export function DemandesListClient({ initialLeads }: { initialLeads: Lead[] }) {
           <div key={lead.id} className="lead-card lead-new" style={{ opacity: 0.95 }}>
             <div className="lead-header">
               <div>
-                <strong>🔒 Demande verrouillée</strong>{" "}
+                <strong>🔒 Demande réservée aux abonnés</strong>{" "}
                 <span className="mono" style={{ fontSize: 12, color: "var(--muted)" }}>
                   {new Date(lead.createdAt).toLocaleDateString("fr-FR")}
                 </span>
