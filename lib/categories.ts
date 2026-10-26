@@ -39,6 +39,11 @@ export function isFreeAccount(artist: { subscriptionStatus: string | null }) {
 
 /** Nombre de demandes de devis lisibles pour un compte gratuit (les suivantes sont verrouillées). */
 export const FREE_READABLE_LEADS = 1;
+// Limites du compte gratuit « découverte »
+export const FREE_MAX_PHOTOS = 1;
+export const FREE_MAX_VIDEOS = 0;
+export const FREE_BIO_MAX = 200;
+export const BIO_MAX = 600;
 
 /** Un profil est considéré "Nouveau" pendant les 14 jours suivant sa création. */
 export function isNewArrival(createdAt: Date | string) {
