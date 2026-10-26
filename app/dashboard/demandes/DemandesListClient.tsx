@@ -53,14 +53,14 @@ export function DemandesListClient({ initialLeads }: { initialLeads: Lead[] }) {
           <div key={lead.id} className="lead-card lead-new" style={{ opacity: 0.95 }}>
             <div className="lead-header">
               <div>
-                <strong>🔒 Demande réservée aux abonnés</strong>{" "}
+                <strong>🔒 Demande réservée à la version PRO</strong>{" "}
                 <span className="mono" style={{ fontSize: 12, color: "var(--muted)" }}>
                   {new Date(lead.createdAt).toLocaleDateString("fr-FR")}
                 </span>
               </div>
             </div>
             <p className="lead-message">
-              Un organisateur vous a contacté. Avec le compte gratuit, une seule demande est lisible : abonnez-vous
+              Un organisateur vous a contacté. Avec le compte gratuit, une seule demande est lisible : passez à la version PRO
               (39 € par an) pour lire celle-ci et répondre.
             </p>
             <div className="lead-contact">
