@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getCurrentArtist } from "@/lib/auth";
-import { COUNTRIES, CITIES_BY_COUNTRY } from "@/lib/categories";
+import { COUNTRIES, CITIES_BY_COUNTRY, FREE_BIO_MAX, isFreeAccount } from "@/lib/categories";
 
 export async function GET() {
   const artist = await getCurrentArtist();
@@ -49,7 +49,17 @@ export async function PATCH(req: NextRequest) {
   const parsed = schema.safeParse(body);
   if (!parsed.success) return NextResponse.json({ error: "Champs invalides." }, { status: 400 });
 
-  const updated = await prisma.artist.update({ where: { id: artist.id }, data: parsed.data });
+  let data: typeof parsed.data = parsed.data;
+  if (isFreeAccount(artist)) {
+    // Compte gratuit : bio courte, pas de formules, de citation ni de liens directs.
+    if (data.bio && data.bio.length > FREE_BIO_MAX) {
+      return NextResponse.json({ error: `Bio limitée à ${FREE_BIO_MAX} caractères avec le compte gratuit.` }, { status: 400 });
+    }
+    const { tagline, services, phone, website, facebook, instagram, ...allowed } = data;
+    data = allowed;
+  }
+
+  const updated = await prisma.artist.update({ where: { id: artist.id }, data });
   const { passwordHash, ...safe } = updated;
   return NextResponse.json(safe);
 }
