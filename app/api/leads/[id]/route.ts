@@ -21,7 +21,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     const all = await prisma.lead.findMany({ where: { artistId: artist.id } });
     const isLocked = lockLeadsForFreeAccount(all, true).find((l) => l.id === lead.id)?.locked;
     if (isLocked) {
-      return NextResponse.json({ error: "Demande réservée aux abonnés : abonnez-vous pour la consulter." }, { status: 403 });
+      return NextResponse.json({ error: "Demande réservée à la version PRO : passez à la version PRO pour la consulter." }, { status: 403 });
     }
   }
 
@@ -45,7 +45,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
   // Compte gratuit : supprimer la demande lisible ferait « glisser » la suivante en lecture libre. On bloque donc
   // la suppression tant que l'abonnement n'est pas actif (l'artiste peut archiver la demande à la place).
   if (isFreeAccount(artist)) {
-    return NextResponse.json({ error: "La suppression est réservée aux abonnés. Vous pouvez archiver la demande." }, { status: 403 });
+    return NextResponse.json({ error: "La suppression est réservée à la version PRO. Vous pouvez archiver la demande." }, { status: 403 });
   }
 
   await prisma.lead.delete({ where: { id: lead.id } });
