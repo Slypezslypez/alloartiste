@@ -2,6 +2,8 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getCurrentArtist } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { isFreeAccount } from "@/lib/categories";
+import { lockLeadsForFreeAccount } from "@/lib/leadLock";
 import { DemandesListClient } from "./DemandesListClient";
 
 export const dynamic = "force-dynamic";
@@ -12,7 +14,9 @@ export default async function DemandesPage({ searchParams }: { searchParams: { f
   const artist = await getCurrentArtist();
   if (!artist) redirect("/connexion");
 
-  const leads = await prisma.lead.findMany({ where: { artistId: artist.id }, orderBy: { createdAt: "desc" } });
+  const rawLeads = await prisma.lead.findMany({ where: { artistId: artist.id }, orderBy: { createdAt: "desc" } });
+  // Compte gratuit : le contenu des demandes verrouillées est retiré ici, côté serveur.
+  const leads = lockLeadsForFreeAccount(rawLeads, isFreeAccount(artist));
 
   const filter = searchParams.filter && VALID_FILTERS.includes(searchParams.filter) ? searchParams.filter : "all";
   const visible = filter === "all" ? leads : leads.filter((l) => l.status === filter);

@@ -11,6 +11,7 @@ type Lead = {
   message: string;
   status: "new" | "replied" | "archived";
   createdAt: string;
+  locked?: boolean;
 };
 
 export function DemandesListClient({ initialLeads }: { initialLeads: Lead[] }) {
@@ -35,7 +36,8 @@ export function DemandesListClient({ initialLeads }: { initialLeads: Lead[] }) {
     if (res.ok) {
       setLeads((ls) => ls.filter((l) => l.id !== id));
     } else {
-      alert("Échec de la suppression.");
+      const body = await res.json().catch(() => ({}));
+      alert(body.error || "Échec de la suppression.");
     }
     setDeletingId(null);
   }
@@ -46,7 +48,28 @@ export function DemandesListClient({ initialLeads }: { initialLeads: Lead[] }) {
 
   return (
     <div className="lead-list">
-      {leads.map((lead) => (
+      {leads.map((lead) =>
+        lead.locked ? (
+          <div key={lead.id} className="lead-card lead-new" style={{ opacity: 0.95 }}>
+            <div className="lead-header">
+              <div>
+                <strong>🔒 Demande verrouillée</strong>{" "}
+                <span className="mono" style={{ fontSize: 12, color: "var(--muted)" }}>
+                  {new Date(lead.createdAt).toLocaleDateString("fr-FR")}
+                </span>
+              </div>
+            </div>
+            <p className="lead-message">
+              Un organisateur vous a contacté. Avec le compte gratuit, une seule demande est lisible : abonnez-vous
+              (39 € par an) pour lire celle-ci et répondre.
+            </p>
+            <div className="lead-contact">
+              <a href="/dashboard" style={{ color: "var(--gold-deep)", fontWeight: 600 }}>
+                Voir mon abonnement
+              </a>
+            </div>
+          </div>
+        ) : (
         <div key={lead.id} className={`lead-card lead-${lead.status}`}>
           <div className="lead-header">
             <div>
@@ -79,7 +102,8 @@ export function DemandesListClient({ initialLeads }: { initialLeads: Lead[] }) {
             {lead.eventDate && <span> · Événement : {lead.eventDate}</span>}
           </div>
         </div>
-      ))}
+        )
+      )}
     </div>
   );
 }
