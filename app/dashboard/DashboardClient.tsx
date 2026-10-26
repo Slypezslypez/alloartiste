@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { CATEGORIES, COUNTRIES, CITIES_BY_COUNTRY, MAX_PHOTOS, MAX_VIDEOS, PAYMENTS_ENABLED, isSubscriptionVisible, type Country } from "@/lib/categories";
+import { CATEGORIES, COUNTRIES, CITIES_BY_COUNTRY, MAX_PHOTOS, MAX_VIDEOS, FREE_MAX_PHOTOS, FREE_BIO_MAX, BIO_MAX, PAYMENTS_ENABLED, isSubscriptionVisible, type Country } from "@/lib/categories";
 import { SPECIALTY_TREE } from "@/lib/specialtyTree";
 import { AvailabilityCalendar } from "@/app/AvailabilityCalendar";
 import { compressImage } from "@/lib/imageCompress";
@@ -64,6 +64,15 @@ export function DashboardClient({
   const [pendingDate, setPendingDate] = useState<string | null>(null);
   // Compte gratuit « découverte » : profil visible, mais une seule demande de devis lisible.
   const isFree = artist.subscriptionStatus === "free";
+  const photoMax = isFree ? FREE_MAX_PHOTOS : MAX_PHOTOS;
+  const bioMax = isFree ? FREE_BIO_MAX : BIO_MAX;
+  // Options réservées aux abonnés : visibles mais grisées et non modifiables pour un compte gratuit.
+  const lockedBox: React.CSSProperties = isFree ? { opacity: 0.45, pointerEvents: "none", userSelect: "none" } : {};
+  const lockedNote = (
+    <p className="hint" style={{ color: "var(--gold-deep)", fontWeight: 600, margin: "6px 0 10px" }}>
+      🔒 Réservé aux abonnés (39 € par an)
+    </p>
+  );
   // `active` = abonnement réellement actif ou en essai (payant / code d'invitation), hors compte gratuit.
   const active =
     !isFree &&
@@ -210,7 +219,7 @@ export function DashboardClient({
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Échec de la génération.");
-      setBioValue((data.bio || "").slice(0, 600));
+      setBioValue((data.bio || "").slice(0, bioMax));
     } catch (err: any) {
       setBioError(err.message || "Échec de la génération.");
     } finally {
@@ -307,12 +316,16 @@ export function DashboardClient({
         bio: bioValue,
         priceMin: finalPriceMin,
         priceMax: finalPriceMax,
-        tagline: taglineValue.trim() || null,
-        services,
-        phone: fd.get("phone") || null,
-        website: fd.get("website") || null,
-        facebook: fd.get("facebook") || null,
-        instagram: fd.get("instagram") || null
+        ...(isFree
+          ? {}
+          : {
+              tagline: taglineValue.trim() || null,
+              services,
+              phone: fd.get("phone") || null,
+              website: fd.get("website") || null,
+              facebook: fd.get("facebook") || null,
+              instagram: fd.get("instagram") || null
+            })
       })
     });
     if (res.ok) {
@@ -608,7 +621,7 @@ export function DashboardClient({
           </div>
 
           <p className="profile-media-label mono">
-            Galerie médias ({artist.photos.length}/{MAX_PHOTOS})
+            Galerie médias ({artist.photos.length}/{photoMax})
           </p>
           <div className="profile-thumbs" style={{ marginBottom: 14 }}>
             {artist.photos.map((p) => (
@@ -636,7 +649,7 @@ export function DashboardClient({
               </div>
             ))}
           </div>
-          {artist.photos.length < MAX_PHOTOS ? (
+          {artist.photos.length < photoMax ? (
             <>
               <input
                 type="file"
@@ -646,27 +659,39 @@ export function DashboardClient({
               />
               <p className="hint">{uploading ? "Envoi en cours..." : "JPEG, PNG ou WebP — la première photo devient la photo principale."}</p>
             </>
+          ) : isFree ? (
+            <div style={lockedBox}>
+              <input type="file" disabled />
+            </div>
           ) : (
             <p className="hint">Nombre maximum de photos atteint.</p>
           )}
+          {isFree && artist.photos.length >= photoMax && (
+            <p className="hint" style={{ color: "var(--gold-deep)", fontWeight: 600 }}>
+              🔒 Compte gratuit : 1 photo. Jusqu&apos;à {MAX_PHOTOS} photos avec l&apos;abonnement (39 € par an).
+            </p>
+          )}
 
           <p className="profile-section-label mono" style={{ margin: "22px 0 10px" }}>
-            Vidéos & extraits ({artist.videos.length}/{MAX_VIDEOS})
+            Vidéos & extraits ({artist.videos.length}/{isFree ? 0 : MAX_VIDEOS})
           </p>
-          {artist.videos.map((v) => (
-            <div className="video-item" key={v}>
-              <span className="mono" style={{ fontSize: 12, wordBreak: "break-all" }}>{v}</span>
-              <button onClick={() => removeVideo(v)}>×</button>
-            </div>
-          ))}
-          {artist.videos.length < MAX_VIDEOS && (
-            <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
-              <input type="url" value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} placeholder="https://youtube.com/watch?v=..." />
-              <button className="btn btn-outline" onClick={addVideo} style={{ whiteSpace: "nowrap" }}>
-                Ajouter
-              </button>
-            </div>
-          )}
+          {isFree && lockedNote}
+          <div style={lockedBox}>
+            {artist.videos.map((v) => (
+              <div className="video-item" key={v}>
+                <span className="mono" style={{ fontSize: 12, wordBreak: "break-all" }}>{v}</span>
+                <button onClick={() => removeVideo(v)} disabled={isFree}>×</button>
+              </div>
+            ))}
+            {(isFree || artist.videos.length < MAX_VIDEOS) && (
+              <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
+                <input type="url" value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} placeholder="https://youtube.com/watch?v=..." disabled={isFree} />
+                <button className="btn btn-outline" onClick={addVideo} disabled={isFree} style={{ whiteSpace: "nowrap" }}>
+                  Ajouter
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Colonne droite : formulaire, même disposition que la fiche publique */}
@@ -787,11 +812,12 @@ export function DashboardClient({
 
               <input
                 type="text"
+                disabled={isFree}
+                style={{ ...lockedBox, fontStyle: "italic" }}
                 value={taglineValue}
                 onChange={(e) => setTaglineValue(e.target.value)}
                 placeholder="Citation courte, ex. Spécialiste de la musique électronique, événements corporate haut de gamme."
                 maxLength={180}
-                style={{ fontStyle: "italic", fontFamily: "'Playfair Display', serif", color: "var(--gold-deep)" }}
               />
 
               <p className="profile-section-label mono">Biographie & démarche</p>
@@ -817,9 +843,15 @@ export function DashboardClient({
                 {bioError && <p className="error">{bioError}</p>}
               </div>
 
-              <textarea name="bio" maxLength={600} value={bioValue} onChange={(e) => setBioValue(e.target.value)} />
+              <textarea name="bio" maxLength={bioMax} value={bioValue} onChange={(e) => setBioValue(e.target.value)} />
+              <p className="hint">
+                {bioValue.length}/{bioMax} caractères
+                {isFree && ` — bio courte avec le compte gratuit (jusqu'à ${BIO_MAX} caractères avec l'abonnement).`}
+              </p>
 
               <p className="profile-section-label mono">Formules & prestations</p>
+              {isFree && lockedNote}
+              <div style={lockedBox}>
               <div className="profile-services-row" style={{ marginBottom: 12 }}>
                 {services.map((s) => (
                   <span key={s} className="profile-service-pill">
@@ -868,6 +900,7 @@ export function DashboardClient({
                 </button>
                 {servicesError && <p className="error">{servicesError}</p>}
               </div>
+              </div>
 
               <p className="profile-section-label mono">Liens directs</p>
               <label>Email</label>
@@ -876,6 +909,8 @@ export function DashboardClient({
                 C&apos;est l&apos;adresse de votre compte : vous l&apos;utilisez pour vous connecter et vous y recevez les demandes des
                 organisateurs. Elle n&apos;est jamais affichée publiquement ; les organisateurs vous écrivent via le formulaire de votre fiche.
               </p>
+              {isFree && lockedNote}
+              <div style={lockedBox}>
               <div className="field-row">
                 <div>
                   <label>Téléphone</label>
@@ -896,6 +931,7 @@ export function DashboardClient({
                   <label>Instagram</label>
                   <input name="instagram" type="text" defaultValue={artist.instagram || ""} maxLength={200} placeholder="instagram.com/..." />
                 </div>
+              </div>
               </div>
 
               {profileMsg && <p className="success">{profileMsg}</p>}
