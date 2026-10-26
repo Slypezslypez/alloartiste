@@ -58,6 +58,7 @@ export function InscriptionForm({ categories }: { categories: string[] }) {
   const [city, setCity] = useState<string>(CITIES_BY_COUNTRY["Belgique"][0]);
   const [priceMin, setPriceMin] = useState("");
   const [priceMax, setPriceMax] = useState("");
+  const [plan, setPlan] = useState<"free" | "pro">("free");
 
   function changeCountry(value: Country) {
     setCountry(value);
@@ -145,6 +146,7 @@ export function InscriptionForm({ categories }: { categories: string[] }) {
         priceMin: finalPriceMin,
         priceMax: finalPriceMax,
         promoCode: fd.get("promoCode") || undefined,
+        plan,
         turnstileToken: fd.get("cf-turnstile-response") || undefined
       })
     });
@@ -182,6 +184,51 @@ export function InscriptionForm({ categories }: { categories: string[] }) {
         L&apos;inscription est gratuite — version découverte.
       </p>
       <form onSubmit={submit}>
+        <label>Votre formule</label>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 10, marginBottom: 6 }}>
+          {(
+            [
+              { value: "free", title: "Compte gratuit", text: "Version découverte : profil visible, 1ʳᵉ demande lisible." },
+              { value: "pro", title: "Version PRO", text: "Toutes les demandes lisibles, photos, vidéos et liens directs." }
+            ] as const
+          ).map((o) => (
+            <label
+              key={o.value}
+              style={{
+                display: "block",
+                cursor: "pointer",
+                padding: "12px 14px",
+                borderRadius: 12,
+                border: plan === o.value ? "2px solid var(--gold-deep)" : "1px solid var(--line, #d9d2c3)",
+                textTransform: "none",
+                fontFamily: "inherit",
+                letterSpacing: "normal"
+              }}
+            >
+              <input
+                type="radio"
+                name="plan"
+                value={o.value}
+                checked={plan === o.value}
+                onChange={() => setPlan(o.value)}
+                style={{ width: "auto", marginRight: 8 }}
+              />
+              <strong>{o.title}</strong>
+              <span style={{ display: "block", fontSize: 13, fontWeight: 400, color: "var(--ink-soft)", marginTop: 4 }}>{o.text}</span>
+            </label>
+          ))}
+        </div>
+        {plan === "pro" && (
+          <p className="hint" style={{ marginTop: 0 }}>
+            {PAYMENTS_ENABLED
+              ? "Vous activerez la version PRO depuis votre espace, juste après la confirmation de votre email. "
+              : "Le paiement de la version PRO ouvre bientôt : votre compte est créé dès maintenant en version découverte, et la version PRO vous sera proposée dès son ouverture. "}
+            <a href="/version-pro" target="_blank" rel="noopener noreferrer" style={{ color: "var(--gold-deep)", fontWeight: 600 }}>
+              Voir la version PRO
+            </a>
+          </p>
+        )}
+
         <label>Nom / nom de scène</label>
         <input name="name" type="text" required maxLength={60} />
         <label>Métier principal</label>
