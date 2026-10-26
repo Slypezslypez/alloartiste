@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { COUNTRIES, CITIES_BY_COUNTRY, PAYMENTS_ENABLED, CATALOG_OPEN, type Country } from "@/lib/categories";
+import { COUNTRIES, CITIES_BY_COUNTRY, PAYMENTS_ENABLED, type Country } from "@/lib/categories";
 import { SPECIALTY_TREE } from "@/lib/specialtyTree";
 
 const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
@@ -179,9 +179,7 @@ export function InscriptionForm({ categories }: { categories: string[] }) {
         </div>
       </div>
       <p className="sub">
-        {CATALOG_OPEN
-          ? "L'inscription est gratuite et votre profil est visible dans le catalogue pendant 3 mois offerts."
-          : "L'inscription est gratuite — version découverte."}
+        L&apos;inscription est gratuite — version découverte.
       </p>
       <form onSubmit={submit}>
         <label>Nom / nom de scène</label>
@@ -318,8 +316,9 @@ export function InscriptionForm({ categories }: { categories: string[] }) {
           </span>
         </label>
         <p className="hint" style={{ marginTop: 14, fontSize: 12.5 }}>
-          Aucun paiement n&apos;est demandé à l&apos;inscription. Après les 3 mois offerts{CATALOG_OPEN ? "" : " (qui débutent à l'ouverture de l'annuaire au public)"}, la visibilité
-          dans le catalogue nécessite un abonnement de 39 € par an, renouvelable automatiquement et résiliable à tout moment.
+          Aucun paiement n&apos;est demandé à l&apos;inscription. Le compte gratuit (version découverte) rend votre profil visible et
+          vous permet de lire votre première demande de devis ; pour lire toutes les demandes, l&apos;abonnement est de 39 € par an,
+          renouvelable automatiquement et résiliable à tout moment.
         </p>
         {TURNSTILE_SITE_KEY && <div ref={turnstileRef} style={{ marginTop: 12 }} />}
         {error && <p className="error">{error}</p>}
