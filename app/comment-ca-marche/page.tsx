@@ -37,7 +37,7 @@ export default async function HowItWorksPage() {
             Votre navigateur ne peut pas lire cette vidéo.
           </video>
           <p className="hint" style={{ textAlign: "center", marginTop: 10 }}>
-            Tutoriel vidéo : créer votre profil artiste en 6 étapes (1 min 36).
+            Tutoriel vidéo : créer votre profil artiste en 6 étapes (1 min 40).
           </p>
         </div>
         <div className={settings.howArtistsImageUrl ? "how-panel-grid" : ""}>
