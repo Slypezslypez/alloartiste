@@ -174,7 +174,7 @@ export async function sendWelcomeEmail(artistName: string, artistEmail: string) 
       <p style="margin:0 0 14px;">Bonjour ${escapeHtml(artistName)},</p>
       <p style="margin:0 0 14px;">Votre compte a bien été créé.</p>
       <p style="margin:0;">
-        Votre profil est visible dans l'annuaire avec un compte gratuit : vous recevez toutes les demandes de devis, la première est lisible gratuitement, les suivantes sont réservées à la version PRO.
+        Votre profil est visible dans l'annuaire avec un compte gratuit : vous recevez toutes les demandes de devis, les deux premières sont lisibles gratuitement, les suivantes sont réservées à la version PRO.
       </p>
     `,
     ctaLabel: "Accéder à mon espace",
@@ -187,7 +187,7 @@ export async function sendWelcomeEmail(artistName: string, artistEmail: string) 
     subject: "Bienvenue sur AlloArtiste",
     text: `Bonjour ${artistName},
 
-Votre compte a bien été créé. Votre profil est visible dans l'annuaire avec un compte gratuit : vous recevez toutes les demandes de devis, la première est lisible gratuitement, les suivantes sont réservées à la version PRO.
+Votre compte a bien été créé. Votre profil est visible dans l'annuaire avec un compte gratuit : vous recevez toutes les demandes de devis, les deux premières sont lisibles gratuitement, les suivantes sont réservées à la version PRO.
 
 À bientôt,
 L'équipe AlloArtiste`,
@@ -205,7 +205,7 @@ export async function sendVerificationEmail(artistName: string, artistEmail: str
         (ce lien est valable 24 heures).
       </p>
       <p style="margin:0;font-size:13px;color:#8c8578;">
-        Une fois confirmé, vous pourrez accéder à votre espace. Votre profil est visible dans l'annuaire avec un compte gratuit : vous recevez toutes les demandes de devis, la première est lisible gratuitement, les suivantes sont réservées à la version PRO.
+        Une fois confirmé, vous pourrez accéder à votre espace. Votre profil est visible dans l'annuaire avec un compte gratuit : vous recevez toutes les demandes de devis, les deux premières sont lisibles gratuitement, les suivantes sont réservées à la version PRO.
       </p>
     `,
     ctaLabel: "Confirmer mon adresse email",
@@ -221,7 +221,7 @@ export async function sendVerificationEmail(artistName: string, artistEmail: str
 Votre compte AlloArtiste a bien été créé. Il ne reste qu'une étape : confirmez votre adresse email en cliquant sur le lien suivant (valable 24 heures) :
 ${verifyUrl}
 
-Une fois confirmé, vous pourrez accéder à votre espace. Votre profil est visible dans l'annuaire avec un compte gratuit : vous recevez toutes les demandes de devis, la première est lisible gratuitement, les suivantes sont réservées à la version PRO.
+Une fois confirmé, vous pourrez accéder à votre espace. Votre profil est visible dans l'annuaire avec un compte gratuit : vous recevez toutes les demandes de devis, les deux premières sont lisibles gratuitement, les suivantes sont réservées à la version PRO.
 
 Si vous n'êtes pas à l'origine de cette inscription, ignorez simplement cet email.
 
@@ -384,7 +384,7 @@ export async function sendResourceAlertEmail(resources: ResourceStatus[]) {
     .join("");
 
   const html = renderEmail({
-    title: "Une ressource du site approche de sa limite",
+    title: "Une ressource du site approche de sa limite gratuite",
     bodyHtml: `
       <p style="margin:0 0 14px;">Bonjour,</p>
       <p style="margin:0 0 14px;">
@@ -402,13 +402,13 @@ export async function sendResourceAlertEmail(resources: ResourceStatus[]) {
         <tbody>${rowsHtml}</tbody>
       </table>
       <p style="margin:0;font-size:13px;color:#8c8578;">
-        Pour Cloudflare R2, dépasser le quota gratuit déclenche une facturation. Pour Neon (forfait payant),
-        la limite est ton budget mensuel : le montant est facturé le 1er du mois suivant. Ce mail ne sera pas renvoyé avant quelques jours pour la même ressource.
+        Selon le fournisseur concerné, dépasser ce seuil peut déclencher une facturation (Cloudflare R2) ou nécessiter
+        un changement de forfait (Neon). Ce mail ne sera pas renvoyé avant quelques jours pour la même ressource.
       </p>
     `
   });
 
-  const text = `Ressources techniques AlloArtiste approchant leur limite :
+  const text = `Ressources techniques AlloArtiste approchant leur limite gratuite :
 
 ${resources.map((r) => `- ${r.name} : ${r.usedLabel} / ${r.limitLabel} (${r.percent !== null ? Math.round(r.percent) + "%" : "?"})`).join("\n")}
 `;
@@ -416,7 +416,7 @@ ${resources.map((r) => `- ${r.name} : ${r.usedLabel} / ${r.limitLabel} (${r.perc
   return resend.emails.send({
     from: process.env.EMAIL_FROM as string,
     to: receiver as string,
-    subject: "AlloArtiste — une ressource approche de sa limite",
+    subject: "AlloArtiste — une ressource approche de sa limite gratuite",
     text,
     html
   });
@@ -547,7 +547,7 @@ export async function sendNewArtistAlertEmail(opts: {
     ? "1 an gratuit (code d'invitation)"
     : opts.wantsPro
       ? "Souhaite la VERSION PRO (compte gratuit en attendant l'ouverture des paiements)"
-      : "Compte gratuit « découverte » (1 demande lisible)";
+      : "Compte gratuit « découverte » (2 demandes lisibles)";
   const bioShort = opts.bio.length > 300 ? `${opts.bio.slice(0, 300)}…` : opts.bio;
   const cell = "padding:6px 10px;border-bottom:1px solid #e7e2d8;";
 
@@ -601,7 +601,7 @@ export async function sendLockedLeadEmail(opts: { artistName: string; artistEmai
     bodyHtml: `
       <p style="margin:0 0 14px;">Bonjour ${escapeHtml(opts.artistName)},</p>
       <p style="margin:0 0 14px;">
-        Un organisateur vient de vous contacter via AlloArtiste. Avec le compte gratuit, une seule demande est lisible :
+        Un organisateur vient de vous contacter via AlloArtiste. Avec le compte gratuit, seules deux demandes sont lisibles :
         celle-ci est réservée à la version PRO.
       </p>
       <p style="margin:0;font-size:13px;color:#8c8578;">
@@ -618,7 +618,7 @@ export async function sendLockedLeadEmail(opts: { artistName: string; artistEmai
     subject: "Vous avez reçu une nouvelle demande — AlloArtiste",
     text: `Bonjour ${opts.artistName},
 
-Un organisateur vient de vous contacter via AlloArtiste. Avec le compte gratuit, une seule demande est lisible : celle-ci est réservée à la version PRO.
+Un organisateur vient de vous contacter via AlloArtiste. Avec le compte gratuit, seules deux demandes sont lisibles : celle-ci est réservée à la version PRO.
 
 Pour la lire et répondre à l'organisateur, passez à la version PRO : ${siteUrl}/version-pro
 
