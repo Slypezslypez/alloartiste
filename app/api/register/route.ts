@@ -90,7 +90,7 @@ export async function POST(req: NextRequest) {
           }
         : {
             // Sans code : compte gratuit « découverte » (plus de période d'essai de 3 mois). Le profil est visible,
-            // mais seule la première demande de devis est lisible ; les suivantes sont verrouillées jusqu'à
+            // mais seules les deux premières demandes de devis sont lisibles ; les suivantes sont verrouillées jusqu'à
             // l'abonnement à 39 €/an (voir lib/leadLock.ts). Pas de date de fin.
             subscriptionStatus: "free",
             currentPeriodEnd: null
