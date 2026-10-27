@@ -40,6 +40,21 @@ export default async function HowItWorksPage() {
             Tutoriel vidéo : créer votre profil artiste en 6 étapes (1 min 40).
           </p>
         </div>
+        <div style={{ margin: "0 0 26px" }}>
+          <video
+            controls
+            playsInline
+            preload="metadata"
+            poster="/tuto-pro-poster.jpg"
+            style={{ width: "100%", maxWidth: 960, display: "block", margin: "0 auto", borderRadius: 16, background: "#14110f" }}
+          >
+            <source src="/tuto-pro.mp4" type="video/mp4" />
+            Votre navigateur ne peut pas lire cette vidéo.
+          </video>
+          <p className="hint" style={{ textAlign: "center", marginTop: 10 }}>
+            Tutoriel vidéo : découvrir la version PRO (1 min 23).
+          </p>
+        </div>
         <div className={settings.howArtistsImageUrl ? "how-panel-grid" : ""}>
           {settings.howArtistsImageUrl && (
             <img
