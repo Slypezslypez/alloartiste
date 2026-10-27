@@ -60,7 +60,7 @@ export function DemandesListClient({ initialLeads }: { initialLeads: Lead[] }) {
               </div>
             </div>
             <p className="lead-message">
-              Un organisateur vous a contacté. Avec le compte gratuit, seules deux demandes sont lisibles : passez à la version PRO
+              Un organisateur vous a contacté. Avec le compte gratuit, seules trois demandes sont lisibles : passez à la version PRO
               pour lire celle-ci et répondre.
             </p>
             <div className="lead-contact">
