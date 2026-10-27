@@ -219,3 +219,20 @@ model SiteSettings {
 
   updatedAt DateTime @updatedAt
 }
+
+// Liste de producteurs — réservée aux artistes PRO
+model Producer {
+  id        String   @id @default(cuid())
+  name      String
+  company   String?
+  genres    String?  // styles / domaines, séparés par des virgules
+  city      String?
+  country   String?
+  email     String?
+  phone     String?
+  website   String?
+  notes     String?
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
