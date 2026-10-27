@@ -44,7 +44,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     }
   });
 
-  // Compte gratuit « découverte » : seules les deux premières demandes sont lisibles. À partir de la troisième, l'artiste
+  // Compte gratuit « découverte » : seules les trois premières demandes sont lisibles. À partir de la quatrième, l'artiste
   // reçoit un email « teaser » (sans nom ni message) qui l'invite à s'abonner pour la lire.
   const locked = isFreeAccount(artist) && (await prisma.lead.count({ where: { artistId: artist.id } })) > FREE_READABLE_LEADS;
 
