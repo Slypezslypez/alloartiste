@@ -384,7 +384,7 @@ export async function sendResourceAlertEmail(resources: ResourceStatus[]) {
     .join("");
 
   const html = renderEmail({
-    title: "Une ressource du site approche de sa limite gratuite",
+    title: "Une ressource du site approche de sa limite",
     bodyHtml: `
       <p style="margin:0 0 14px;">Bonjour,</p>
       <p style="margin:0 0 14px;">
@@ -402,13 +402,13 @@ export async function sendResourceAlertEmail(resources: ResourceStatus[]) {
         <tbody>${rowsHtml}</tbody>
       </table>
       <p style="margin:0;font-size:13px;color:#8c8578;">
-        Selon le fournisseur concerné, dépasser ce seuil peut déclencher une facturation (Cloudflare R2) ou nécessiter
-        un changement de forfait (Neon). Ce mail ne sera pas renvoyé avant quelques jours pour la même ressource.
+        Pour Cloudflare R2, dépasser le quota gratuit déclenche une facturation. Pour Neon (forfait payant),
+        la limite est ton budget mensuel : le montant est facturé le 1er du mois suivant. Ce mail ne sera pas renvoyé avant quelques jours pour la même ressource.
       </p>
     `
   });
 
-  const text = `Ressources techniques AlloArtiste approchant leur limite gratuite :
+  const text = `Ressources techniques AlloArtiste approchant leur limite :
 
 ${resources.map((r) => `- ${r.name} : ${r.usedLabel} / ${r.limitLabel} (${r.percent !== null ? Math.round(r.percent) + "%" : "?"})`).join("\n")}
 `;
@@ -416,7 +416,7 @@ ${resources.map((r) => `- ${r.name} : ${r.usedLabel} / ${r.limitLabel} (${r.perc
   return resend.emails.send({
     from: process.env.EMAIL_FROM as string,
     to: receiver as string,
-    subject: "AlloArtiste — une ressource approche de sa limite gratuite",
+    subject: "AlloArtiste — une ressource approche de sa limite",
     text,
     html
   });

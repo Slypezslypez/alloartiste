@@ -25,7 +25,12 @@ export type ResourceStatus = {
 // Limites des paliers gratuits (à ajuster ici si Silvio change de forfait chez un fournisseur).
 const R2_FREE_LIMIT_GB = 10;
 const NEON_STORAGE_LIMIT_GB = 0.5;
-const NEON_COMPUTE_LIMIT_HOURS = 100;
+// Neon est sur le forfait payant "Launch" : pas de limite d'heures, chaque CU-heure est facturée.
+// On surveille donc un budget mensuel en dollars plutôt qu'un quota gratuit.
+// Prix constaté sur la facture Neon (octobre 2026) : ~0,106 $ par CU-heure.
+const NEON_COMPUTE_PRICE_PER_HOUR = 0.106;
+const NEON_MONTHLY_BUDGET_USD = 5;
+const NEON_BUDGET_LABEL = `${NEON_MONTHLY_BUDGET_USD} $ / mois`;
 
 export async function checkR2Usage(): Promise<ResourceStatus> {
   const name = "Stockage R2 (photos & vidéos)";
@@ -120,7 +125,7 @@ export async function checkR2Usage(): Promise<ResourceStatus> {
 }
 
 export async function checkNeonCompute(): Promise<ResourceStatus> {
-  const name = "Temps de calcul de la base de données (Neon)";
+  const name = "Coût du calcul de la base de données (Neon)";
   const key = "neonCompute";
   const apiKey = process.env.NEON_API_KEY;
   const projectId = process.env.NEON_PROJECT_ID;
@@ -130,7 +135,7 @@ export async function checkNeonCompute(): Promise<ResourceStatus> {
       key,
       name,
       usedLabel: "?",
-      limitLabel: `${NEON_COMPUTE_LIMIT_HOURS} h`,
+      limitLabel: NEON_BUDGET_LABEL,
       percent: null,
       ok: false,
       error: "NEON_API_KEY ou NEON_PROJECT_ID manquant(e)."
@@ -147,7 +152,7 @@ export async function checkNeonCompute(): Promise<ResourceStatus> {
         key,
         name,
         usedLabel: "?",
-        limitLabel: `${NEON_COMPUTE_LIMIT_HOURS} h`,
+        limitLabel: NEON_BUDGET_LABEL,
         percent: null,
         ok: false,
         error: json?.message || `Neon a répondu ${res.status}.`
@@ -159,19 +164,20 @@ export async function checkNeonCompute(): Promise<ResourceStatus> {
         key,
         name,
         usedLabel: "?",
-        limitLabel: `${NEON_COMPUTE_LIMIT_HOURS} h`,
+        limitLabel: NEON_BUDGET_LABEL,
         percent: null,
         ok: false,
         error: "Le champ compute_time_seconds est absent de la réponse Neon (plan ou API modifiés ?)."
       };
     }
     const hours = seconds / 3600;
+    const cost = hours * NEON_COMPUTE_PRICE_PER_HOUR;
     return {
       key,
       name,
-      usedLabel: `${hours.toFixed(1)} h`,
-      limitLabel: `${NEON_COMPUTE_LIMIT_HOURS} h`,
-      percent: (hours / NEON_COMPUTE_LIMIT_HOURS) * 100,
+      usedLabel: `${cost.toFixed(2)} $ (${hours.toFixed(1)} h)`,
+      limitLabel: NEON_BUDGET_LABEL,
+      percent: (cost / NEON_MONTHLY_BUDGET_USD) * 100,
       ok: true
     };
   } catch (e) {
@@ -179,7 +185,7 @@ export async function checkNeonCompute(): Promise<ResourceStatus> {
       key,
       name,
       usedLabel: "?",
-      limitLabel: `${NEON_COMPUTE_LIMIT_HOURS} h`,
+      limitLabel: NEON_BUDGET_LABEL,
       percent: null,
       ok: false,
       error: e instanceof Error ? e.message : "Erreur inconnue."

@@ -6,6 +6,9 @@ import { sendResourceAlertEmail } from "@/lib/email";
 export const dynamic = "force-dynamic";
 
 const ALERT_THRESHOLD_PERCENT = 80;
+// Seuils propres à certaines ressources. Pour Neon (forfait payant), la "limite" est un budget
+// mensuel choisi par Silvio : on prévient quand il est atteint, pas à 80%.
+const THRESHOLD_BY_KEY: Record<string, number> = { neonCompute: 100 };
 const MIN_DAYS_BETWEEN_ALERTS = 3;
 
 // Appelée une fois par jour par le cron Vercel (voir vercel.json). Vérifie le stockage R2, le
@@ -29,7 +32,7 @@ export async function GET(req: Request) {
   }
 
   const now = Date.now();
-  const overThreshold = resources.filter((r) => r.ok && r.percent !== null && r.percent >= ALERT_THRESHOLD_PERCENT);
+  const overThreshold = resources.filter((r) => r.ok && r.percent !== null && r.percent >= (THRESHOLD_BY_KEY[r.key] ?? ALERT_THRESHOLD_PERCENT));
 
   const toAlert = overThreshold.filter((r) => {
     const last = sentAt[r.key] ? new Date(sentAt[r.key]).getTime() : 0;
