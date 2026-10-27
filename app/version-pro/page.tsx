@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 const ROWS: { label: string; free: string; pro: string }[] = [
   { label: "Profil visible dans l'annuaire", free: "Oui", pro: "Oui" },
   { label: "Réception des demandes de devis", free: "Toutes", pro: "Toutes" },
-  { label: "Demandes lisibles", free: "Les 2 premières", pro: "Toutes, avec réponse directe" },
+  { label: "Demandes lisibles", free: "Les 3 premières", pro: "Toutes, avec réponse directe" },
   { label: "Photos", free: "1", pro: `Jusqu'à ${MAX_PHOTOS}` },
   { label: "Vidéos", free: "—", pro: `Jusqu'à ${MAX_VIDEOS}` },
   { label: "Biographie", free: `${FREE_BIO_MAX} caractères`, pro: `${BIO_MAX} caractères` },
