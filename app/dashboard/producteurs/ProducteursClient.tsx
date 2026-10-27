@@ -17,9 +17,13 @@ type P = {
 
 // Catégories (filtres) déduites des mots-clés de la fiche : société + styles + notes.
 const CATEGORIES: { key: string; label: string; match: RegExp }[] = [
-  { key: "label", label: "Producteur musical / Label", match: /label|producteur|production|maison de disques/i },
-  { key: "event", label: "Organisateur d'événements", match: /organisateur|festival|concerts?\b/i },
-  { key: "booking", label: "Agence / Booking", match: /booking|management|agence|manager/i }
+  { key: "label", label: "Producteur musical / Label", match: /label|producteur|production musicale|maison de disques/i },
+  { key: "event", label: "Organisateur d'événements", match: /organisateur|événementiel|evenementiel/i },
+  { key: "festival", label: "Festivals", match: /festival/i },
+  { key: "salle", label: "Salles & centres culturels", match: /salle|centre culturel|cabaret/i },
+  { key: "theatre", label: "Théâtre & humour", match: /th[ée][âa]tre|humour|stand-up|impro|caf[ée]s?-th/i },
+  { key: "danse", label: "Danse, cirque & arts de la rue", match: /danse|cirque|arts de la rue|magie|spectacle vivant/i },
+  { key: "booking", label: "Agence / Booking", match: /booking|management|agence|manager|tourn[ée]es/i }
 ];
 
 function textOf(p: P) {
