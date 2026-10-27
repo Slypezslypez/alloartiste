@@ -15,7 +15,8 @@ const ROWS: { label: string; free: string; pro: string }[] = [
   { label: "Vidéos", free: "—", pro: `Jusqu'à ${MAX_VIDEOS}` },
   { label: "Biographie", free: `${FREE_BIO_MAX} caractères`, pro: `${BIO_MAX} caractères` },
   { label: "Formules & prestations, citation", free: "—", pro: "Oui" },
-  { label: "Téléphone, site web, réseaux sociaux", free: "—", pro: "Oui" }
+  { label: "Téléphone, site web, réseaux sociaux", free: "—", pro: "Oui" },
+  { label: "Liste de producteurs (contacts)", free: "—", pro: "Oui" }
 ];
 
 export default function VersionProPage() {
