@@ -410,7 +410,7 @@ export function InscriptionForm({ categories }: { categories: string[] }) {
         </label>
         <p className="hint" style={{ marginTop: 14, fontSize: 12.5 }}>
           Aucun paiement n&apos;est demandé à l&apos;inscription. Le compte gratuit (version découverte) rend votre profil visible et
-          vous permet de lire vos deux premières demandes de devis ; pour lire toutes les demandes, il existe la version PRO, sans
+          vous permet de lire vos trois premières demandes de devis ; pour lire toutes les demandes, il existe la version PRO, sans
           obligation et résiliable à tout moment.{" "}
           <a href="/version-pro" target="_blank" rel="noopener noreferrer" style={{ color: "var(--gold-deep)", fontWeight: 600 }}>
             Voir la version PRO
