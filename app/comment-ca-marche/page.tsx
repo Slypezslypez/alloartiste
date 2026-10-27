@@ -25,6 +25,21 @@ export default async function HowItWorksPage() {
 
       <div className="how-section">
         <h2 style={{ fontSize: 24 }}>Pour les artistes</h2>
+        <div style={{ margin: "0 0 26px" }}>
+          <video
+            controls
+            playsInline
+            preload="metadata"
+            poster="/tuto-artistes-poster.jpg"
+            style={{ width: "100%", maxWidth: 960, display: "block", margin: "0 auto", borderRadius: 16, background: "#14110f" }}
+          >
+            <source src="/tuto-artistes.mp4" type="video/mp4" />
+            Votre navigateur ne peut pas lire cette vidéo.
+          </video>
+          <p className="hint" style={{ textAlign: "center", marginTop: 10 }}>
+            Tutoriel vidéo : créer votre profil artiste en 6 étapes (1 min 36).
+          </p>
+        </div>
         <div className={settings.howArtistsImageUrl ? "how-panel-grid" : ""}>
           {settings.howArtistsImageUrl && (
             <img
