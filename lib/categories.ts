@@ -32,13 +32,13 @@ export function isSubscriptionVisible(artist: {
   return okStatus && artist.currentPeriodEnd.getTime() > Date.now();
 }
 
-/** Compte gratuit « découverte » : le profil est visible, mais seules les deux premières demandes de devis sont lisibles. */
+/** Compte gratuit « découverte » : le profil est visible, mais seules les trois premières demandes de devis sont lisibles. */
 export function isFreeAccount(artist: { subscriptionStatus: string | null }) {
   return artist.subscriptionStatus === "free";
 }
 
 /** Nombre de demandes de devis lisibles pour un compte gratuit (les suivantes sont verrouillées). */
-export const FREE_READABLE_LEADS = 2;
+export const FREE_READABLE_LEADS = 3;
 // Limites du compte gratuit « découverte »
 export const FREE_MAX_PHOTOS = 1;
 export const FREE_MAX_VIDEOS = 0;
