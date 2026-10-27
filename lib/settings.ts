@@ -9,11 +9,12 @@ async function fetchSiteSettings() {
   });
 }
 
-// Mis en cache 60s : évite une requête (upsert) à la base de données à chaque
-// changement de page — c'était la cause du léger décalage ressenti sur le menu.
-// L'admin (app/api/admin/settings/route.ts) invalide ce cache immédiatement après
-// une modification via revalidateTag("site-settings").
+// Mis en cache sans expiration automatique : la base de données n'est interrogée
+// qu'une seule fois, puis à chaque modification dans l'admin
+// (app/api/admin/settings/route.ts appelle revalidateTag("site-settings")).
+// Avant, l'expiration à 60s réveillait la base Neon en permanence, même pour
+// les robots qui visitent la page "en construction", et consommait le quota gratuit.
 export const getSiteSettings = unstable_cache(fetchSiteSettings, ["site-settings"], {
-  revalidate: 60,
+  revalidate: false,
   tags: ["site-settings"]
 });
