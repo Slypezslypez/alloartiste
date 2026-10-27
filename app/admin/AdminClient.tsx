@@ -8,6 +8,7 @@ import { AdminSettings } from "./AdminSettings";
 import { AdminBilling } from "./AdminBilling";
 import { AdminBackup } from "./AdminBackup";
 import { AdminSpecialties } from "./AdminSpecialties";
+import { AdminProducers } from "./AdminProducers";
 
 type Artist = {
   id: string;
@@ -101,7 +102,7 @@ export function AdminClient({
   initialSettings: Settings;
 }) {
   const router = useRouter();
-  const [tab, setTab] = useState<"artists" | "leads" | "messages" | "articles" | "billing" | "backup" | "specialties" | "settings">("artists");
+  const [tab, setTab] = useState<"artists" | "leads" | "messages" | "articles" | "billing" | "backup" | "specialties" | "producers" | "settings">("artists");
   const [artists, setArtists] = useState(initialArtists);
   const [leads, setLeads] = useState(initialLeads);
   const [messages, setMessages] = useState(initialMessages);
@@ -214,6 +215,9 @@ export function AdminClient({
         </button>
         <button className={`chip ${tab === "specialties" ? "active" : ""}`} onClick={() => setTab("specialties")}>
           Spécialités
+        </button>
+        <button className={`chip ${tab === "producers" ? "active" : ""}`} onClick={() => setTab("producers")}>
+          Producteurs
         </button>
         <button className={`chip ${tab === "settings" ? "active" : ""}`} onClick={() => setTab("settings")}>
           Réglages
@@ -344,6 +348,7 @@ export function AdminClient({
       {tab === "billing" && <AdminBilling />}
       {tab === "backup" && <AdminBackup />}
       {tab === "specialties" && <AdminSpecialties />}
+      {tab === "producers" && <AdminProducers />}
       {tab === "settings" && (
         <AdminSettings initialSettings={initialSettings} artistOptions={artists.map((a) => ({ id: a.id, name: a.name }))} />
       )}
