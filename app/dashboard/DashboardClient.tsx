@@ -526,6 +526,9 @@ export function DashboardClient({
           <Link href="/dashboard/salles" className="account-tab">
             Salles à proximité
           </Link>
+          <Link href="/dashboard/producteurs" className="account-tab">
+            Liste de producteurs
+          </Link>
           <Link href="/dashboard/evenements" className="account-tab">
             Mes événements
           </Link>
