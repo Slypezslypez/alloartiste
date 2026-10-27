@@ -62,7 +62,7 @@ export function DashboardClient({
   const [leads, setLeads] = useState(initialLeads);
   const [unavailableDates, setUnavailableDates] = useState<string[]>(initialUnavailableDates || []);
   const [pendingDate, setPendingDate] = useState<string | null>(null);
-  // Compte gratuit « découverte » : profil visible, mais une seule demande de devis lisible.
+  // Compte gratuit « découverte » : profil visible, mais deux demandes de devis lisibles.
   const isFree = artist.subscriptionStatus === "free";
   const photoMax = isFree ? FREE_MAX_PHOTOS : MAX_PHOTOS;
   const bioMax = isFree ? FREE_BIO_MAX : BIO_MAX;
@@ -449,7 +449,7 @@ export function DashboardClient({
           <h2 style={{ fontSize: 24 }}>Votre compte gratuit (version découverte)</h2>
           <p className="sub">
             Votre profil est visible dans l&apos;annuaire et vous recevez toutes les demandes de devis. Avec le compte
-            gratuit, seule la première demande est lisible : les suivantes sont réservées à la version PRO
+            gratuit, seules les deux premières demandes sont lisibles : les suivantes sont réservées à la version PRO
             (bientôt disponible). <Link href="/version-pro" style={{ textDecoration: "underline" }}>Voir la version PRO</Link>
           </p>
         </div>
