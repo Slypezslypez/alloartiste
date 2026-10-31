@@ -4,7 +4,7 @@ import { InscriptionForm } from "./InscriptionForm";
 
 // La liste des métiers déjà utilisés évolue rarement : régénérée toutes les 5 minutes plutôt que
 // d'interroger la base à chaque visite du formulaire d'inscription.
-export const revalidate = 300;
+export const revalidate = 1800;
 
 export default async function InscriptionPage() {
   const artists = await prisma.artist.findMany({ select: { category: true }, distinct: ["category"] });
