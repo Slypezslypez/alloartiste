@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 
 // Même logique que la liste des actualités : contenu régénéré toutes les 5 minutes.
-export const revalidate = 300;
+export const revalidate = 1800;
 
 export default async function ArticlePage({ params }: { params: { slug: string } }) {
   const article = await prisma.article.findUnique({ where: { slug: params.slug } });
