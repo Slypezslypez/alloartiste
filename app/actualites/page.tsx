@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 
 // Les articles changent rarement : on régénère la page toutes les 5 minutes au lieu d'interroger
 // la base à chaque visite.
-export const revalidate = 300;
+export const revalidate = 1800;
 
 export default async function ActualitesPage() {
   const articles = await prisma.article.findMany({
