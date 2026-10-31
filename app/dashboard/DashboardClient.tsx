@@ -332,7 +332,7 @@ export function DashboardClient({
     if (res.ok) {
       const updated = await res.json();
       setArtist((a) => ({ ...a, ...updated }));
-      setProfileMsg("Profil mis à jour.");
+      setProfileMsg("Profil mis à jour. Vos modifications peuvent mettre jusqu'à 15 minutes à apparaître sur votre fiche publique.");
     } else {
       setProfileMsg("Erreur lors de l'enregistrement.");
     }
@@ -945,6 +945,9 @@ export function DashboardClient({
                   Enregistrer
                 </button>
               </div>
+              <p className="hint" style={{ marginTop: 10 }}>
+                Après enregistrement, les modifications peuvent prendre jusqu&apos;à 15 minutes pour s&apos;afficher sur votre fiche publique.
+              </p>
             </form>
           </div>
         </div>
