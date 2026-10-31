@@ -5,10 +5,10 @@ import { getSiteSettings } from "@/lib/settings";
 import { CatalogClient } from "./CatalogClient";
 import { PromoCarousel } from "./PromoCarousel";
 
-// Régénérée automatiquement toutes les 60 secondes (au lieu d'interroger la base à chaque visite) :
-// un artiste dont l'abonnement expire peut rester visible jusqu'à 60s de plus, ce qui est acceptable
+// Régénérée automatiquement toutes les 15 minutes (au lieu d'interroger la base à chaque visite) :
+// un artiste dont l'abonnement expire peut rester visible jusqu'à 15 minutes de plus, ce qui est acceptable
 // vu le gain de rapidité pour tous les visiteurs.
-export const revalidate = 60;
+export const revalidate = 900;
 
 export default async function HomePage() {
   const [all, settings, upcomingEvents] = await Promise.all([
