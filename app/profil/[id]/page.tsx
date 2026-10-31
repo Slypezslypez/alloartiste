@@ -7,9 +7,13 @@ import { isSubscriptionVisible } from "@/lib/categories";
 import { ContactForm } from "./ContactForm";
 import { ProfileGallery } from "./ProfileGallery";
 import { ScrollToHash } from "./ScrollToHash";
+import { ViewCounter } from "./ViewCounter";
 import { PhoneReveal } from "./PhoneReveal";
 
-export const dynamic = "force-dynamic";
+// Page mise en cache 15 minutes (au lieu d'interroger la base à chaque visite, y compris celles des
+// robots) : cela permet à la base de données Neon de se mettre en veille et réduit la facture.
+// Les modifications d'un profil apparaissent donc avec un délai maximal de 15 minutes.
+export const revalidate = 900;
 
 // Mise en cache par requête : évite d'interroger la base deux fois (une pour les métadonnées SEO,
 // une pour l'affichage de la page) pour un même chargement.
@@ -43,8 +47,8 @@ export default async function ProfilePage({ params }: { params: { id: string } }
   const artist = await getArtist(params.id);
   if (!artist || !isSubscriptionVisible(artist)) notFound();
 
-  // Comptabilise la vue (non bloquant pour l'affichage).
-  prisma.artist.update({ where: { id: artist.id }, data: { views: { increment: 1 } } }).catch(() => {});
+  // Les vues sont comptées côté navigateur (voir <ViewCounter />) pour ne pas écrire en base
+  // à chaque génération de la page ni à chaque passage de robot.
 
   const todayMidnightUTC = new Date(`${new Date().toISOString().slice(0, 10)}T00:00:00.000Z`);
   const unavailableDates = artist.calendarVisible
@@ -68,6 +72,7 @@ export default async function ProfilePage({ params }: { params: { id: string } }
   return (
     <>
       <ScrollToHash />
+      <ViewCounter artistId={artist.id} />
       <Link className="backlink" href="/">
         ← Retour au catalogue
       </Link>
