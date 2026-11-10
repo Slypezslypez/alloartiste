@@ -1,3 +1,4 @@
+import { refreshArticles } from "@/lib/revalidate";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
@@ -25,6 +26,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   if (!parsed.success) return NextResponse.json({ error: "Champs invalides." }, { status: 400 });
 
   const updated = await prisma.article.update({ where: { id: params.id }, data: parsed.data });
+  refreshArticles();
   return NextResponse.json(updated);
 }
 
@@ -33,5 +35,6 @@ export async function DELETE(_req: NextRequest, { params }: { params: { id: stri
   if (denied) return denied;
 
   await prisma.article.delete({ where: { id: params.id } });
+  refreshArticles();
   return NextResponse.json({ ok: true });
 }
