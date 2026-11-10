@@ -1,3 +1,4 @@
+import { refreshPublic } from "@/lib/revalidate";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import crypto from "crypto";
@@ -127,5 +128,6 @@ export async function POST(req: NextRequest) {
     console.error("Échec de l'envoi de l'alerte nouvelle inscription:", err);
   }
 
+  refreshPublic(artist.id);
   return NextResponse.json({ ok: true, artistId: artist.id, freeAccess: grantsFreeAccess });
 }
