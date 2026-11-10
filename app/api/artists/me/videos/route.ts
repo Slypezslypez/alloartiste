@@ -1,3 +1,4 @@
+import { refreshPublic } from "@/lib/revalidate";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
@@ -24,6 +25,7 @@ export async function POST(req: NextRequest) {
     data: { videos: { push: parsed.data.url } }
   });
 
+  refreshPublic(artist.id);
   return NextResponse.json({ videos: updated.videos });
 }
 
@@ -39,5 +41,6 @@ export async function DELETE(req: NextRequest) {
   const nextVideos = artist.videos.filter((v) => v !== parsed.data.url);
   await prisma.artist.update({ where: { id: artist.id }, data: { videos: nextVideos } });
 
+  refreshPublic(artist.id);
   return NextResponse.json({ videos: nextVideos });
 }
