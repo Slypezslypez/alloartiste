@@ -1,3 +1,4 @@
+import { refreshPublic } from "@/lib/revalidate";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
@@ -61,5 +62,6 @@ export async function PATCH(req: NextRequest) {
 
   const updated = await prisma.artist.update({ where: { id: artist.id }, data });
   const { passwordHash, ...safe } = updated;
+  refreshPublic(artist.id);
   return NextResponse.json(safe);
 }
