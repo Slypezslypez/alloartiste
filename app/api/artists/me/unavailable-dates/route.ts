@@ -1,3 +1,4 @@
+import { refreshPublic } from "@/lib/revalidate";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getCurrentArtist } from "@/lib/auth";
@@ -25,6 +26,7 @@ export async function POST(req: NextRequest) {
     where: { artistId: artist.id },
     orderBy: { date: "asc" }
   });
+  refreshPublic(artist.id);
   return NextResponse.json({ dates: dates.map((d) => d.date.toISOString().slice(0, 10)) });
 }
 
@@ -44,5 +46,6 @@ export async function DELETE(req: NextRequest) {
     where: { artistId: artist.id },
     orderBy: { date: "asc" }
   });
+  refreshPublic(artist.id);
   return NextResponse.json({ dates: dates.map((d) => d.date.toISOString().slice(0, 10)) });
 }
