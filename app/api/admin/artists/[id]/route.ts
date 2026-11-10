@@ -1,3 +1,4 @@
+import { refreshAllPublic } from "@/lib/revalidate";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
@@ -28,6 +29,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
       where: { id: params.id },
       data: { subscriptionStatus: "active", currentPeriodEnd: newPeriodEnd }
     });
+    refreshAllPublic();
     return NextResponse.json({ id: updated.id, currentPeriodEnd: updated.currentPeriodEnd });
   }
 
@@ -35,6 +37,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     where: { id: params.id },
     data: { isVerified: parsed.data.isVerified }
   });
+  refreshAllPublic();
   return NextResponse.json({ id: updated.id, isVerified: updated.isVerified });
 }
 
@@ -43,5 +46,6 @@ export async function DELETE(_req: NextRequest, { params }: { params: { id: stri
   if (denied) return denied;
 
   await prisma.artist.delete({ where: { id: params.id } });
+  refreshAllPublic();
   return NextResponse.json({ ok: true });
 }
