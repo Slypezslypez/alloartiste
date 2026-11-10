@@ -1,3 +1,4 @@
+import { refreshPublic } from "@/lib/revalidate";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
@@ -62,6 +63,7 @@ export async function PUT(req: NextRequest) {
     data: { photos: { push: parsed.data.publicUrl } }
   });
 
+  refreshPublic(artist.id);
   return NextResponse.json({ photos: updated.photos });
 }
 
@@ -79,5 +81,6 @@ export async function DELETE(req: NextRequest) {
   await prisma.artist.update({ where: { id: artist.id }, data: { photos: nextPhotos } });
   deleteObjectByUrl(parsed.data.url).catch(() => {});
 
+  refreshPublic(artist.id);
   return NextResponse.json({ photos: nextPhotos });
 }
