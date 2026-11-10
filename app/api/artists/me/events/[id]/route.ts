@@ -1,3 +1,4 @@
+import { refreshPublic } from "@/lib/revalidate";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
@@ -30,6 +31,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   if (data.bookingLink === "") data.bookingLink = null;
 
   const updated = await prisma.event.update({ where: { id: event.id }, data });
+  refreshPublic(artist.id);
   return NextResponse.json(updated);
 }
 
@@ -43,5 +45,6 @@ export async function DELETE(_req: NextRequest, { params }: { params: { id: stri
   }
 
   await prisma.event.delete({ where: { id: event.id } });
+  refreshPublic(artist.id);
   return NextResponse.json({ ok: true });
 }
