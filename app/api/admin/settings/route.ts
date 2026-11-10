@@ -1,3 +1,4 @@
+import { refreshAllPublic } from "@/lib/revalidate";
 import { NextRequest, NextResponse } from "next/server";
 import { revalidateTag } from "next/cache";
 import { z } from "zod";
@@ -81,5 +82,6 @@ export async function PATCH(req: NextRequest) {
 
   const updated = await prisma.siteSettings.update({ where: { id: "singleton" }, data });
   revalidateTag("site-settings"); // le nouveau contenu s'affiche immédiatement, sans attendre le cache de 60s
+  refreshAllPublic();
   return NextResponse.json(updated);
 }
