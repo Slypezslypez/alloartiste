@@ -10,10 +10,10 @@ import { ScrollToHash } from "./ScrollToHash";
 import { ViewCounter } from "./ViewCounter";
 import { PhoneReveal } from "./PhoneReveal";
 
-// Page mise en cache 15 minutes (au lieu d'interroger la base à chaque visite, y compris celles des
+// Page mise en cache 6 heures (au lieu d'interroger la base à chaque visite, y compris celles des
 // robots) : cela permet à la base de données Neon de se mettre en veille et réduit la facture.
-// Les modifications d'un profil apparaissent donc avec un délai maximal de 15 minutes.
-export const revalidate = 900;
+// Les modifications d'un profil apparaissent donc avec un délai maximal de 6 heures, mais toute modification via le site déclenche un rafraîchissement immédiat.
+export const revalidate = 21600;
 
 // Mise en cache par requête : évite d'interroger la base deux fois (une pour les métadonnées SEO,
 // une pour l'affichage de la page) pour un même chargement.
