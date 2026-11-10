@@ -1,3 +1,4 @@
+import { refreshAllPublic } from "@/lib/revalidate";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { prisma } from "@/lib/prisma";
@@ -94,6 +95,7 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  refreshAllPublic();
   return NextResponse.json({ received: true });
 }
 
