@@ -1,3 +1,4 @@
+import { refreshAllPublic } from "@/lib/revalidate";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
@@ -113,6 +114,7 @@ export async function POST(req: NextRequest) {
       { timeout: 30000 }
     );
 
+    refreshAllPublic();
     return NextResponse.json({ ok: true, counts });
   } catch (err) {
     console.error("Échec de la restauration de la sauvegarde :", err);
