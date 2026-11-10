@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 export default function ContactPage() {
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const startedAt = useRef<number>(Date.now());
 
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -17,10 +19,18 @@ export default function ContactPage() {
         email: fd.get("email"),
         phone: fd.get("phone") || undefined,
         role: fd.get("role"),
-        message: fd.get("message")
+        message: fd.get("message"),
+        website: fd.get("website") || undefined,
+        elapsedMs: Date.now() - startedAt.current
       })
     });
-    setStatus(res.ok ? "sent" : "error");
+    if (res.ok) {
+      setStatus("sent");
+    } else {
+      const data = await res.json().catch(() => null);
+      setErrorMsg(data?.error || null);
+      setStatus("error");
+    }
   }
 
   return (
@@ -34,6 +44,11 @@ export default function ContactPage() {
         <p className="success">Votre message a bien été envoyé. Nous revenons vers vous rapidement.</p>
       ) : (
         <form onSubmit={submit}>
+          {/* Champ piège anti-robot : invisible pour les visiteurs, les robots le remplissent. */}
+          <div aria-hidden="true" style={{ position: "absolute", left: "-9999px", width: 1, height: 1, overflow: "hidden" }}>
+            <label>Site web</label>
+            <input name="website" type="text" tabIndex={-1} autoComplete="off" />
+          </div>
           <label>Nom</label>
           <input name="name" type="text" required maxLength={80} />
           <label>Email</label>
@@ -54,7 +69,7 @@ export default function ContactPage() {
           </div>
           <label>Message</label>
           <textarea name="message" required minLength={10} maxLength={3000} placeholder="Décrivez votre demande..." />
-          {status === "error" && <p className="error">L&apos;envoi a échoué, réessayez.</p>}
+          {status === "error" && <p className="error">{errorMsg || "L'envoi a échoué, réessayez."}</p>}
           <div style={{ marginTop: 20 }}>
             <button type="submit" className="btn btn-gold" disabled={status === "sending"} data-loading={status === "sending"}>
               {status === "sending" ? "Envoi..." : "Envoyer"}
