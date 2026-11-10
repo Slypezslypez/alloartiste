@@ -1,3 +1,4 @@
+import { refreshArticles } from "@/lib/revalidate";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
@@ -41,5 +42,6 @@ export async function POST(req: NextRequest) {
     data: { ...parsed.data, slug }
   });
 
+  refreshArticles();
   return NextResponse.json(article);
 }
