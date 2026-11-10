@@ -1,3 +1,4 @@
+import { refreshPublic } from "@/lib/revalidate";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
@@ -42,5 +43,6 @@ export async function POST(req: NextRequest) {
       bookingLink: parsed.data.bookingLink || null
     }
   });
+  refreshPublic(artist.id);
   return NextResponse.json(event);
 }
