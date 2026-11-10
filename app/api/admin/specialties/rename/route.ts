@@ -1,3 +1,4 @@
+import { refreshAllPublic } from "@/lib/revalidate";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
@@ -35,5 +36,6 @@ export async function POST(req: NextRequest) {
     count += 1;
   }
 
+  refreshAllPublic();
   return NextResponse.json({ ok: true, count });
 }
